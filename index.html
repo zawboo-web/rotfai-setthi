@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="เกมกระดานรถไฟสายเหนือ เล่นกับเพื่อนออนไลน์หรือกับบอท">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}html,body{height:100%}</style>
+<title>รถไฟเศรษฐีไทย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mali:wght@500;600;700&display=swap">
+<style>
+/* Layout: one-screen pass-and-play board — scrollable rail map on top, operator panel below on phones; panel becomes a right column on tablets */
+:root{
+  --bg:#E7ECE4; --surface:#FFFFFF; --surface-2:#F3F6F1; --ink:#17232B; --muted:#5A6A6E; --line:#CBD4CC;
+  --rail:#1F4E9C; --accent:#F2B705; --accent-ink:#2B2100; --bus:#9AA29A; --new:#E2711D;
+  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB;
+  --shadow:0 10px 30px rgba(20,35,40,.18);
+  --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai',sans-serif;
+  --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai',sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
+  --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16;
+  --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
+  --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16;
+  --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:15px;line-height:1.45;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,[data-node]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{height:100%;display:flex;flex-direction:column;gap:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-family:var(--font-d);font-weight:600;font-size:18px;color:var(--rail);margin-right:auto;white-space:nowrap}
+@media (max-width:520px){.brand{font-size:0;margin-right:auto}.brand::before{content:"";}.top{flex-wrap:nowrap}.chip{padding:5px 10px;font-size:13px}}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13.5px;white-space:nowrap}
+.chip b{font-family:var(--font-d);font-weight:500}
+.chip.dest{border-color:#C8361E}
+.chip.dest b{color:#C8361E}
+.iconbtn{width:40px;height:40px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center}
+
+/* stage */
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.mapwrap{flex:1;min-height:180px;position:relative}
+.map{position:absolute;inset:0;overflow:auto;border-radius:16px;background:var(--field-c);border:1px solid var(--line);overscroll-behavior:contain}
+.map svg{display:block;margin:0 auto}
+.zoom{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:38px;height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:20px;font-weight:600;box-shadow:var(--shadow)}
+.panel{flex:none;max-height:48%;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:2px}
+@media (min-width:860px){
+  .stage{flex-direction:row}
+  .panel{width:370px;max-height:none}
+}
+
+/* board svg */
+.stn-ring{fill:var(--surface);stroke:var(--ink);stroke-width:1.3}
+.stn-num{font-family:var(--font-d);font-weight:600;font-size:5px;fill:var(--rail)}
+.stn-name{font-family:var(--font-d);font-weight:500;font-size:6px;fill:var(--ink)}
+.rail{stroke:var(--rail);stroke-width:2.8}
+.bus{stroke:var(--bus);stroke-width:1.2;stroke-dasharray:.6 1.7;stroke-linecap:round}
+.fut{stroke:var(--new);stroke-width:2.3;stroke-dasharray:3 2;opacity:.75}
+svg.newrail .fut{stroke-dasharray:none;opacity:1}
+svg.newrail .barrier{display:none}
+.reach{fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:1.4;cursor:pointer;animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{fill-opacity:.55}}
+.tok{transition:transform .17s ease-out}
+.tok.active circle.body{stroke-width:1.4}
+.tok .halo{fill:none;stroke-width:1;opacity:.0}
+.tok.active .halo{opacity:.9;animation:halo 1.2s ease-out infinite}
+@keyframes halo{0%{r:3.4;opacity:.9}100%{r:7;opacity:0}}
+.destflag{pointer-events:none}
+.stn-hit{fill:transparent;cursor:pointer}
+
+/* panel */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.who{display:flex;align-items:center;gap:10px}
+.who .tokbig{width:34px;height:34px;flex:none}
+.who .nm{font-family:var(--font-d);font-weight:500;font-size:17px;line-height:1.2}
+.who .sub{font-size:13px;color:var(--muted)}
+.money{margin-left:auto;text-align:right}
+.money b{font-family:var(--font-d);font-weight:600;font-size:22px;font-variant-numeric:tabular-nums}
+.money small{display:block;font-size:12px;color:var(--muted)}
+.neg{color:var(--minus)}
+.prompt{margin-top:8px;font-size:14px;color:var(--muted)}
+.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn{min-height:48px;padding:0 16px;border-radius:12px;font-family:var(--font-d);font-weight:500;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1;background:var(--surface-2);border:1px solid var(--line)}
+.btn.primary{background:var(--rail);border-color:var(--rail);color:#fff}
+.btn.gold{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.dice{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.die{width:46px;height:46px;border-radius:11px;background:var(--surface);border:2px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px}
+.die i{width:8px;height:8px;border-radius:50%;background:var(--ink);place-self:center;visibility:hidden}
+.die i.on{visibility:visible}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pick{min-height:42px;padding:0 12px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-family:var(--font-d);font-weight:500}
+.pick small{font-family:var(--font-b);font-weight:400;opacity:.8;margin-left:4px}
+.hand{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mini{font-size:12.5px;background:#FFF3C4;color:#4A3A00;border-radius:7px;padding:2px 8px}
+.ghostb{font-size:12.5px;background:#EDE5F7;color:#4A2F78;border-radius:7px;padding:2px 8px}
+.label{font-size:12px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.board-list{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.prow{display:grid;grid-template-columns:14px 1fr auto auto;gap:8px;align-items:center;padding:7px 6px;border-radius:10px;text-align:left;width:100%}
+.prow:hover{background:var(--surface-2)}
+.prow.cur{background:var(--surface-2)}
+.dot{width:12px;height:12px;border-radius:50%}
+.prow .n{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .v{font-variant-numeric:tabular-nums;font-size:14px;text-align:right}
+.prow .a{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);text-align:right;min-width:62px}
+.log{display:flex;flex-direction:column;gap:3px;margin-top:6px;font-size:13px}
+.log div{color:var(--muted)}
+.log div:first-child{color:var(--ink)}
+
+/* modal */
+.modal-wrap{position:fixed;inset:0;background:rgba(10,18,22,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:12px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+@media (min-width:600px){.modal-wrap{align-items:center}}
+.modal{background:var(--surface);color:var(--ink);border-radius:20px;box-shadow:var(--shadow);width:100%;max-width:460px;max-height:86%;overflow:auto;padding:18px 18px 16px;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(16px);opacity:0}}
+.modal h3{font-family:var(--font-d);font-weight:600;font-size:21px;line-height:1.25;text-wrap:balance}
+.modal .eyebrow{font-size:12px;letter-spacing:.05em;color:var(--muted);font-weight:600;margin-bottom:2px}
+.modal .body{margin-top:8px;font-size:15px}
+.modal .body p+p{margin-top:6px}
+.modal .actions{margin-top:16px}
+.big-num{font-family:var(--font-d);font-weight:600;font-size:34px;line-height:1.1}
+.plist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.prop{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.prop .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center}
+.prop .pn{font-weight:600;font-size:14.5px;line-height:1.25}
+.prop .pm{font-size:12.5px;color:var(--muted)}
+.prop .btn{flex:none;min-height:40px;font-size:14px;padding:0 12px}
+.owner-tag{font-size:12.5px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.seg{display:flex;gap:6px;margin-top:6px}
+.seg button{flex:1;min-height:44px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);font-family:var(--font-d)}
+.seg button[aria-pressed="true"]{background:var(--rail);border-color:var(--rail);color:#fff}
+.field{margin-top:12px}
+.names{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.names label{display:flex;align-items:center;gap:8px}
+.names input{flex:1;min-width:0;min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);padding:0 10px;font:inherit}
+table.rep{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+table.rep td,table.rep th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+table.rep td:first-child,table.rep th:first-child{text-align:left}
+table.rep th{font-size:12px;color:var(--muted);font-weight:600}
+.rules li{margin:4px 0 4px 18px}
+/* game cards (fixed look in both themes, like printed cards) */
+.gc{--c:#FF8A3D;--cl:#FFE3CC;--cl2:#FFD3B0;width:260px;height:363px;box-sizing:border-box;background:var(--c);border:3px solid #2A2238;border-radius:18px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 5px 0 #2A2238;color:#2A2238;font-family:'Mali',var(--font-b);flex:none;text-align:left}
+.gc-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.gc-pill{background:#fff;border:2px solid #2A2238;border-radius:999px;padding:1px 10px;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-dark{background:#2A2238;color:#fff;border-radius:999px;padding:2px 9px;font-weight:700;font-size:11px;white-space:nowrap}
+.gc-art{height:178px;border:3px solid #2A2238;border-radius:13px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--cl) 0 12px,var(--cl2) 12px 24px);display:grid;place-items:center;flex:none}
+.gc-art.short{height:150px}
+.gc-art img{width:100%;height:100%;object-fit:cover;display:block}
+.gc-ph{background:rgba(255,255,255,.85);border:2px dashed #2A2238;border-radius:8px;padding:2px 8px;font-size:11px;font-weight:600}
+.gc-name{margin-top:-22px;align-self:center;position:relative;background:#fff;border:3px solid #2A2238;border-radius:12px;padding:1px 14px;font-family:var(--font-d);font-weight:600;font-size:18px;line-height:1.3;box-shadow:0 3px 0 #2A2238;max-width:94%;text-align:center}
+.gc-name.big{font-size:24px}
+.gc-name.dark{background:#2A2238;color:#fff;box-shadow:0 3px 0 #EDE5FF}
+.gc-panel{flex:1;background:#fff;border:2px solid #2A2238;border-radius:13px;padding:7px 10px;display:flex;flex-direction:column;justify-content:center;gap:5px;font-size:13.5px;font-weight:700;line-height:1.35;min-height:0;overflow:hidden}
+.gc-panel.center{align-items:center;text-align:center}
+.gc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.gc-stat{background:#fff;border:2px solid #2A2238;border-radius:12px;padding:3px 6px;display:flex;align-items:center;gap:6px;line-height:1.15}
+.gc-coin{width:30px;height:30px;flex:none;border-radius:50%;background:#FFD84D;border:2px solid #2A2238;display:grid;place-items:center;font-family:var(--font-d);font-weight:600;font-size:13px}
+.gc-coin.lg{width:54px;height:54px;font-size:21px;box-shadow:inset 0 0 0 3px #FFEFA3}
+.gc-stat small,.gc-sub{display:block;font-size:10.5px;color:#6B5E7A;font-weight:700}
+.gc-stat b{font-size:12px}
+.gc-foot{margin-top:auto;text-align:center;font-size:10.5px;font-weight:700;display:flex;justify-content:center;align-items:center;gap:4px}
+.gc-dot{width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid #2A2238}
+.gc-num{display:inline-grid;place-items:center;flex:none;min-width:22px;height:22px;border-radius:999px;background:#EDE5FF;border:2px solid #2A2238;font-size:12px;padding:0 4px;margin-right:6px}
+.gc-line{display:flex;align-items:center}
+.gc-wrap{display:flex;justify-content:center;margin:4px 0 10px}
+.gc-row{display:flex;gap:12px;overflow-x:auto;padding:4px 4px 10px;scroll-snap-type:x mandatory;margin:8px -4px 0}
+.gc-col{display:flex;flex-direction:column;gap:8px;align-items:center;scroll-snap-align:center;flex:none}
+.gc-col .btn{width:100%;flex:none}
+.art-file{display:block;width:100%;margin-top:10px;font:inherit}
+/* card pop-up effects */
+.gc-wrap,.gc-row{perspective:900px}
+.gc{position:relative;transform-origin:50% 60%}
+.gc-wrap{position:relative;isolation:isolate}
+.gc-wrap::before{content:"";position:absolute;left:50%;top:50%;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;background:repeating-conic-gradient(rgba(255,216,77,.6) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 25%,transparent 68%);mask:radial-gradient(circle,#000 25%,transparent 68%);animation:gcBurst 1.5s ease-out both;pointer-events:none;z-index:-1}
+#modal .gc{animation:gcIn .7s cubic-bezier(.2,1.35,.4,1) both}
+#modal .gc::after{content:"";position:absolute;inset:-3px;border-radius:18px;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.7) 50%,transparent 62%);background-size:260% 100%;background-position:160% 0;animation:gcShine .9s .5s ease-out both;pointer-events:none}
+#modal .gc-row .gc-col:nth-child(2) .gc,#modal .gc-row .gc-col:nth-child(2) .gc::after{animation-delay:.12s}
+#modal .gc-row .gc-col:nth-child(3) .gc,#modal .gc-row .gc-col:nth-child(3) .gc::after{animation-delay:.24s}
+#modal .gc-row .gc-col:nth-child(4) .gc,#modal .gc-row .gc-col:nth-child(4) .gc::after{animation-delay:.36s}
+#modal .gc-row .gc-col:nth-child(n+5) .gc,#modal .gc-row .gc-col:nth-child(n+5) .gc::after{animation-delay:.48s}
+#modal .gc-row .gc-col .btn{animation:gcFade .4s .45s both}
+#modal .gc.ghost{animation:gcIn .7s cubic-bezier(.2,1.35,.4,1) both,gcWobble .45s .7s 2 ease-in-out}
+#modal .gc .gc-coin.lg{animation:gcCoin .8s .55s ease-out both}
+.gc-wrap.ghost::before{background:repeating-conic-gradient(rgba(155,123,224,.55) 0 9deg,transparent 9deg 22deg)}
+@keyframes gcIn{0%{transform:translateY(46px) scale(.45) rotateY(-90deg);opacity:0}45%{opacity:1}65%{transform:translateY(-6px) scale(1.06) rotateY(10deg)}100%{transform:none;opacity:1}}
+@keyframes gcShine{to{background-position:-60% 0}}
+@keyframes gcBurst{0%{transform:scale(.2) rotate(0);opacity:0}30%{opacity:1}100%{transform:scale(1.1) rotate(50deg);opacity:0}}
+@keyframes gcWobble{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+@keyframes gcCoin{0%{transform:rotateY(0)}100%{transform:rotateY(720deg)}}
+@keyframes gcFade{from{opacity:0;transform:translateY(8px)}}
+.qtimer{display:flex;align-items:center;gap:10px;margin:8px 0 10px}
+.qtrack{flex:1;height:10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.qbar{height:100%;background:var(--accent);transform-origin:left;animation:qbar linear forwards}
+.qtimer b{font-family:var(--font-d);font-size:20px;min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.qtimer.hurry b{color:var(--minus)}
+@keyframes qbar{from{transform:scaleX(1)}to{transform:scaleX(0);background:var(--minus)}}
+#modal.again .gc,#modal.again .gc::after,#modal.again .gc-col .btn{animation:none}
+#modal.again{animation:none}
+
+.mode-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);min-height:64px}
+.mode-btn b{font-family:var(--font-d);font-weight:500;font-size:17px}
+.mode-btn span{font-size:13px;color:var(--muted)}
+.mode-btn.primary{background:var(--rail);border-color:var(--rail);color:#fff}
+.mode-btn.primary span{color:#DCE6F7}
+.stack{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.code{font-family:var(--font-d);font-weight:600;font-size:30px;letter-spacing:.18em;color:var(--rail)}
+.room{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;width:100%}
+.room .rn{font-family:var(--font-d);font-weight:500;letter-spacing:.1em}
+.room .rm{font-size:12.5px;color:var(--muted)}
+.seat{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:center;padding:6px 0}
+.seat input{min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);padding:0 10px;font:inherit;width:100%;min-width:0}
+.seat .who-n{font-size:12.5px;color:var(--muted)}
+.you{font-size:11.5px;background:var(--rail);color:#fff;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top,0px));z-index:40;display:flex;flex-direction:column;gap:6px;width:min(420px,calc(100% - 32px));pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);border-radius:12px;padding:9px 14px;font-size:14px;box-shadow:var(--shadow);animation:up .2s ease-out}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <header class="top">
+    <div class="brand">รถไฟเศรษฐีไทย</div>
+    <span class="chip" id="chipMonth"><b>เม.ย.</b> ปีที่ 1</span>
+    <span class="chip dest" id="chipDest">จุดหมาย <b>—</b></span>
+    <button class="iconbtn" id="menuBtn" aria-label="เมนู"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </header>
+  <main class="stage">
+    <div class="mapwrap">
+      <div class="map" id="map"><svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 22 210 500"></svg></div>
+      <div class="zoom"><button id="zin" aria-label="ซูมเข้า">+</button><button id="zout" aria-label="ซูมออก">−</button></div>
+    </div>
+    <aside class="panel" id="panel"></aside>
+  </main>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<div class="modal-wrap" id="modalWrap" hidden><div class="modal" role="dialog" aria-modal="true" id="modal"></div></div>
+
+<script>
+'use strict';
+// ================= DATA =================
+const DX = 8;
+const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
+const NODES = {};
+MAIN.forEach(([id,t],i)=>{ NODES[id]={x:55+DX,y:510-17*i,t}; });
+Object.assign(NODES,{
+  sk1:{x:80,y:272,t:"g"},sk2:{x:105,y:272,t:"g"},SKT:{x:130,y:272,t:"st"},
+  pa1:{x:80,y:34,t:"g"},pa2:{x:105,y:34,t:"g"},PAI:{x:130,y:34,t:"st"},
+  py1:{x:80,y:119,t:"g"},py2:{x:105,y:119,t:"g"},py3:{x:130,y:119,t:"g"},PYO:{x:155,y:119,t:"st"},
+  cr1:{x:155,y:100,t:"g"},cr2:{x:155,y:82,t:"g"},CRI:{x:155,y:63,t:"st"},
+  ph1:{x:72,y:192,t:"g"},ph2:{x:97,y:192,t:"g"},PHR:{x:118,y:170,t:"st"},
+  nn1:{x:136,y:190,t:"g"},nn2:{x:155,y:208,t:"g"},NAN:{x:174,y:226,t:"st"},
+  f1:{x:86,y:170,t:"b"},f2:{x:137,y:145,t:"y"}
+});
+for(const k of Object.keys(NODES)){ if(!MAIN.find(m=>m[0]===k)) NODES[k].x+=DX; }
+const EDGES=[];
+for(let i=0;i<MAIN.length-1;i++) EDGES.push([MAIN[i][0],MAIN[i+1][0],"rail"]);
+[["PSL","sk1"],["sk1","sk2"],["sk2","SKT"],["CMI","pa1"],["pa1","pa2"],["pa2","PAI"],["LPG","py1"],["py1","py2"],["py2","py3"],["py3","PYO"],["PYO","cr1"],["cr1","cr2"],["cr2","CRI"],["DNC","ph1"],["ph1","ph2"],["ph2","PHR"],["PHR","nn1"],["nn1","nn2"],["nn2","NAN"]].forEach(e=>EDGES.push([e[0],e[1],"bus"]));
+[["DNC","f1"],["f1","PHR"],["PHR","f2"],["f2","PYO"]].forEach(e=>EDGES.push([e[0],e[1],"future"]));
+const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย"};
+const LABEL_R=new Set(["SKT","PAI","PYO","CRI","PHR","NAN"]);
+const NORTH=new Set(["UTD","DNC","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"]);
+const FOOD="อาหาร",AGRI="เกษตร",TOUR="ท่องเที่ยว",IND="อุตสาหกรรม";
+const TYPE_COL={[FOOD]:"#E8742A",[AGRI]:"#3E9B4F",[TOUR]:"#2F7FC1",[IND]:"#6B5FA8"};
+const PROPS=[["BKK","ร้านข้าวมันไก่",FOOD,10,3],["BKK","แผงตลาดนัดสุดสัปดาห์",TOUR,30,6],["BKK","ท่าเรือขนส่งสินค้า",IND,80,9],["AYT","ร้านโรตีสายไหม",FOOD,5,2],["AYT","ร้านกุ้งแม่น้ำเผา",FOOD,15,5],["AYT","เรือทัวร์รอบเกาะเมือง",TOUR,20,4],["AYT","นิคมอุตสาหกรรม",IND,60,7],["LOP","ทุ่งทานตะวัน",AGRI,10,4],["LOP","ร้านของฝากเมืองลิง",FOOD,8,3],["NSW","โรงสีข้าว",AGRI,20,6],["NSW","ร้านโมจิปากน้ำโพ",FOOD,8,3],["NSW","ท่าเรือแม่น้ำเจ้าพระยา",IND,40,5],["PSL","ร้านก๋วยเตี๋ยวห้อยขา",FOOD,8,3],["PSL","โรงงานกล้วยตาก",FOOD,15,5],["SKT","ร้านก๋วยเตี๋ยวสุโขทัย",FOOD,6,2],["SKT","ทัวร์ปั่นจักรยานเมืองเก่า",TOUR,20,5],["UTD","สวนทุเรียนหลงลับแล",AGRI,30,10],["UTD","สวนลางสาด",AGRI,15,5],["PHR","โรงงานผ้าหม้อห้อม",IND,25,4],["PHR","ร้านขนมจีนน้ำเงี้ยว",FOOD,6,2],["NAN","โฮมสเตย์เมืองเก่า",TOUR,15,4],["NAN","ร้านกาแฟดอย",FOOD,10,3],["NAN","สวนส้มสีทอง",AGRI,20,6],["LPG","โรงงานชามตราไก่",IND,40,5],["LPG","รถม้าชมเมือง",TOUR,10,3],["LPN","สวนลำไย",AGRI,20,7],["LPN","โรงทอผ้าไหมยกดอก",IND,30,4],["CMI","ร้านข้าวซอย",FOOD,10,3],["CMI","ร้านไส้อั่ว",FOOD,8,3],["CMI","โรงงานร่มบ่อสร้าง",IND,30,4],["CMI","รีสอร์ตแม่ริม",TOUR,60,10],["PAI","ร้านกาแฟวิวดอย",FOOD,10,4],["PAI","โฮมสเตย์ริมน้ำปาย",TOUR,25,6],["PYO","ร้านปลากว๊านพะเยา",FOOD,8,3],["PYO","เรือชมกว๊าน",TOUR,15,4],["CRI","ไร่ชาบนดอย",AGRI,30,9],["CRI","ไร่สับปะรดนางแล",AGRI,15,5],["CRI","รีสอร์ตสามเหลี่ยมทองคำ",TOUR,50,8]]
+  .map(([s,n,t,price,profit],id)=>({id,s,n,t,price,profit}));
+const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
+const ITEMS={
+  exp:{n:"รถด่วน",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 2 ลูก",count:4},
+  sexp:{n:"รถด่วนพิเศษ",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 3 ลูก",count:2},
+  home:{n:"ตั๋วกลับบ้าน",when:"ใช้แทนการทอย",eff:"ย้ายไปกรุงเทพฯ ทันที",count:2},
+  drive:{n:"ขับเองกำหนดเอง",when:"ใช้แทนการทอย",eff:"เลือกเดิน 1–6 ช่อง",count:2},
+  mob:{n:"ม็อบปิดถนน",when:"ใช้ก่อนทอย",eff:"ผู้เล่น 1 คนห้ามเดินเทิร์นหน้า",count:2},
+  amulet:{n:"พระเครื่อง",when:"เก็บไว้",eff:"ยกเลิกผลตารางผี 1 ครั้ง",count:2},
+  pass:{n:"ตั๋วฝากผี",when:"ใช้ก่อนทอย",eff:"ส่งผีที่ติดตัวไปให้คนอื่น",count:1},
+  lotto:{n:"ลอตเตอรี่",when:"ใช้ก่อนทอย",eff:"ทอย 6 รับ 30 ล้าน, 1–5 เสีย 1 ล้าน",count:2},
+  viral:{n:"รีวิวไวรัล",when:"ใช้ก่อนทอย",eff:"รับเงินเท่ากำไรต่อปีของกิจการ 1 แห่ง",count:2},
+  insure:{n:"ประกันภัย",when:"เก็บไว้",eff:"ไม่ต้องจ่ายช่องแดงหรืออีเวนต์ 1 ครั้ง",count:1},
+  plane:{n:"เหมาเครื่องบิน",when:"ใช้แทนการทอย · ปีที่ 2",eff:"ย้ายไปจุดหมายทันที",count:1}
+};
+const MONTHS=["เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.","ม.ค.","ก.พ.","มี.ค."];
+const PCOL=[["แดง","#D93B3B"],["น้ำเงิน","#2F6FDE"],["เขียว","#2E9A4E"],["เหลือง","#E3A900"]];
+const SQ_COL={b:"var(--plus)",r:"var(--minus)",y:"var(--card)",g:"var(--bus)"};
+const SQ_SYM={b:"+",r:"−",y:"?",g:""};
+
+// ================= GRAPH =================
+function adjacency(newRail){
+  const a={}; for(const k in NODES) a[k]=[];
+  for(const [x,y,k] of EDGES){ if(k==="future"&&!newRail) continue; a[x].push(y); a[y].push(x); }
+  return a;
+}
+function bfs(from,newRail){
+  const a=adjacency(newRail), d={[from]:0}, q=[from];
+  while(q.length){ const u=q.shift(); for(const v of a[u]) if(d[v]===undefined){d[v]=d[u]+1;q.push(v);} }
+  return d;
+}
+const D0=bfs("BKK",false);
+const REWARD={}; for(const s in NAME) if(s!=="DNC") REWARD[s]=s==="BKK"?20:5+D0[s];
+
+// ================= STATE =================
+let S=null;            // game state (synced in online mode)
+let SAFE=null;         // local-mode save copy
+let UI={mode:"idle",opts:null,dice:[],busy:false,msg:""};
+let MODE="local";      // "local" | "online"
+const ON={db:null,user:null,me:null,ref:null,unsub:null,listUnsub:null,meta:null,seenMove:null,seenLog:0,seenReport:null,handledTurn:null,shownOver:false,writeQ:Promise.resolve(),applyQ:Promise.resolve(),warned:false};
+let zoom=1;
+const $=id=>document.getElementById(id);
+const rnd=n=>1+Math.floor(Math.random()*n);
+const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("th-TH")+" ล้าน";
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,reduced()?Math.min(ms,40):ms));
+const cur=()=>S.players[S.turn];
+const mySeat=()=>MODE==="online"&&S?S.players.findIndex(p=>p.uid===ON.me):-1;
+const isMyTurn=()=>MODE==="local"||(S&&S.turn===mySeat());
+const amHost=()=>MODE==="local"||(S&&S.hostUid===ON.me);
+const botNow=()=>!!(S&&S.phase==="play"&&S.players[S.turn]&&S.players[S.turn].bot);
+const isBotTurn=()=>botNow()&&amHost();
+const assets=i=>S.players[i].money+PROPS.filter(p=>S.owners[p.id]===i).reduce((t,p)=>t+p.price,0);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function log(t){S.log.unshift(t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function newGame(names,years){
+  const deck=[]; for(const k in ITEMS) for(let i=0;i<ITEMS[k].count;i++) deck.push(k);
+  S={phase:"play",years,year:1,month:0,turn:0,newRail:false,
+     players:names.map((n,i)=>({name:n,color:PCOL[i][1],node:"BKK",money:100,cards:[]})),
+     owners:{},deck:shuffle(deck),discard:[],ghost:{holder:-1,count:0},skip:names.map(()=>false),
+     dest:null,log:[],logN:0,songkran:false,stage:"begin",turnId:1,rev:0,tf:{nDice:1,cardUsed:false,locked:false},lastMove:null,report:null};
+  S.dest=drawDest(true);
+  log("เริ่มเกม ทุกคนออกจากกรุงเทพฯ พร้อมเงิน 100 ล้าน");
+}
+function drawDest(first){
+  const taken=new Set(S.players.map(p=>p.node));
+  const pool=Object.keys(NAME).filter(s=>s!=="DNC"&&s!==S.dest&&!(first&&s==="BKK")&&!taken.has(s));
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function drawItem(i){
+  const p=S.players[i];
+  if(p.cards.length>=5) return null;
+  if(!S.deck.length){S.deck=shuffle(S.discard);S.discard=[];}
+  if(!S.deck.length) return null;
+  const c=S.deck.pop(); p.cards.push(c); return c;
+}
+function discardCard(i,k){const p=S.players[i];const ix=p.cards.indexOf(k);if(ix>=0){p.cards.splice(ix,1);S.discard.push(k);}}
+
+// save (local) or sync (online)
+function commit(){
+  if(!S) return;
+  if(MODE==="local"){
+    SAFE=JSON.parse(JSON.stringify(S));
+    try{localStorage.setItem("rotfai-save",JSON.stringify(SAFE));}catch(e){}
+    return;
+  }
+  S.rev=(S.rev||0)+1;
+  const body={...ON.meta,status:S.phase==="over"?"over":"play",S:JSON.parse(JSON.stringify(S)),rev:S.rev,updated:Date.now()};
+  ON.meta.status=body.status;
+  const ref=ON.ref;
+  ON.writeQ=ON.writeQ.then(()=>ref.set(body)).catch(e=>{
+    if(!ON.warned){ON.warned=true; toast(e&&e.code==="invalid_argument"?"บันทึกไม่ได้: บัญชีนี้ยังไม่มีสิทธิ์แก้ไขเกม ให้เจ้าของแชร์แบบ Editor":"การเชื่อมต่อมีปัญหา เกมอาจไม่ซิงก์");}
+  });
+}
+
+// ================= BOARD =================
+const svg=$("board");
+function buildBoard(){
+  let h=`<rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><rect x="0" y="236" width="210" height="300" fill="var(--field-c)"/>`;
+  h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ภาคเหนือ</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ภาคกลาง</text>`;
+  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
+  h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
+  h+=`<text class="barrier" x="${86+DX}" y="161" text-anchor="middle" font-size="3.4" font-weight="600" fill="#C8361E" font-family="Mitr">รางใหม่ เปิด เม.ย. ปีที่ 2</text>`;
+  for(const [id,n] of Object.entries(NODES)){
+    if(n.t==="st"||n.t==="jn"){
+      h+=`<circle class="stn-ring" cx="${n.x}" cy="${n.y}" r="6.4"/>`;
+      if(n.t==="jn") h+=`<circle cx="${n.x}" cy="${n.y}" r="3.7" fill="var(--card)"/><text x="${n.x}" y="${n.y+1.5}" text-anchor="middle" font-size="4.2" font-weight="700" fill="#2B2100">?</text>`;
+      else h+=`<text class="stn-num" x="${n.x}" y="${n.y+1.8}" text-anchor="middle">${PROPS_AT(id).length}</text>`;
+      const r=LABEL_R.has(id), tx=r?n.x+9:n.x-9;
+      h+=`<text class="stn-name" x="${tx}" y="${n.y+1}" text-anchor="${r?"start":"end"}">${NAME[id]}</text>`;
+      h+=`<circle class="stn-hit" data-stn="${id}" cx="${n.x}" cy="${n.y}" r="8"/>`;
+    } else {
+      const s=n.t==="g"?5.2:7.4;
+      h+=`<rect x="${n.x-s/2}" y="${n.y-s/2}" width="${s}" height="${s}" rx="1.6" fill="${SQ_COL[n.t]}"/>`;
+      if(SQ_SYM[n.t]) h+=`<text x="${n.x}" y="${n.y+2}" text-anchor="middle" font-size="5.6" font-weight="700" fill="${n.t==="y"?"#2B2100":"#fff"}">${SQ_SYM[n.t]}</text>`;
+    }
+  }
+  h+=`<g id="dyn"></g><g id="toks"></g>`;
+  svg.innerHTML=h;
+}
+function renderBoard(){
+  svg.classList.toggle("newrail",!!S.newRail);
+  let h="";
+  for(const s in NAME){
+    if(s==="DNC") continue;
+    const n=NODES[s], props=PROPS_AT(s), r=LABEL_R.has(s);
+    props.forEach((p,i)=>{
+      const o=S.owners[p.id], x=r?n.x+10.5+i*3.4:n.x-10.5-(props.length-1-i)*3.4;
+      h+=`<circle cx="${x}" cy="${n.y+5.4}" r="1.25" fill="${o===undefined?"var(--bg)":S.players[o].color}" stroke="${o===undefined?"var(--muted)":"none"}" stroke-width=".4"/>`;
+    });
+  }
+  if(S.dest){const n=NODES[S.dest];
+    h+=`<g class="destflag" transform="translate(${n.x},${n.y})"><circle r="9" fill="none" stroke="#C8361E" stroke-width="1" stroke-dasharray="2 1.4"/><path d="M2 -6.5V-17" stroke="var(--ink)" stroke-width=".9"/><path d="M2.4 -17h8l-2 3 2 3h-8z" fill="#C8361E"/></g>`;}
+  if(UI.mode==="pick"&&UI.opts){for(const id of UI.opts.keys()){const n=NODES[id];h+=`<circle class="reach" data-node="${id}" tabindex="0" cx="${n.x}" cy="${n.y}" r="8.6"/>`;}}
+  $("dyn").innerHTML=h;
+  renderTokens();
+}
+const OFF=[[-3.6,-3.6],[3.6,-3.6],[-3.6,3.6],[3.6,3.6]];
+function renderTokens(){
+  const g=$("toks");
+  if(g.querySelectorAll(".tok").length!==S.players.length){
+    g.innerHTML=S.players.map((p,i)=>`<g class="tok" id="tok${i}"><circle class="halo" r="3.4" stroke="${p.color}"/><circle class="body" r="3.2" fill="${p.color}" stroke="#fff" stroke-width=".9"/></g>`).join("")
+      +`<g id="ghostTok" style="display:none"><path d="M-2.6 2.6V-0.5a2.6 2.6 0 0 1 5.2 0V2.6l-.9-.7-.9.7-.9-.7-.9.7-.9-.7z" fill="#F4F1FA" stroke="#4A3A66" stroke-width=".4"/><circle cx="-.9" cy="-.4" r=".45" fill="#222"/><circle cx=".9" cy="-.4" r=".45" fill="#222"/></g>`;
+  }
+  const byNode={};
+  S.players.forEach((p,i)=>{(byNode[p.node]=byNode[p.node]||[]).push(i);});
+  S.players.forEach((p,i)=>{
+    const n=NODES[p.node], grp=byNode[p.node], k=grp.length>1?grp.indexOf(i):-1;
+    const [ox,oy]=k<0?[0,0]:OFF[k];
+    const el=$("tok"+i); el.style.transform=`translate(${n.x+ox}px,${n.y+oy}px)`;
+    el.classList.toggle("active",S.phase==="play"&&i===S.turn);
+    if(i===S.turn) g.appendChild(el);
+  });
+  const gt=$("ghostTok");
+  if(S.ghost.holder>=0){const p=S.players[S.ghost.holder],n=NODES[p.node];gt.style.display="";gt.setAttribute("transform",`translate(${n.x+6.5},${n.y-6.5}) scale(1.25)`);g.appendChild(gt);}
+  else gt.style.display="none";
+}
+function sizeBoard(){
+  const m=$("map"); const base=Math.min(Math.max((m.clientWidth-2)/210,1.7),3.8)*zoom;
+  svg.style.width=(210*base)+"px"; svg.style.height=(500*base)+"px"; svg.dataset.scale=base;
+}
+function focusNode(id,smooth=true){
+  const m=$("map"),n=NODES[id],sc=+svg.dataset.scale||2;
+  m.scrollTo({top:(n.y-22)*sc-m.clientHeight/2,left:n.x*sc-m.clientWidth/2,behavior:smooth&&!reduced()?"smooth":"auto"});
+}
+async function animateMove(lm){
+  const p=S.players[lm.p], final=p.node;
+  for(const n of lm.path.slice(1)){ p.node=n; renderTokens(); focusNode(n,true); await sleep(190); }
+  p.node=final; renderTokens();
+}
+
+// ================= PANEL =================
+function dieHTML(v){const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[v]||[];return `<div class="die" aria-label="ลูกเต๋า ${v}">${[...Array(9)].map((_,i)=>`<i class="${on.includes(i)?"on":""}"></i>`).join("")}</div>`;}
+function tokSVG(c,s=34){return `<svg class="tokbig" width="${s}" height="${s}" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="${c}"/><rect x="8" y="11" width="18" height="10" rx="3" fill="#fff"/><rect x="10.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="15.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="20.5" y="13" width="3.5" height="3.5" rx="1" fill="${c}"/><circle cx="12" cy="23.5" r="1.8" fill="#fff"/><circle cx="22" cy="23.5" r="1.8" fill="#fff"/></svg>`;}
+function renderTop(){
+  $("chipMonth").innerHTML=`<b>${MONTHS[S.month]}</b> ปีที่ ${S.year}/${S.years}`;
+  $("chipDest").innerHTML=S.dest?`จุดหมาย <b>${NAME[S.dest]}</b> ${REWARD[S.dest]} ล้าน`:"จุดหมาย —";
+}
+function renderPanel(){
+  const p=cur(), i=S.turn, me=mySeat();
+  const handHTML=(MODE==="online"&&i!==me)?`<span class="label" style="font-weight:400">การ์ดในมือ ${p.cards.length} ใบ</span>`:p.cards.length?p.cards.map(k=>`<span class="mini">${ITEMS[k].n}</span>`).join(""):`<span class="label" style="font-weight:400">ยังไม่มีการ์ด</span>`;
+  let prompt="", actions="";
+  const ghostMine=S.ghost.holder===i;
+  if(S.phase!=="play"){ prompt=S.phase==="over"?"จบเกมแล้ว":"ตั้งค่าเกม"; }
+  else if(botNow()){ prompt=`${esc(p.name)} (บอท) กำลังเล่น…`; }
+  else if(!isMyTurn()){ prompt=`รอ${esc(p.name)}เล่นอยู่… ทุกอย่างจะอัปเดตบนจอคุณเอง`; }
+  else if(UI.mode==="choose"){
+    const usable=p.cards.some(k=>canUse(k));
+    prompt=S.tf.locked?"ผีเจ้าที่ขี้งอน: เทิร์นนี้เดินได้ 1 ช่อง":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย");
+    actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>ใช้การ์ด</button><button class="btn primary" id="aRoll">${S.tf.locked?"เดิน 1 ช่อง":`ทอยเต๋า${S.tf.nDice>1?` ${S.tf.nDice} ลูก`:""}`}</button>`;
+  } else if(UI.mode==="pick"){
+    prompt=`ได้ ${UI.steps} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง`;
+    actions=`<div class="picks">${[...UI.opts.keys()].map(id=>`<button class="pick" data-pick="${id}">${labelOf(id)}${id===S.dest?`<small>จุดหมาย</small>`:""}</button>`).join("")}</div>`;
+  } else prompt=UI.msg||"…";
+  const dice=UI.dice.length?`<div class="dice">${UI.dice.map(dieHTML).join("")}</div>`:"";
+  const rows=S.players.map((q,k)=>`<button class="prow ${k===i?"cur":""}" data-player="${k}"><span class="dot" style="background:${q.color}"></span><span class="n">${esc(q.name)}${q.bot?`<span class="you" style="background:#6B5E7A">บอท</span>`:""}${k===me?`<span class="you">คุณ</span>`:""}${S.ghost.holder===k?` <span class="ghostb">ผี ${S.ghost.count}/3</span>`:""}${S.skip[k]?` <span class="mini">ติดม็อบ</span>`:""}</span><span class="v ${q.money<0?"neg":""}">${fmt(q.money)}</span><span class="a">รวม ${assets(k)}</span></button>`).join("");
+  $("panel").innerHTML=`
+  <section class="card" aria-live="polite">
+    <div class="who">${tokSVG(p.color)}<div><div class="nm">${esc(p.name)}${i===me?`<span class="you">คุณ</span>`:""}</div><div class="sub">อยู่ที่${labelOf(p.node)}${ghostMine?` · <span class="ghostb">ผีติดตัว ${S.ghost.count}/3</span>`:""}</div></div>
+      <div class="money"><b class="${p.money<0?"neg":""}">${fmt(p.money)}</b><small>ทรัพย์สินรวม ${assets(i)} ล้าน</small></div></div>
+    <div class="hand">${handHTML}</div>
+    <div class="prompt">${prompt}</div>
+    ${dice}
+    <div class="actions">${actions}</div>
+  </section>
+  <section class="card"><div class="label">อันดับ · แตะเพื่อดูกิจการ</div><div class="board-list">${rows}</div></section>
+  <section class="card"><div class="label">ข่าวล่าสุด</div><div class="log">${S.log.slice(0,5).map(t=>`<div>${esc(t)}</div>`).join("")}</div></section>`;
+  if(isMyTurn()&&UI.mode==="choose"){ $("aRoll").onclick=onRoll; const c=$("aCard"); if(c) c.onclick=onCard; }
+  document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>onPick(b.dataset.pick));
+  document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
+}
+function labelOf(id){ if(NAME[id]) return NAME[id]; const t=NODES[id].t; return {b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ทางรถทัวร์"}[t]; }
+function render(){ if(!S) return; renderTop(); renderBoard(); renderPanel(); }
+function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;$("toasts").appendChild(el);setTimeout(()=>el.remove(),3600);while($("toasts").children.length>3)$("toasts").firstChild.remove();}
+
+// ================= MODAL =================
+let modalResolve=null;
+function modal({eyebrow="",title,html="",buttons=[{label:"ตกลง",value:true,primary:true}]}){
+  if(modalResolve){const r=modalResolve;modalResolve=null;r(undefined);}
+  $("modal").classList.remove("again");
+  return new Promise(res=>{
+    modalResolve=res;
+    $("modal").innerHTML=`${eyebrow?`<div class="eyebrow">${eyebrow}</div>`:""}<h3>${title}</h3><div class="body">${html}</div>
+      ${buttons.length?`<div class="actions">${buttons.map((b,k)=>`<button class="btn ${b.primary?"primary":b.gold?"gold":""}" data-mb="${k}" ${b.disabled?"disabled":""}>${b.label}</button>`).join("")}</div>`:""}`;
+    $("modalWrap").hidden=false;
+    $("modal").querySelectorAll("[data-mb]").forEach(el=>el.onclick=()=>close(buttons[+el.dataset.mb].value));
+    $("modal").querySelectorAll("[data-val]").forEach(el=>el.onclick=()=>close(el.dataset.val));
+    const f=$("modal").querySelector(".btn.primary,[data-mb]"); if(f) setTimeout(()=>f.focus({preventScroll:true}),30);
+    function close(v){$("modalWrap").hidden=true;if(modalResolve===res){modalResolve=null;}res(v);}
+  });
+}
+function closeModal(){ if(modalResolve){const r=modalResolve;modalResolve=null;r(undefined);} $("modalWrap").hidden=true; }
+function brief(o,ms=1500){const p=modal({...o,buttons:[]});const r=modalResolve;setTimeout(()=>{if(modalResolve===r) closeModal();},reduced()?400:ms);return p;}
+const say=(o,ms)=>isBotTurn()?brief(o,ms):modal(o);
+const info=(title,html,eyebrow)=>say({title,html,eyebrow});
+function propRow(p,right){const c=TYPE_COL[p.t];return `<div class="prop"><div class="ic" style="background:${c}22">${typeIcon(p.t,c)}</div><div><div class="pn">${p.n}</div><div class="pm">${p.t} · ราคา ${p.price} · กำไร ${p.profit}/ปี</div></div><div>${right}</div></div>`;}
+function typeIcon(t,c){const g={[FOOD]:`<path d="M5 13h22a11 10 0 0 1-22 0z" fill="${c}"/><path d="M11 10c-1.5-2 1.5-3.5 0-6M16 10c-1.5-2 1.5-3.5 0-6M21 10c-1.5-2 1.5-3.5 0-6" stroke="${c}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`,[AGRI]:`<path d="M16 29V14" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/><path d="M16 16C8 16 5 10 6 4c7 0 10 4 10 12z" fill="${c}"/><path d="M16 19c7 0 10-5 9-10-6 0-9 4-9 10z" fill="${c}" opacity=".7"/>`,[TOUR]:`<path d="M3 27l10-16 6 9 4-5 7 12z" fill="${c}"/><path d="M13 11V4l6 2.5-6 2.5" fill="${c}" stroke="${c}" stroke-width="1.4"/>`,[IND]:`<path d="M3 28V15l7 5v-5l7 5v-5l7 5V6h4v22z" fill="${c}"/>`}[t];return `<svg width="22" height="22" viewBox="0 0 32 32">${g}</svg>`;}
+function ownerTag(o){return o===undefined?"":`<span class="owner-tag"><span class="dot" style="background:${S.players[o].color}"></span>${esc(S.players[o].name)}</span>`;}
+function choosePlayer(title,exclude,html=""){
+  const btns=S.players.map((p,k)=>({label:esc(p.name),value:k})).filter(b=>b.value!==exclude);
+  return modal({title,html,buttons:[...btns,{label:"ยกเลิก",value:null}]});
+}
+
+// ================= ACTIONS =================
+function canUse(k){
+  if(S.tf.locked&&["exp","sexp","home","drive","plane"].includes(k)) return false;
+  if(k==="amulet"||k==="insure") return false;
+  if(k==="pass") return S.ghost.holder===S.turn;
+  if(k==="viral") return PROPS.some(p=>S.owners[p.id]===S.turn);
+  if(k==="plane") return S.year>=2;
+  return true;
+}
+async function onCard(){
+  if(UI.busy||!isMyTurn()) return;
+  const p=cur();
+  const uniq=[...new Set(p.cards)];
+  const html=`<p class="note" style="margin-top:0">ปัดซ้ายขวาดูการ์ด</p><div class="gc-row">${uniq.map(k=>{const n=p.cards.filter(c=>c===k).length;return `<div class="gc-col">${itemCard(k)}${canUse(k)?`<button class="btn gold" data-val="${k}">ใช้${n>1?` (มี ${n} ใบ)`:""}</button>`:`<div class="pm" style="min-height:40px;display:grid;place-items:center">${k==="amulet"||k==="insure"?"ใช้อัตโนมัติเมื่อถึงเวลา":"ใช้ตอนนี้ไม่ได้"}${n>1?` · มี ${n} ใบ`:""}</div>`}</div>`;}).join("")}</div>`;
+  const k=await modal({title:"การ์ดในมือ",html,buttons:[{label:"ปิด",value:null}]});
+  if(!k) return;
+  UI.busy=true;
+  const r=await useCard(k);
+  UI.busy=false;
+  if(r==="cancel") return render();
+  discardCard(S.turn,k); S.tf.cardUsed=true;
+  if(r==="moved") return endTurn();
+  commit();
+  if(typeof r==="number") return goMove(r);
+  render();
+}
+async function teleport(to,arrived){
+  const p=cur(); S.lastMove={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:S.turn,path:[p.node,to]};
+  ON.seenMove=S.lastMove.id; p.node=to; commit(); render(); focusNode(to); await sleep(300);
+  await resolveSquare(to,arrived);
+}
+async function useCard(k){
+  const i=S.turn,p=cur();
+  switch(k){
+    case "exp": S.tf.nDice=2; log(`${p.name} ใช้รถด่วน`); return "ok";
+    case "sexp": S.tf.nDice=3; log(`${p.name} ใช้รถด่วนพิเศษ`); return "ok";
+    case "drive":{
+      const v=await modal({title:"ขับเองกำหนดเอง",html:"เลือกจำนวนช่องที่จะเดิน",buttons:[1,2,3,4,5,6].map(n=>({label:String(n),value:n})).concat([{label:"ยกเลิก",value:null}])});
+      if(!v) return "cancel"; log(`${p.name} ขับเอง ${v} ช่อง`); return v; }
+    case "home": discardCard(i,k); log(`${p.name} ใช้ตั๋วกลับบ้าน`); await teleport("BKK",S.dest==="BKK"); p.cards.push(k); return "moved";
+    case "plane": discardCard(i,k); log(`${p.name} เหมาเครื่องบินไป${NAME[S.dest]}`); await teleport(S.dest,true); p.cards.push(k); return "moved";
+    case "mob":{ const t=await choosePlayer("ม็อบปิดถนนใคร",i,"คนที่เลือกจะเดินไม่ได้ในเทิร์นหน้าของเขา"); if(t===null||t===undefined) return "cancel"; S.skip[t]=true; log(`${p.name} ส่งม็อบไปปิดถนน${S.players[t].name}`); return "ok"; }
+    case "pass":{ const t=await choosePlayer("ฝากผีให้ใคร",i); if(t===null||t===undefined) return "cancel"; S.ghost={holder:t,count:0}; log(`${p.name} ฝากผีให้${S.players[t].name}`); return "ok"; }
+    case "lotto":{ const d=rnd(6); UI.dice=[d]; render(); if(d===6){p.money+=30;log(`${p.name} ถูกลอตเตอรี่ รับ 30 ล้าน`);await info("ถูกรางวัล!",`ทอยได้ 6 รับ <b>30 ล้าน</b>`);} else {p.money-=1;log(`${p.name} ซื้อลอตเตอรี่ไม่ถูก เสีย 1 ล้าน`);await info("ไม่ถูก",`ทอยได้ ${d} เสีย 1 ล้าน`);} return "ok"; }
+    case "viral":{ const mine=PROPS.filter(q=>S.owners[q.id]===i);
+      const v=await modal({title:"รีวิวไวรัล",html:`<div class="plist">${mine.map(q=>propRow(q,`<button class="btn gold" data-val="${q.id}">+${q.profit}</button>`)).join("")}</div>`,buttons:[{label:"ยกเลิก",value:null}]});
+      if(v===null||v===undefined) return "cancel"; const q=PROPS[+v]; p.money+=q.profit; log(`${q.n}ของ${p.name} ดังในโซเชียล รับ ${q.profit} ล้าน`); return "ok"; }
+  }
+  return "cancel";
+}
+async function onRoll(){
+  if(UI.busy||!isMyTurn()||UI.mode!=="choose") return; UI.busy=true;
+  let steps;
+  if(S.tf.locked){ steps=1; UI.dice=[]; }
+  else{
+    const n=S.tf.nDice||1;
+    for(let t=0;t<8;t++){UI.dice=[...Array(n)].map(()=>rnd(6));renderPanel();await sleep(55);}
+    steps=UI.dice.reduce((a,b)=>a+b,0);
+    if(S.songkran){steps=Math.max(1,steps-1);}
+  }
+  UI.busy=false;
+  goMove(steps);
+}
+function endpoints(start,steps){
+  const a=adjacency(S.newRail), res=new Map();
+  (function dfs(node,prev,path,left){
+    if(node===S.dest&&path.length>1){ if(!res.has(node)) res.set(node,path.slice()); return; }
+    if(left===0){ if(!res.has(node)) res.set(node,path.slice()); return; }
+    let nx=a[node].filter(n=>n!==prev); if(!nx.length) nx=a[node];
+    for(const n of nx){path.push(n);dfs(n,node,path,left-1);path.pop();}
+  })(start,null,[start],steps);
+  return res;
+}
+function goMove(steps){
+  UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(cur().node,steps);
+  if(S.songkran&&!S.tf.locked) log("สงกรานต์รถติด แต้มเดิน −1");
+  render();
+  const first=[...UI.opts.keys()][0]; if(first) focusNode(first);
+}
+async function onPick(id,fromBot){
+  if(botNow()&&!fromBot) return;
+  if(UI.mode!=="pick"||UI.busy||!UI.opts||!UI.opts.has(id)) return;
+  UI.busy=true; const path=UI.opts.get(id); UI.mode="moving"; UI.msg="กำลังเดินทาง…"; UI.opts=null;
+  const i=S.turn,p=cur(); let passed=null;
+  if(S.ghost.holder===i){ for(const n of path.slice(1)){ const o=S.players.findIndex((q,k)=>k!==i&&q.node===n); if(o>=0){passed=o;break;} } }
+  const start=p.node;
+  p.node=id;
+  if(passed!==null){ S.ghost={holder:passed,count:0}; log(`ผีกระโดดจาก${p.name}ไปหา${S.players[passed].name}`); }
+  S.lastMove={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:i,path};
+  ON.seenMove=S.lastMove.id;
+  commit();
+  render();
+  p.node=start; renderTokens();
+  p.node=id; await animateMove(S.lastMove);
+  render();
+  if(passed!==null) await info("ผีย้ายบ้าน!",`ระหว่างทางเจอ${esc(S.players[passed].name)} ผีเลยกระโดดไปติดแทน`);
+  await resolveSquare(p.node,p.node===S.dest);
+  UI.busy=false;
+  endTurn();
+}
+async function pay(i,amt,reason,insurable){
+  const p=S.players[i];
+  if(insurable&&amt>0&&p.cards.includes("insure")){
+    let use=true;
+    if(!p.bot&&(MODE==="local"||i===mySeat())){
+      use=await modal({eyebrow:esc(p.name),title:`ต้องจ่าย ${amt} ล้าน`,html:`${reason}<p>มีการ์ดประกันภัย ใช้เพื่อไม่ต้องจ่ายไหม</p>`,buttons:[{label:"ใช้ประกันภัย",value:true,gold:true},{label:"จ่ายเอง",value:false}]});
+    }
+    if(use){discardCard(i,"insure");log(`${p.name} ใช้ประกันภัย ไม่ต้องจ่าย ${amt} ล้าน`);return false;}
+  }
+  p.money-=amt; return true;
+}
+async function resolveSquare(id,arrived){
+  const i=S.turn,p=cur(),t=NODES[id].t;
+  if(arrived){
+    const rw=REWARD[id]; p.money+=rw; log(`${p.name} ถึง${NAME[id]}คนแรก รับ ${rw} ล้าน`); commit(); render();
+    await say({eyebrow:"ถึงจุดหมาย",title:`${esc(p.name)} ถึง${NAME[id]}คนแรก!`,html:wrapCard(destCard(id))+`<div class="big-num" style="color:#C8361E;text-align:center">+${rw} ล้าน</div>`});
+    await buySheet(id);
+    await assignGhost(id);
+    S.dest=drawDest(false); log(`จุดหมายใหม่: ${NAME[S.dest]} รางวัล ${REWARD[S.dest]} ล้าน`); commit(); render(); focusNode(S.dest);
+    await info("จุดหมายใหม่",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> รางวัล ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
+    return;
+  }
+  if(t==="b"){ const d=rnd(6); UI.dice=[d]; p.money+=d*2; log(`${p.name} ได้ ${d*2} ล้านจากช่องน้ำเงิน`); commit(); render(); await info(`ได้เงิน ${d*2} ล้าน`,`ทอยได้ ${d} × 2 ล้าน`,"ช่องน้ำเงิน"); }
+  else if(t==="r"){ const d=rnd(6); UI.dice=[d]; render(); if(await pay(i,d*2,`ทอยได้ ${d} × 2 ล้าน`,true)){log(`${p.name} เสีย ${d*2} ล้านที่ช่องแดง`); commit(); render(); await info(`เสียเงิน ${d*2} ล้าน`,`ทอยได้ ${d} × 2 ล้าน`,"ช่องแดง");} }
+  else if(t==="y"||t==="jn"){ const c=drawItem(i); commit(); render(); if(c){log(`${p.name} ได้การ์ดไอเทม`); await say({eyebrow:"ได้การ์ดไอเทม",title:ITEMS[c].n,html:(MODE==="online"&&p.bot)?"บอทเก็บการ์ดไว้ในมือ":wrapCard(itemCard(c))});} else await info("มือเต็ม","ถือการ์ดได้สูงสุด 5 ใบ รอบนี้ไม่ได้จั่ว"); }
+  else if(t==="st"){
+    if(S.quiz&&Math.random()<0.35){
+      const r=S.year>=2?12:8;
+      const ok=await askQuiz(id,"ควิซประจำสถานี"+NAME[id],`ตอบถูกได้ ${r} ล้าน · ตอบผิดเสีย 2 ล้าน`);
+      if(ok){p.money+=r;log(`${p.name} ได้โบนัสควิซ ${r} ล้าน`);} else {p.money-=2;}
+      commit(); render();
+    }
+    await buySheet(id);
+  }
+}
+async function buySheet(s){
+  if(isBotTurn()) return botBuy(s);
+  const props=PROPS_AT(s); if(!props.length) return;
+  if(!props.some(q=>S.owners[q.id]===undefined)) return;
+  const i=S.turn,p=cur(); let shown=false;
+  while(true){
+    const free=props.filter(q=>S.owners[q.id]===undefined);
+    if(!free.length) break;
+    const html=`<p>เงินคงเหลือ <b>${fmt(p.money)}</b>${props.length>1?" · ปัดซ้ายขวาดูการ์ด":""}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}${S.owners[q.id]!==undefined?`<div style="min-height:40px;display:grid;place-items:center">${ownerTag(S.owners[q.id])}</div>`:`<button class="btn primary" data-val="${q.id}" ${p.money<q.price?"disabled":""}>ซื้อ ${q.price} ล้าน</button>`}</div>`).join("")}</div>`;
+    const mp=modal({eyebrow:"สถานี"+NAME[s],title:"ซื้อกิจการ",html,buttons:[{label:"เสร็จ",value:"done"}]});
+    if(shown) $("modal").classList.add("again"); shown=true;
+    const v=await mp;
+    if(v==="done"||v===undefined) break;
+    const q=PROPS[+v]; if(p.money<q.price) continue;
+    p.money-=q.price; S.owners[q.id]=i; log(`${p.name} ซื้อ${q.n} ${q.price} ล้าน`); commit(); render();
+  }
+}
+async function assignGhost(dest){
+  const d=bfs(dest,S.newRail); let best=-1,bd=-1;
+  S.players.forEach((q,k)=>{ if(k===S.turn) return; const v=d[q.node]??0; if(v>bd||(v===bd&&q.money>S.players[best].money)){bd=v;best=k;} });
+  if(best<0) return;
+  const was=S.ghost.holder; S.ghost={holder:best,count:was===best?S.ghost.count:0};
+  log(`ผีไปติด${S.players[best].name} คนที่อยู่ไกลที่สุด`); commit(); render();
+  await info("ผีมาแล้ว",`${esc(S.players[best].name)} อยู่ไกล${NAME[dest]}ที่สุด (${bd} ช่อง) ผีตามไปติดตัว`,"ผีปอบ");
+}
+async function ghostTurn(){
+  const i=S.turn,p=cur(); const giant=S.ghost.count>=3;
+  await say({eyebrow:"ผีติดตัว",title:giant?"ผีปอบกลายร่างเป็นร่างยักษ์!":"ผีปอบจะทำอะไรนะ",html:giant?"อยู่ด้วยกันครบ 3 เทิร์น ผีโตขึ้นแล้ว":"ทอยเต๋าดูตารางผี",buttons:[{label:"ทอยตารางผี",value:1,primary:true}]});
+  const d=rnd(6); UI.dice=[d]; render();
+  const T=giant?[[1,2,"อาละวาด","กิจการทั้งหมดในสถานีที่คุณมีมากที่สุดคืนธนาคารฟรี"],[3,4,"ช้อปหนัก","เสียเงินสดครึ่งหนึ่ง"],[5,5,"ฉีกการ์ด","ทิ้งการ์ดทั้งหมด"],[6,6,"ขายของ","ขายกิจการแพงที่สุดคืนธนาคารครึ่งราคา"]]
+              :[[1,1,"ผีปอบสายช้อป","เสียเงิน 5 ล้าน"],[2,2,"ผีปอบสายช้อป","ทิ้งการ์ด 1 ใบแบบสุ่ม"],[3,3,"ผีกระสือเล่นหุ้น","ขายกิจการถูกที่สุดคืนธนาคารครึ่งราคา"],[4,4,"ผีเจ้าที่ขี้งอน","เทิร์นนี้เดินได้ 1 ช่อง ห้ามใช้การ์ดเคลื่อนที่"],[5,5,"ผีหลับ","ไม่มีอะไรเกิดขึ้น"],[6,6,"ผีเลี้ยงหมูกระทะ","จ่ายผู้เล่นคนอื่นคนละ 3 ล้าน"]];
+  const row=T.find(r=>d>=r[0]&&d<=r[1]);
+  const gid=giant?"G06":({1:"G01",2:"G01",3:"G02",4:"G03",5:"G04",6:"G05"})[d];
+  const gface=wrapGhost(ghostCard(gid,giant?"ผีปอบร่างยักษ์":row[2],`ทอยได้ ${d}`,`<div class="gc-line">${row[3]}</div>`));
+  if(giant) S.ghost.count=0; else S.ghost.count++;
+  const harmless=!giant&&d===5;
+  if(!harmless&&S.quiz){
+    await say({eyebrow:`ทอยได้ ${d}`,title:"ผีท้าตอบควิซ!",html:`${gface}<p>ตอบควิซถูก ผีจะหนีไปไม่แกล้ง</p>`,buttons:[{label:"รับคำท้า",value:1,primary:true}]},1600);
+    const ok=await askQuiz(nearestStation(p.node),"ผีถามควิซ",`ผีจะ: ${row[3]} · ตอบถูกรอดตัว`);
+    if(ok){ log(`${p.name} ตอบถูก ผีหนีไปไม่แกล้ง`); render(); return; }
+  }
+  if(!harmless&&p.cards.includes("amulet")){
+    const v=isBotTurn()?(giant||[1,3,6].includes(d)):await modal({eyebrow:`ทอยได้ ${d}`,title:row[2],html:`${gface}<p>มีพระเครื่อง ใช้ยกเลิกผลนี้ไหม</p>`,buttons:[{label:"ใช้พระเครื่อง",value:true,gold:true},{label:"รับผล",value:false}]});
+    if(v){discardCard(i,"amulet");log(`${p.name} ใช้พระเครื่องไล่ผี`);render();return;}
+  } else await say({eyebrow:`ทอยได้ ${d}`,title:row[2],html:gface},2000);
+  const mine=()=>PROPS.filter(q=>S.owners[q.id]===i);
+  if(!giant){
+    if(d===1){p.money-=5;log(`ผีปอบช้อปด้วยเงิน${p.name} 5 ล้าน`);}
+    if(d===2&&p.cards.length){const k=p.cards[Math.floor(Math.random()*p.cards.length)];discardCard(i,k);log(`ผีทิ้งการ์ด${ITEMS[k].n}ของ${p.name}`);}
+    if(d===3){const m=mine().sort((a,b)=>a.price-b.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log(`ผีขาย${m.n}ของ${p.name}`);}}
+    if(d===4){S.tf.locked=true;log(`ผีเจ้าที่งอน ${p.name}เดินได้ 1 ช่อง`);}
+    if(d===5){log(`ผีของ${p.name}หลับอยู่`);}
+    if(d===6){S.players.forEach((q,k)=>{if(k!==i){q.money+=3;p.money-=3;}});log(`${p.name} โดนผีพาเลี้ยงหมูกระทะทุกคน`);}
+  } else {
+    if(d<=2){const cnt={};mine().forEach(q=>cnt[q.s]=(cnt[q.s]||0)+1);const s=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];if(s){mine().filter(q=>q.s===s).forEach(q=>delete S.owners[q.id]);log(`ผีปอบยักษ์อาละวาดที่${NAME[s]} ${p.name}เสียกิจการทั้งหมดที่นั่น`);}else log(`ผีปอบยักษ์อาละวาด แต่${p.name}ไม่มีกิจการ`);}
+    else if(d<=4){if(p.money>0){const l=Math.floor(p.money/2);p.money-=l;log(`ผีปอบยักษ์ช้อปหนัก ${p.name}เสีย ${l} ล้าน`);}}
+    else if(d===5){p.cards.forEach(k=>S.discard.push(k));p.cards=[];log(`ผีปอบยักษ์ฉีกการ์ดของ${p.name}ทั้งหมด`);}
+    else {const m=mine().sort((a,b)=>b.price-a.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log(`ผีปอบยักษ์ขาย${m.n}ของ${p.name}`);}}
+  }
+  render();
+}
+async function settleDebts(){
+  for(let i=0;i<S.players.length;i++){
+    const p=S.players[i]; const sold=[];
+    while(p.money<0){const m=PROPS.filter(q=>S.owners[q.id]===i).sort((a,b)=>a.price-b.price)[0];if(!m)break;delete S.owners[m.id];p.money+=Math.floor(m.price/2);sold.push(m.n);}
+    if(sold.length){log(`${p.name} ติดลบ ต้องขาย${sold.join(", ")}`);render();await info("เงินติดลบ!",`${esc(p.name)} ขายกิจการคืนธนาคารครึ่งราคา: ${sold.join(", ")}`);}
+  }
+}
+
+
+
+// ================= QUIZ =================
+// [สถานี, คำถาม, คำตอบที่ถูก, [ตัวเลือกผิด 3 ข้อ], เกร็ดสั้น]
+const QUIZ=[
+ ["BKK","สถานีรถไฟเก่าแก่ที่คนเรียกว่า \"หัวลำโพง\" มีชื่อทางการว่าอะไร","สถานีกรุงเทพ",["สถานีบางซื่อ","สถานีธนบุรี","สถานีสามเสน"],"หัวลำโพงเปิดใช้ตั้งแต่ปี 2459 เป็นสถานีหลักของประเทศมานานกว่า 100 ปี"],
+ ["BKK","สถานีกลางแห่งใหม่ของรถไฟทางไกลในกรุงเทพฯ ชื่ออะไร","สถานีกลางกรุงเทพอภิวัฒน์",["สถานีมักกะสัน","สถานีหัวหมาก","สถานีดอนเมือง"],"อยู่ย่านบางซื่อ เป็นศูนย์กลางรถไฟทางไกลแทนหัวลำโพง"],
+ ["BKK","แม่น้ำสายหลักที่ไหลผ่านกรุงเทพฯ คือแม่น้ำอะไร","เจ้าพระยา",["ท่าจีน","แม่กลอง","ป่าสัก"],"แม่น้ำเจ้าพระยาไหลลงอ่าวไทยที่จังหวัดสมุทรปราการ"],
+ ["BKK","ตลาดนัดสุดสัปดาห์ที่ใหญ่ที่สุดของกรุงเทพฯ ชื่อตลาดอะไร","ตลาดนัดจตุจักร",["ตลาดน้ำอัมพวา","ตลาดรถไฟแม่กลอง","ตลาดต้นลำไย"],"ตลาดนัดจตุจักรมีร้านค้าหลายพันร้าน"],
+ ["AYT","อยุธยาเป็นราชธานีของไทยนานประมาณกี่ปี","417 ปี",["100 ปี","250 ปี","600 ปี"],"อยุธยาเป็นราชธานีตั้งแต่ปี 1893 ถึง 2310"],
+ ["AYT","เกาะเมืองอยุธยาล้อมรอบด้วยแม่น้ำ 3 สาย ข้อใดไม่ใช่","แม่น้ำท่าจีน",["แม่น้ำเจ้าพระยา","แม่น้ำป่าสัก","แม่น้ำลพบุรี"],"แม่น้ำเจ้าพระยา ป่าสัก และลพบุรี โอบล้อมจนเมืองกลายเป็นเกาะ"],
+ ["AYT","ขนมขึ้นชื่อของอยุธยาที่กินแป้งบางห่อเส้นน้ำตาลฟูๆ คืออะไร","โรตีสายไหม",["ขนมเปี๊ยะ","ทองม้วน","ขนมชั้น"],"แป้งโรตีบางห่อสายไหมหลากสี เป็นของฝากยอดนิยม"],
+ ["AYT","นครประวัติศาสตร์พระนครศรีอยุธยาเป็นมรดกโลกประเภทใด","มรดกโลกทางวัฒนธรรม",["มรดกโลกทางธรรมชาติ","มรดกความทรงจำแห่งโลก","อุทยานธรณีโลก"],"ขึ้นทะเบียนเป็นมรดกโลกทางวัฒนธรรมเมื่อปี 2534"],
+ ["LOP","สัตว์ชนิดไหนที่ลพบุรีจัดงานเลี้ยงโต๊ะจีนให้ทุกปี","ลิง",["ช้าง","นกยูง","ปลา"],"งานเลี้ยงโต๊ะจีนลิงจัดที่พระปรางค์สามยอด"],
+ ["LOP","โบราณสถานศิลปะขอมกลางเมืองลพบุรีที่มี 3 ยอด ชื่ออะไร","พระปรางค์สามยอด",["ปราสาทหินพิมาย","ปราสาทพนมรุ้ง","เจดีย์สามองค์"],"เป็นสัญลักษณ์ของเมืองลพบุรี"],
+ ["LOP","ลพบุรีขึ้นชื่อเรื่องทุ่งดอกไม้อะไรช่วงปลายฝนต้นหนาว","ทานตะวัน",["ทิวลิป","บัวตอง","ลาเวนเดอร์"],"ทุ่งทานตะวันบานเต็มทุ่งราวเดือนพฤศจิกายนถึงมกราคม"],
+ ["LOP","สมเด็จพระนารายณ์มหาราชทรงใช้ลพบุรีเป็นราชธานีแห่งที่สองในสมัยใด","อยุธยา",["สุโขทัย","ธนบุรี","รัตนโกสินทร์"],"พระองค์ประทับที่พระนารายณ์ราชนิเวศน์เป็นประจำ"],
+ ["NSW","แม่น้ำปิงและน่านบรรจบกันที่ปากน้ำโพ กลายเป็นแม่น้ำอะไร","เจ้าพระยา",["ท่าจีน","ยม","ป่าสัก"],"ปากน้ำโพได้ชื่อว่าต้นแม่น้ำเจ้าพระยา"],
+ ["NSW","ประเพณีที่ดังที่สุดของนครสวรรค์ช่วงตรุษจีนคืออะไร","แห่เจ้าพ่อเจ้าแม่ปากน้ำโพ",["บุญบั้งไฟ","ผีตาโขน","แห่เทียนพรรษา"],"มีขบวนมังกรทองและเชิดสิงโตยาวทั่วเมือง"],
+ ["NSW","บึงน้ำจืดที่ใหญ่ที่สุดของไทยอยู่ที่นครสวรรค์ ชื่ออะไร","บึงบอระเพ็ด",["หนองหาน","กว๊านพะเยา","บึงสีไฟ"],"บึงบอระเพ็ดเป็นแหล่งอาศัยของนกน้ำหลายชนิด"],
+ ["NSW","นครสวรรค์มีอีกชื่อหนึ่งที่คนนิยมเรียกว่าอะไร","ปากน้ำโพ",["ปากเกร็ด","ปากช่อง","ปากพนัง"],"ตั้งชื่อตามจุดที่แม่น้ำบรรจบกัน"],
+ ["PSL","แม่น้ำที่ไหลผ่านกลางเมืองพิษณุโลกคือแม่น้ำอะไร","น่าน",["ปิง","วัง","ยม"],"ริมแม่น้ำน่านมีเรือนแพเรียงราย"],
+ ["PSL","พระพุทธรูปที่ได้ชื่อว่างดงามที่สุดองค์หนึ่งของไทย ประดิษฐานที่พิษณุโลก คือองค์ใด","พระพุทธชินราช",["พระแก้วมรกต","พระพุทธโสธร","พระศรีศากยมุนี"],"ประดิษฐานที่วัดพระศรีรัตนมหาธาตุ หรือวัดใหญ่"],
+ ["PSL","ก๋วยเตี๋ยวขึ้นชื่อของพิษณุโลกที่นั่งกินแบบปล่อยขาห้อยคือก๋วยเตี๋ยวอะไร","ก๋วยเตี๋ยวห้อยขา",["ก๋วยเตี๋ยวเรือ","ก๋วยเตี๋ยวต้มยำ","ก๋วยเตี๋ยวลูกชิ้นปลา"],"นั่งบนแคร่สูงริมน้ำแล้วห้อยขากิน"],
+ ["PSL","พิษณุโลกเป็นเมืองประสูติของกษัตริย์พระองค์ใด","สมเด็จพระนเรศวรมหาราช",["สมเด็จพระเจ้าตากสินมหาราช","พ่อขุนรามคำแหงมหาราช","สมเด็จพระนารายณ์มหาราช"],"ในเมืองมีพระราชวังจันทน์ ที่ประทับในวัยเยาว์"],
+ ["SKT","คำว่า \"สุโขทัย\" มีความหมายว่าอะไร","รุ่งอรุณแห่งความสุข",["เมืองแห่งดอกบัว","นครแห่งพระอาทิตย์","แผ่นดินทอง"],"สุโข แปลว่าความสุข อุทัย แปลว่ารุ่งอรุณ"],
+ ["SKT","ผู้ทรงประดิษฐ์ลายสือไทยในสมัยสุโขทัยคือใคร","พ่อขุนรามคำแหงมหาราช",["พ่อขุนศรีอินทราทิตย์","พระมหาธรรมราชาลิไท","พ่อขุนบานเมือง"],"ลายสือไทยคือต้นแบบของอักษรไทยในปัจจุบัน"],
+ ["SKT","งานลอยกระทงที่สุโขทัยมีชื่อเรียกเฉพาะว่าอะไร","เผาเทียนเล่นไฟ",["ยี่เป็ง","ไหลเรือไฟ","ชักพระ"],"จัดที่อุทยานประวัติศาสตร์สุโขทัยทุกปี"],
+ ["SKT","เจดีย์ทรงพุ่มข้าวบิณฑ์หรือทรงดอกบัวตูม เป็นเอกลักษณ์ของศิลปะสมัยใด","สุโขทัย",["อยุธยา","ล้านนา","ทวารวดี"],"พบมากในอุทยานประวัติศาสตร์สุโขทัย"],
+ ["UTD","ทุเรียนพันธุ์ขึ้นชื่อของอุตรดิตถ์คือพันธุ์อะไร","หลงลับแล",["หมอนทอง","ก้านยาว","ชะนี"],"ปลูกบนภูเขาสูงชันในอำเภอลับแล"],
+ ["UTD","วีรบุรุษของอุตรดิตถ์ที่รบจนดาบหักคือใคร","พระยาพิชัยดาบหัก",["พระยาพหลพลพยุหเสนา","ขุนรองปลัดชู","พันท้ายนรสิงห์"],"อนุสาวรีย์ของท่านตั้งอยู่หน้าศาลากลางจังหวัด"],
+ ["UTD","เขื่อนดินที่ใหญ่ที่สุดของไทยอยู่ที่อุตรดิตถ์ ชื่อเขื่อนอะไร","เขื่อนสิริกิติ์",["เขื่อนภูมิพล","เขื่อนศรีนครินทร์","เขื่อนป่าสักชลสิทธิ์"],"กั้นแม่น้ำน่านที่อำเภอท่าปลา"],
+ ["UTD","ผลไม้ลูกกลมสีนวลที่ขึ้นชื่อคู่กับทุเรียนของอุตรดิตถ์คืออะไร","ลางสาด",["มังคุด","เงาะ","ลิ้นจี่"],"ลางสาดลับแลมีงานเทศกาลประจำทุกปี"],
+ ["PHR","ผ้าพื้นเมืองย้อมครามสีน้ำเงินเข้มขึ้นชื่อของแพร่คือผ้าอะไร","ผ้าหม้อห้อม",["ผ้าไหมแพรวา","ผ้าซิ่นตีนจก","ผ้าบาติก"],"แหล่งผลิตดังอยู่ที่บ้านทุ่งโฮ้ง"],
+ ["PHR","บ้านไม้สักหลังงามที่เปิดเป็นพิพิธภัณฑ์ในเมืองแพร่ชื่ออะไร","บ้านวงศ์บุรี",["เรือนคำเที่ยง","บ้านเสาไห้","คุ้มเจ้าหลวงลำปาง"],"เป็นบ้านไม้สักสีชมพู ฉลุลายขนมปังขิงทั้งหลัง"],
+ ["PHR","อุทยานแห่งชาติในแพร่ที่มีเสาดินรูปร่างแปลกตาชื่ออะไร","แพะเมืองผี",["ผาแต้ม","สามพันโบก","ออบหลวง"],"เกิดจากการกัดเซาะของน้ำฝนและลมนานหลายพันปี"],
+ ["PHR","ชุมทางรถไฟสำคัญของสายเหนือที่อยู่ในจังหวัดแพร่คือสถานีใด","เด่นชัย",["บ้านดารา","ศิลาอาสน์","นครลำปาง"],"เป็นจุดเริ่มของทางรถไฟสายใหม่เด่นชัย–เชียงราย–เชียงของ"],
+ ["NAN","จิตรกรรมฝาผนัง \"ปู่ม่านย่าม่าน\" อยู่ที่วัดใดในจังหวัดน่าน","วัดภูมินทร์",["วัดพระธาตุแช่แห้ง","วัดพระธาตุลำปางหลวง","วัดศรีชุม"],"ภาพนี้ได้ฉายาว่ากระซิบรักบันลือโลก"],
+ ["NAN","แม่น้ำสายใดมีต้นกำเนิดในจังหวัดน่าน","แม่น้ำน่าน",["แม่น้ำปิง","แม่น้ำกก","แม่น้ำโขง"],"แม่น้ำน่านเป็นหนึ่งในต้นน้ำของแม่น้ำเจ้าพระยา"],
+ ["NAN","ต้นไม้หายากที่พบบนดอยภูคา จังหวัดน่าน ชื่ออะไร","ชมพูภูคา",["ซากุระดอย","ราชพฤกษ์","เสี้ยวดอกขาว"],"บานสีชมพูช่วงเดือนกุมภาพันธ์"],
+ ["NAN","ผลไม้ขึ้นชื่อของน่านที่มีผิวสีเหลืองทองคืออะไร","ส้มสีทอง",["ส้มโอ","ส้มเขียวหวานบางมด","ส้มจี๊ด"],"ปลูกได้ดีเพราะอากาศหนาวเย็น"],
+ ["LPG","ลำปางได้ฉายาว่าเมืองอะไร เพราะยังมีให้นั่งชมเมือง","เมืองรถม้า",["เมืองสามหมอก","เมืองดอกบัว","เมืองช้างเผือก"],"รถม้าลำปางวิ่งให้บริการรอบเมืองมานานกว่า 100 ปี"],
+ ["LPG","ชามลายสัตว์ที่ขึ้นชื่อของลำปางคือชามอะไร","ชามตราไก่",["ชามลายคราม","ชามเบญจรงค์","ชามสังคโลก"],"ลำปางมีดินขาวคุณภาพดี จึงเป็นเมืองเซรามิก"],
+ ["LPG","ศูนย์อนุรักษ์ช้างไทยตั้งอยู่ในจังหวัดใด","ลำปาง",["สุรินทร์","เชียงใหม่","ลำพูน"],"อยู่ริมทางหลวงลำปาง–เชียงใหม่"],
+ ["LPG","อุโมงค์รถไฟเก่าแก่ที่ยาวที่สุดในไทย อยู่ระหว่างลำปางกับลำพูน ชื่ออะไร","อุโมงค์ขุนตาน",["อุโมงค์ห้วยแม่ลาน","อุโมงค์ปางตูบขอบ","อุโมงค์เขาพลึง"],"ยาวประมาณ 1.3 กิโลเมตร เปิดใช้ราวปี 2461"],
+ ["LPN","ลำพูนมีชื่อโบราณว่าอะไร","หริภุญชัย",["โยนกนคร","หิรัญนครเงินยาง","เขลางค์นคร"],"เป็นเมืองที่เก่าแก่ที่สุดแห่งหนึ่งของภาคเหนือ"],
+ ["LPN","ผลไม้ขึ้นชื่อที่สุดของลำพูนคืออะไร","ลำไย",["ลิ้นจี่","มะม่วง","สตรอว์เบอร์รี"],"ลำพูนจัดงานเทศกาลลำไยทุกปี"],
+ ["LPN","ผ้าไหมขึ้นชื่อของลำพูนคือผ้าไหมแบบใด","ผ้าไหมยกดอก",["ผ้าไหมมัดหมี่","ผ้าไหมแพรวา","ผ้าไหมหางกระรอก"],"ทอยกลายดอกด้วยไหมสีทองหรือเงิน"],
+ ["LPN","พระนางผู้ครองนครหริภุญชัยองค์แรกตามตำนานคือใคร","พระนางจามเทวี",["พระนางสามผิว","พระนางจิรประภา","พระสุพรรณกัลยา"],"มีอนุสาวรีย์ของพระนางในเมืองลำพูน"],
+ ["CMI","ข้าวซอยเป็นเส้นบะหมี่ในน้ำแกงแบบใด","น้ำแกงกะทิ",["น้ำซุปใส","ต้มยำน้ำข้น","น้ำตก"],"ข้าวซอยโรยหน้าด้วยเส้นทอดกรอบ"],
+ ["CMI","ร่มกระดาษสาขึ้นชื่อของเชียงใหม่ทำที่หมู่บ้านใด","บ่อสร้าง",["ถวาย","บ้านเชียง","ทุ่งโฮ้ง"],"มีเทศกาลร่มบ่อสร้างทุกเดือนมกราคม"],
+ ["CMI","ประเพณีปล่อยโคมลอยช่วงวันเพ็ญเดือน 12 ทางภาคเหนือเรียกว่าอะไร","ยี่เป็ง",["สงกรานต์","ตานก๋วยสลาก","ปอยส่างลอง"],"ยี่เป็ง แปลว่าวันเพ็ญเดือนยี่ตามปฏิทินล้านนา"],
+ ["CMI","ยอดเขาที่สูงที่สุดในประเทศไทยอยู่ในเชียงใหม่ ชื่ออะไร","ดอยอินทนนท์",["ดอยสุเทพ","ดอยเชียงดาว","ดอยภูคา"],"สูงประมาณ 2,565 เมตรจากระดับน้ำทะเล"],
+ ["PAI","อำเภอปายอยู่ในจังหวัดใด","แม่ฮ่องสอน",["เชียงใหม่","เชียงราย","ตาก"],"ปายเป็นอำเภอท่องเที่ยวที่ดังที่สุดของแม่ฮ่องสอน"],
+ ["PAI","แม่ฮ่องสอนได้ฉายาว่าเมืองอะไร","เมืองสามหมอก",["เมืองรถม้า","เมืองสามแม่น้ำ","เมืองดอกไม้"],"เพราะมีหมอกปกคลุมเกือบทั้งปี"],
+ ["PAI","จุดชมวิวสันเขาแคบๆ ที่คนเรียกว่า Pai Canyon มีชื่อไทยว่าอะไร","กองแลน",["ผาช่อ","แพะเมืองผี","ออบหลวง"],"เป็นจุดดูพระอาทิตย์ตกยอดนิยมของปาย"],
+ ["PAI","ถนนจากเชียงใหม่ไปปายขึ้นชื่อเรื่องอะไร","ทางโค้งเยอะมาก",["ทางตรงยาวที่สุดในไทย","ถนนเลียบทะเล","ถนนผ่านทะเลทราย"],"คนชอบพูดกันว่าทางนี้มีโค้งถึง 762 โค้ง"],
+ ["PYO","ทะเลสาบน้ำจืดขนาดใหญ่กลางเมืองพะเยามีชื่อว่าอะไร","กว๊านพะเยา",["บึงบอระเพ็ด","หนองหาน","ทะเลน้อย"],"เป็นแหล่งน้ำจืดใหญ่อันดับต้นๆ ของภาคเหนือ"],
+ ["PYO","คำว่า \"กว๊าน\" ในภาษาเหนือหมายถึงอะไร","บึงหรือแหล่งน้ำขนาดใหญ่",["ภูเขาสูง","ป่าไม้สัก","ทุ่งนา"],"กว๊านพะเยาจึงหมายถึงบึงใหญ่แห่งเมืองพะเยา"],
+ ["PYO","วัดที่ตั้งอยู่กลางกว๊านพะเยาชื่ออะไร","วัดติโลกอาราม",["วัดร่องขุ่น","วัดภูมินทร์","วัดพระธาตุดอยสุเทพ"],"ต้องนั่งเรือไปไหว้พระกลางน้ำ"],
+ ["CRI","สามเหลี่ยมทองคำคือจุดที่ไทยติดกับประเทศใดบ้าง","ลาวและเมียนมา",["ลาวและกัมพูชา","เมียนมาและจีน","มาเลเซียและลาว"],"อยู่ที่อำเภอเชียงแสน ริมแม่น้ำโขง"],
+ ["CRI","แม่น้ำสายใหญ่ที่ไหลผ่านสามเหลี่ยมทองคำคือแม่น้ำอะไร","แม่น้ำโขง",["แม่น้ำกก","แม่น้ำสาละวิน","แม่น้ำอิง"],"แม่น้ำโขงไหลผ่านหกประเทศ"],
+ ["CRI","ดอยที่ขึ้นชื่อเรื่องไร่ชาของเชียงรายชื่ออะไร","ดอยแม่สลอง",["ดอยอินทนนท์","ดอยสุเทพ","ดอยภูคา"],"มีไร่ชาอูหลงเรียงเป็นขั้นบนภูเขา"],
+ ["CRI","สับปะรดพันธุ์ขึ้นชื่อของเชียงรายคือพันธุ์อะไร","นางแล",["ปัตตาเวีย","ศรีราชา","ตราดสีทอง"],"ผลเล็ก หวานหอม เนื้อสีเหลืองทอง"],
+ ["CRI","วัดสีขาวที่ออกแบบโดยอาจารย์เฉลิมชัย โฆษิตพิพัฒน์ ชื่ออะไร","วัดร่องขุ่น",["วัดร่องเสือเต้น","วัดพระแก้ว","วัดเจดีย์หลวง"],"เป็นสถานที่ท่องเที่ยวที่ดังที่สุดของเชียงราย"],
+ ["*","รถไฟสายเหนือวิ่งจากกรุงเทพฯ ไปสิ้นสุดที่สถานีใด","เชียงใหม่",["เชียงราย","ลำปาง","แม่ฮ่องสอน"],"ระยะทางรวมประมาณ 750 กิโลเมตร"],
+ ["*","รางรถไฟส่วนใหญ่ในไทยมีความกว้างเท่าไร","1 เมตร (มีเตอร์เกจ)",["1.435 เมตร","1.6 เมตร","2 เมตร"],"รถไฟความเร็วสูงที่กำลังสร้างใช้ราง 1.435 เมตร"],
+];
+const QUIZ_PROV={DNC:"PHR"};
+function nearestStation(node){
+  if(NAME[node]) return QUIZ_PROV[node]||node;
+  const d=bfs(node,S.newRail); let best="BKK",bd=1e9;
+  for(const s in NAME){ if(s==="DNC") continue; if((d[s]??1e9)<bd){bd=d[s];best=s;} }
+  return best;
+}
+function pickQuiz(st){
+  S.qUsed=S.qUsed||[];
+  let pool=QUIZ.map((q,i)=>i).filter(i=>QUIZ[i][0]===st&&!S.qUsed.includes(i));
+  if(!pool.length) pool=QUIZ.map((q,i)=>i).filter(i=>!S.qUsed.includes(i));
+  if(!pool.length){ S.qUsed=[]; pool=QUIZ.map((q,i)=>i); }
+  const i=pool[Math.floor(Math.random()*pool.length)]; S.qUsed.push(i); return i;
+}
+// คืนค่า true ถ้าตอบถูก
+async function askQuiz(st,eyebrow,stake){
+  const i=pickQuiz(st), [qs,q,ans,wrong,fact]=QUIZ[i], p=cur();
+  const opts=shuffle([ans,...wrong]);
+  const head=`<p style="font-size:13px;color:var(--muted);margin:0 0 4px">${stake}</p><p style="font-size:17px;font-weight:600;line-height:1.45">${esc(q)}</p>`;
+  let pick, timedOut=false;
+  if(isBotTurn()){
+    pick=Math.random()<0.55?ans:wrong[Math.floor(Math.random()*3)];
+    await brief({eyebrow,title:`${esc(p.name)} ตอบควิซ`,html:head+`<p>ตอบว่า <b>${esc(pick)}</b></p>`},1800);
+  } else {
+    const T=S.qTime??5;
+    const timer=T?`<div class="qtimer" id="qtimer"><div class="qtrack"><div class="qbar" style="animation-duration:${T}s"></div></div><b id="qsec">${T}</b></div>`:"";
+    const mp=modal({eyebrow,title:"ควิซ!",html:head+timer+`<div class="stack">${opts.map((o,j)=>`<button class="btn" data-val="q${j}" style="width:100%;flex:none;justify-content:flex-start;text-align:left;padding:10px 14px;line-height:1.35"><span class="gc-num" style="background:var(--surface);color:var(--ink)">${"กขคง"[j]}</span>${esc(o)}</button>`).join("")}</div>`,buttons:[]});
+    let iv=null;
+    if(T){ const r=modalResolve; let left=T;
+      iv=setInterval(()=>{ left--; const el=$("qsec"); if(el) el.textContent=Math.max(0,left); if(left<=2){const tm=$("qtimer"); if(tm) tm.classList.add("hurry");}
+        if(left<=0){ clearInterval(iv); if(modalResolve===r){ timedOut=true; closeModal(); } } },1000); }
+    const k=await mp; clearInterval(iv);
+    pick=k&&k[0]==="q"?opts[+k.slice(1)]:null;
+  }
+  const ok=pick===ans;
+  log(`${p.name} ${ok?"ตอบควิซถูก":(timedOut?"ตอบควิซไม่ทัน":"ตอบควิซผิด")}`);
+  await say({eyebrow,title:ok?"ถูกต้อง!":(timedOut?"หมดเวลา!":"ยังไม่ถูก"),html:`<p>คำตอบคือ <b>${esc(ans)}</b></p><p style="color:var(--muted)">${esc(fact)}</p>`},2000);
+  return ok;
+}
+
+// ================= BOT =================
+function botPickDest(opts){
+  if(opts.has(S.dest)) return S.dest;
+  const d=bfs(S.dest,S.newRail), i=S.turn, p=cur();
+  let best=null,bs=Infinity;
+  for(const [id,path] of opts){
+    let sc=(d[id]??99)*10; const t=NODES[id].t;
+    if(t==="b") sc-=3; if(t==="r") sc+=3; if(t==="y"||t==="jn") sc-=2;
+    if(t==="st"&&PROPS_AT(id).some(q=>S.owners[q.id]===undefined&&q.price<=p.money-10)) sc-=4;
+    if(S.ghost.holder===i&&path.slice(1).some(n=>S.players.some((q,k)=>k!==i&&q.node===n))) sc-=12;
+    sc+=Math.random()*2;
+    if(sc<bs){bs=sc;best=id;}
+  }
+  return best;
+}
+async function botBuy(s){
+  const i=S.turn,p=cur(),props=PROPS_AT(s),bought=[];
+  const late=S.month>=9&&S.year>=S.years;
+  const reserve=Math.max(10,Math.round(p.money*0.2));
+  const free=props.filter(q=>S.owners[q.id]===undefined).sort((a,b)=>b.profit/b.price-a.profit/a.price);
+  for(const q of free){
+    const completes=props.every(x=>x.id===q.id||S.owners[x.id]===i);
+    if(p.money<q.price) continue;
+    if(completes||(!late&&p.money-q.price>=reserve)){ p.money-=q.price; S.owners[q.id]=i; bought.push(q); log(`${p.name} ซื้อ${q.n} ${q.price} ล้าน`); }
+  }
+  if(bought.length){ commit(); render(); await brief({eyebrow:"สถานี"+NAME[s],title:`${esc(p.name)} ซื้อกิจการ`,html:`<div class="gc-row" style="justify-content:${bought.length===1?"center":"flex-start"}">${bought.map(q=>`<div class="gc-col">${propCard(q)}</div>`).join("")}</div>`},1900); }
+}
+async function botUseCard(){
+  const i=S.turn,p=cur(); const has=k=>p.cards.includes(k)&&canUse(k);
+  const d=bfs(S.dest,S.newRail), dist=d[p.node]??99;
+  let k=null, arg=null;
+  if(has("plane")&&dist>6) k="plane";
+  else if(has("drive")&&dist>=1&&dist<=6&&endpoints(p.node,dist).has(S.dest)){k="drive";arg=dist;}
+  else if(has("pass")){k="pass";arg=S.players.map((q,j)=>({j,m:q.money})).filter(o=>o.j!==i).sort((a,b)=>b.m-a.m)[0].j;}
+  else if(has("sexp")&&dist>9) k="sexp";
+  else if(has("exp")&&dist>4) k="exp";
+  else if(has("viral")) k="viral";
+  else if(has("mob")){const near=S.players.map((q,j)=>({j,v:d[q.node]??99})).filter(o=>o.j!==i&&o.v<=6).sort((a,b)=>a.v-b.v)[0]; if(near){k="mob";arg=near.j;}}
+  else if(has("lotto")&&p.money>20&&Math.random()<0.3) k="lotto";
+  if(!k) return null;
+  discardCard(i,k); S.tf.cardUsed=true;
+  await brief({eyebrow:`${esc(p.name)} ใช้การ์ด`,title:ITEMS[k].n,html:wrapCard(itemCard(k))},1500);
+  switch(k){
+    case "plane": log(`${p.name} เหมาเครื่องบินไป${NAME[S.dest]}`); await teleport(S.dest,true); return "moved";
+    case "drive": log(`${p.name} ขับเอง ${arg} ช่อง`); commit(); return arg;
+    case "pass": S.ghost={holder:arg,count:0}; log(`${p.name} ฝากผีให้${S.players[arg].name}`); break;
+    case "sexp": S.tf.nDice=3; log(`${p.name} ใช้รถด่วนพิเศษ`); break;
+    case "exp": S.tf.nDice=2; log(`${p.name} ใช้รถด่วน`); break;
+    case "mob": S.skip[arg]=true; log(`${p.name} ส่งม็อบไปปิดถนน${S.players[arg].name}`); break;
+    case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log(`${q.n}ของ${p.name} ดังในโซเชียล รับ ${q.profit} ล้าน`); break; }
+    case "lotto":{ const r=rnd(6); if(r===6){p.money+=30;log(`${p.name} ถูกลอตเตอรี่ รับ 30 ล้าน`);} else {p.money-=1;log(`${p.name} ซื้อลอตเตอรี่ไม่ถูก`);} break; }
+  }
+  commit(); render(); return null;
+}
+async function botTurn(){
+  UI={mode:"idle",opts:null,dice:[],busy:true,msg:""};
+  if(MODE==="online") ON.handledTurn=S.turnId;
+  const i=S.turn,p=cur();
+  if(S.stage!=="choose"){
+    S.tf={nDice:1,cardUsed:false,locked:false};
+    render(); focusNode(p.node); await sleep(600);
+    if(S.skip[i]){ S.skip[i]=false; log(`${p.name} ติดม็อบ เดินไม่ได้`); render(); await info(`${esc(p.name)} ติดม็อบปิดถนน`,"เทิร์นนี้เดินไม่ได้"); UI.busy=false; return endTurn(); }
+    if(S.ghost.holder===i) await ghostTurn();
+    S.stage="choose"; commit();
+  }
+  render(); await sleep(400);
+  const r=S.tf.cardUsed?null:await botUseCard();
+  if(r==="moved"){ UI.busy=false; return endTurn(); }
+  let steps;
+  if(typeof r==="number") steps=r;
+  else if(S.tf.locked){ steps=1; UI.dice=[]; }
+  else{
+    const n=S.tf.nDice||1;
+    for(let t=0;t<7;t++){UI.dice=[...Array(n)].map(()=>rnd(6));renderPanel();await sleep(60);}
+    steps=UI.dice.reduce((a,b)=>a+b,0);
+    if(S.songkran) steps=Math.max(1,steps-1);
+  }
+  UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(p.node,steps);
+  render(); const pick=botPickDest(UI.opts); focusNode(pick); await sleep(800);
+  UI.busy=false;
+  return onPick(pick,true);
+}
+
+// ================= TURN FLOW =================
+async function startTurn(){
+  UI={mode:"idle",opts:null,dice:[],busy:false,msg:""};
+  const i=S.turn,p=cur();
+  if(MODE==="online") ON.handledTurn=S.turnId;
+  if(S.stage!=="choose"){
+    S.tf={nDice:1,cardUsed:false,locked:false};
+    render(); focusNode(p.node);
+    if(S.skip[i]){ S.skip[i]=false; log(`${p.name} ติดม็อบ เดินไม่ได้`); render(); await info(`${esc(p.name)} ติดม็อบปิดถนน`,"เทิร์นนี้เดินไม่ได้"); return endTurn(); }
+    if(MODE==="local"&&S.players.filter(q=>!q.bot).length<2) toast(`ตาของ${p.name}`);
+    else if(MODE==="local") await modal({eyebrow:`${MONTHS[S.month]} ปีที่ ${S.year}`,title:`ตาของ${esc(p.name)}`,html:`ส่งเครื่องให้${esc(p.name)} แล้วกดเริ่ม`,buttons:[{label:"เริ่มเทิร์น",value:1,primary:true}]});
+    else await modal({eyebrow:`${MONTHS[S.month]} ปีที่ ${S.year}`,title:"ถึงตาคุณแล้ว",html:`${esc(p.name)} อยู่ที่${labelOf(p.node)} · จุดหมาย${NAME[S.dest]}`,buttons:[{label:"เริ่มเทิร์น",value:1,primary:true}]});
+    if(S.ghost.holder===i) await ghostTurn();
+    S.stage="choose"; commit();
+  }
+  UI.mode="choose"; render(); focusNode(p.node);
+}
+async function endTurn(){
+  UI.mode="idle"; UI.msg="";
+  await settleDebts();
+  S.stage="begin"; S.turn++;
+  if(S.turn>=S.players.length){
+    S.turn=0;
+    if(S.month===11){
+      await yearClose();
+      if(S.year>=S.years) return gameOver();
+      S.year++;
+    }
+    S.month=(S.month+1)%12;
+    await startMonth();
+  }
+  S.turnId=(S.turnId||0)+1;
+  commit();
+  advance();
+}
+function beginTurn(){ return isBotTurn()?botTurn():startTurn(); }
+function advance(){
+  if(MODE==="local") return beginTurn();
+  if(S.turn===mySeat()) return startTurn();
+  if(isBotTurn()) return botTurn();
+  UI={mode:"idle",opts:null,dice:[],busy:false,msg:""}; render(); focusNode(cur().node);
+}
+function ownersOf(filter,per){
+  const out=[];
+  S.players.forEach((p,k)=>{const n=PROPS.filter(q=>S.owners[q.id]===k&&filter(q)).length; if(n) out.push([k,n*per,n]);});
+  return out;
+}
+async function startMonth(){
+  S.songkran=false; render();
+  const m=S.month;
+  if(m===0&&S.year===2&&!S.newRail){ S.newRail=true; log("รางใหม่เด่นชัย–แพร่–พะเยาเปิดแล้ว"); render(); await evInfo("เปิดรางใหม่!","รถไฟสายเด่นชัย–แพร่–พะเยาเปิดใช้ เดินทางขึ้นเหนือได้อีกเส้นทาง","ข่าวการรถไฟ"); }
+  const list=(arr,sign)=>arr.length?arr.map(([k,a,n])=>`<p>${esc(S.players[k].name)} ${sign}${a} ล้าน (${n} แห่ง)</p>`).join(""):"<p>ไม่มีใครได้รับผล</p>";
+  const E="อีเวนต์ประจำเดือน";
+  if(m===0){ S.songkran=true; const r=ownersOf(q=>q.t===TOUR,2); r.forEach(([k,a])=>S.players[k].money+=a); log("สงกรานต์ รถติดทั้งเดือน กิจการท่องเที่ยวได้คนละ 2 ล้านต่อแห่ง"); render(); await evInfo("สงกรานต์","<p>เดือนนี้รถติด ทุกคนเดิน −1 ช่อง (ต่ำสุด 1)</p>"+list(r,"+"),E); }
+  if(m===1){ const r=ownersOf(q=>q.t===AGRI,3); r.forEach(([k,a])=>S.players[k].money+=a); log("ฤดูผลไม้ กิจการเกษตรรับ 3 ล้านต่อแห่ง"); render(); await evInfo("ฤดูผลไม้","<p>เจ้าของกิจการเกษตรรับ 3 ล้านต่อแห่ง</p>"+list(r,"+"),E); }
+  if(m===5){ const r=ownersOf(q=>q.t===AGRI,2); await evInfo("น้ำท่วม","<p>เจ้าของกิจการเกษตรจ่ายค่าซ่อม 2 ล้านต่อแห่ง</p>"+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,"ค่าซ่อมหลังน้ำท่วม",true); log("น้ำท่วม กิจการเกษตรจ่ายค่าซ่อม"); render(); }
+  if(m===7){ const r=ownersOf(q=>q.s==="CMI"||q.s==="SKT",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ลอยกระทง/ยี่เป็ง กิจการเชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง"); render(); await evInfo("ลอยกระทง / ยี่เป็ง","<p>เจ้าของกิจการที่เชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง</p>"+list(r,"+"),E); }
+  if(m===8){ const got=S.players.map((p,k)=>{const c=drawItem(k);return `<p>${esc(p.name)}: ${c?"ได้การ์ด 1 ใบ":"มือเต็ม"}</p>`;}).join(""); log("ปีใหม่ ทุกคนได้การ์ดไอเทม"); render(); await evInfo("ปีใหม่","<p>ทุกคนจั่วการ์ดไอเทม 1 ใบ</p>"+got,E); }
+  if(m===9){ const r=ownersOf(q=>q.t===TOUR&&NORTH.has(q.s),2); await evInfo("ฝุ่น PM2.5","<p>เจ้าของกิจการท่องเที่ยวในภาคเหนือจ่าย 2 ล้านต่อแห่ง</p>"+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,"นักท่องเที่ยวหายเพราะฝุ่น",true); log("ฝุ่น PM2.5 ท่องเที่ยวภาคเหนือจ่าย 2 ล้านต่อแห่ง"); render(); }
+  if(m===10){ const r=ownersOf(q=>q.s==="NSW",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ตรุษจีน กิจการนครสวรรค์รับ 5 ล้านต่อแห่ง"); render(); await evInfo("ตรุษจีน","<p>เจ้าของกิจการที่นครสวรรค์รับ 5 ล้านต่อแห่ง</p>"+list(r,"+"),E); }
+  if(m===11){ log("เดือนปิดงบ จบเดือนนี้ทุกกิจการจ่ายกำไร"); await evInfo("เดือนปิดงบ","จบเดือนนี้ทุกกิจการจ่ายกำไรให้เจ้าของ",E); }
+}
+function reportHTML(rows){return `<table class="rep"><tr><th>บริษัท</th><th>กำไรปีนี้</th><th>ทรัพย์สินรวม</th></tr>${rows.map(r=>`<tr><td>${esc(S.players[r.k].name)}${r.mono.length?`<br><span style="font-size:12px;color:var(--muted)">ผูกขาด ${r.mono.join(", ")}</span>`:""}</td><td>+${r.prof}</td><td>${assets(r.k)}</td></tr>`).join("")}</table>`;}
+async function yearClose(){
+  const rows=S.players.map((p,k)=>{
+    let prof=0; const mono=[];
+    for(const s in NAME){const props=PROPS_AT(s); if(!props.length) continue; const own=props.filter(q=>S.owners[q.id]===k); if(!own.length) continue;
+      const sum=own.reduce((t,q)=>t+q.profit,0); if(own.length===props.length){prof+=sum*2;mono.push(NAME[s]);} else prof+=sum;}
+    p.money+=prof; return {k,prof,mono};
+  });
+  log(`ปิดงบปีที่ ${S.year} ทุกกิจการจ่ายกำไร`);
+  S.report={id:Date.now()+"-"+S.year,title:`ปิดงบปีที่ ${S.year}`,html:reportHTML(rows)};
+  ON.seenReport=S.report.id;
+  render();
+  await modal({eyebrow:"มีนาคม",title:S.report.title,html:S.report.html});
+}
+async function gameOver(){
+  S.phase="over"; commit();
+  if(MODE==="local"){ try{localStorage.removeItem("rotfai-save");}catch(e){} }
+  render(); await showGameOver();
+}
+async function showGameOver(){
+  ON.shownOver=true;
+  const rank=S.players.map((p,k)=>({k,a:assets(k)})).sort((a,b)=>b.a-a.a);
+  const html=`<table class="rep"><tr><th>อันดับ</th><th>ทรัพย์สินรวม (ล้าน)</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${r.a}</td></tr>`).join("")}</table>`;
+  await modal({eyebrow:"จบเกม",title:`${esc(S.players[rank[0].k].name)} คือเศรษฐีรถไฟ!`,html,buttons:[{label:"กลับหน้าแรก",value:1,primary:true}]});
+  leaveOnline(); home();
+}
+
+
+// ================= CARD ART & FACES =================
+const ART={map:{}};
+const DEST_ORDER=["BKK","AYT","LOP","NSW","PSL","SKT","UTD","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"];
+const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane"];
+const pad2=n=>String(n).padStart(2,"0");
+const ARTID={prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
+const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:6},(_,i)=>"G"+pad2(i+1)),...Array.from({length:9},(_,i)=>"E"+pad2(i+1))];
+const GC_TYPE={[FOOD]:["#FF8A3D","#FFE3CC","#FFD3B0"],[AGRI]:["#45B864","#DDF5E3","#C6EDD0"],[TOUR]:["#3E9BE0","#DCEEFF","#C4E2FF"],[IND]:["#7E8AB0","#E3E8F2","#D0D8E8"]};
+const GC_KIND={dest:["#E8453C","#FFE0DA","#FFCBC2"],item:["#FFC21A","#FFF3C4","#FFE89A"],ghost:["#9B7BE0","#EDE5FF","#DCCEFF"],event:["#1FA59A","#D4F4EF","#B3EAE2"]};
+const gcVars=c=>`--c:${c[0]};--cl:${c[1]};--cl2:${c[2]}`;
+function gcArt(id){const a=ART.map[id];return a&&a.url?`<img src="${esc(a.url)}" alt="" loading="lazy">`:`<span class="gc-ph">ภาพ ${id}</span>`;}
+function propCard(p){
+  const all=PROPS_AT(p.s);
+  return `<div class="gc" style="${gcVars(GC_TYPE[p.t])}"><div class="gc-top"><span class="gc-pill">สถานี${NAME[p.s]}</span><span class="gc-dark">${p.t}</span></div><div class="gc-art">${gcArt(ARTID.prop(p))}</div><div class="gc-name">${p.n}</div><div class="gc-stats"><div class="gc-stat"><span class="gc-coin">${p.price}</span><span><small>ราคาซื้อ</small><b>ล้านบาท</b></span></div><div class="gc-stat"><span class="gc-coin" style="background:#7BE0A0">+${p.profit}</span><span><small>กำไรต่อปี</small><b>ล้านบาท</b></span></div></div><div class="gc-foot">${all.map(q=>{const o=S.owners[q.id];return `<span class="gc-dot" style="${o!==undefined?`background:${S.players[o].color}`:""}"></span>`;}).join("")}<span>ครบ ${all.length} แห่ง = ผูกขาด ×2</span></div></div>`;
+}
+function destCard(s){
+  return `<div class="gc" style="${gcVars(GC_KIND.dest)}"><div class="gc-top"><span class="gc-pill">จุดหมาย</span><span class="gc-dark">${NORTH.has(s)?"ภาคเหนือ":"ภาคกลาง"}</span></div><div class="gc-art">${gcArt(ARTID.dest(s))}</div><div class="gc-name big">${NAME[s]}</div><div class="gc-panel" style="flex-direction:row;align-items:center;gap:10px"><span class="gc-coin lg">${REWARD[s]}</span><span><span class="gc-sub">คนแรกที่ไปถึงได้รับ</span><span style="font-family:var(--font-d);font-size:18px">${REWARD[s]} ล้านบาท</span></span></div></div>`;
+}
+function itemCard(k){
+  const it=ITEMS[k];
+  return `<div class="gc" style="${gcVars(GC_KIND.item)}"><div class="gc-top"><span class="gc-pill">การ์ดไอเทม</span><span class="gc-dark">${it.when}</span></div><div class="gc-art short">${gcArt(ARTID.item(k))}</div><div class="gc-name">${it.n}</div><div class="gc-panel center">${it.eff}</div><div class="gc-foot">ใช้แล้วทิ้ง · ถือได้สูงสุด 5 ใบ</div></div>`;
+}
+function ghostCard(id,name,cond,lines){
+  return `<div class="gc ghost" style="${gcVars(GC_KIND.ghost)}"><div class="gc-top"><span class="gc-pill">ผีป่วน!</span><span class="gc-dark">${cond}</span></div><div class="gc-art">${gcArt(id)}</div><div class="gc-name dark">${name}</div><div class="gc-panel">${lines}</div></div>`;
+}
+function eventCard(id,month,name,lines){
+  return `<div class="gc" style="${gcVars(GC_KIND.event)}"><div class="gc-top"><span class="gc-pill">อีเวนต์ประจำเดือน</span><span class="gc-dark">${month}</span></div><div class="gc-art short">${gcArt(id)}</div><div class="gc-name">${name}</div><div class="gc-panel">${lines}</div></div>`;
+}
+const wrapCard=c=>`<div class="gc-wrap">${c}</div>`;
+const wrapGhost=c=>`<div class="gc-wrap ghost">${c}</div>`;
+const EVID={"สงกรานต์":"E01","ฤดูผลไม้":"E02","น้ำท่วม":"E03","ลอยกระทง / ยี่เป็ง":"E04","ปีใหม่":"E05","ฝุ่น PM2.5":"E06","ตรุษจีน":"E07","เดือนปิดงบ":"E08","เปิดรางใหม่!":"E09"};
+const EVTXT={E01:"รถติด ทุกคนเดิน −1 ช่อง · กิจการท่องเที่ยวรับ 2 ล้าน/แห่ง",E02:"กิจการเกษตรรับ 3 ล้าน/แห่ง",E03:"กิจการเกษตรจ่ายค่าซ่อม 2 ล้าน/แห่ง",E04:"กิจการเชียงใหม่และสุโขทัยรับ 5 ล้าน/แห่ง",E05:"ทุกคนจั่วการ์ดไอเทม 1 ใบ",E06:"ท่องเที่ยวภาคเหนือจ่าย 2 ล้าน/แห่ง",E07:"กิจการนครสวรรค์รับ 5 ล้าน/แห่ง",E08:"จบเดือนนี้ทุกกิจการจ่ายกำไร ผูกขาด ×2",E09:"รางเด่นชัย–แพร่–พะเยาเปิดใช้"};
+function evInfo(title,html,eyebrow){
+  const id=EVID[title];
+  if(!id) return info(title,html,eyebrow);
+  const month=id==="E09"?"เม.ย. ปี 2":MONTHS[S.month];
+  return modal({eyebrow,title,html:wrapCard(eventCard(id,month,title.replace("!",""),EVTXT[id]))+html.replace(/^<p>[^<]*<\/p>/,"")});
+}
+async function initArt(){
+  try{
+    const db=await (window.claude?.use?.("db")??null); if(!db) return;
+    db.doc("art/cards").onSnapshot(s=>{ART.map=s.exists?{...s.data()}:{}; if(S) renderPanel();},()=>{});
+  }catch(e){}
+}
+async function shrinkImage(file){
+  const bmp=await createImageBitmap(file); const W=720,H=960;
+  const sc=Math.max(W/bmp.width,H/bmp.height), w=bmp.width*sc, h=bmp.height*sc;
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  c.getContext("2d").drawImage(bmp,(W-w)/2,(H-h)/2,w,h);
+  return await new Promise(r=>c.toBlob(b=>r(b),"image/webp",0.86));
+}
+async function manageArt(){
+  const [assets,db]=await Promise.all([window.claude?.use?.("assets")??null, window.claude?.use?.("db")??null]);
+  const missing=ALL_ART_IDS.filter(id=>!(ART.map[id]&&ART.map[id].url));
+  const html=`<p>มีภาพแล้ว <b>${ALL_ART_IDS.length-missing.length}/${ALL_ART_IDS.length}</b> ใบ</p>
+    ${assets&&db?`<p>เลือกไฟล์ภาพที่เจนไว้ทีเดียวหลายไฟล์ได้ (เลือกทั้งโฟลเดอร์ rotfai_cards ได้เลย) เกมดูรหัสจากชื่อไฟล์ เช่น card_P01_00001_.png ถ้ามีหลายไฟล์รหัสเดียวกัน ไฟล์ที่เลือกทีหลังจะใช้แทน</p>
+    <input class="art-file" type="file" id="artFiles" multiple accept="image/png,image/jpeg,image/webp"><p class="note" id="artProg"></p>`
+    :`<p>อัปโหลดได้เฉพาะเจ้าของเกมหรือคนที่ได้สิทธิ์ Can edit ที่ล็อกอินอยู่</p>`}
+    ${missing.length?`<p class="note">ยังขาด: ${missing.join(", ")}</p>`:""}`;
+  const p=modal({title:"ภาพการ์ด",html,buttons:[{label:"ปิด",value:null,primary:true}]});
+  const input=$("artFiles");
+  if(input) input.onchange=async()=>{
+    const files=[...input.files]; const prog=$("artProg"); const add={}; let ok=0,skip=0,fail=0;
+    input.disabled=true;
+    for(const f of files){
+      const m=f.name.match(/card_([PDIGE]\d{2})/i);
+      if(!m||!ALL_ART_IDS.includes(m[1].toUpperCase())){skip++;continue;}
+      const id=m[1].toUpperCase();
+      if(prog) prog.textContent=`กำลังอัปโหลด ${id} (${ok+fail+1}/${files.length})…`;
+      try{ const blob=await shrinkImage(f); const r=await assets.upload(blob); add[id]={id:r.id,url:r.url}; ok++; }
+      catch(e){ fail++; }
+    }
+    if(ok){
+      try{ const cur=await db.doc("art/cards").get(); await db.doc("art/cards").set({...(cur.exists?cur.data():{}),...add}); }
+      catch(e){ fail+=ok; ok=0; }
+    }
+    if(prog) prog.textContent=`เสร็จแล้ว: อัปโหลด ${ok} ภาพ${skip?` · ข้าม ${skip} ไฟล์ (ชื่อไม่ตรงรูปแบบ card_XXX)`:""}${fail?` · ไม่สำเร็จ ${fail}`:""}`;
+    input.disabled=false; input.value="";
+  };
+  await p;
+}
+
+// ================= PLAYER / STATION INFO =================
+async function showPlayer(k){
+  if(modalResolve) return;
+  const p=S.players[k], mine=PROPS.filter(q=>S.owners[q.id]===k);
+  const showCards=MODE==="local"||k===mySeat();
+  const html=`<p>เงินสด <b>${fmt(p.money)}</b> · ทรัพย์สินรวม <b>${assets(k)} ล้าน</b></p><p>การ์ด: ${showCards?(p.cards.length?p.cards.map(c=>ITEMS[c].n).join(", "):"ไม่มี"):`${p.cards.length} ใบ (ซ่อนไว้)`}</p>${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${NAME[q.s]}</span>`)).join("")}</div>`:"<p>ยังไม่มีกิจการ</p>"}`;
+  await modal({title:esc(p.name),html});
+}
+async function showStation(s){
+  if(modalResolve||UI.mode==="pick"||UI.busy) return;
+  const props=PROPS_AT(s);
+  const html=s==="DNC"?"ชุมทาง ไม่มีกิจการ หยุดแล้วจั่วการ์ดไอเทม":`<p>รางวัลถ้าเป็นจุดหมาย ${REWARD[s]} ล้าน</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}<div style="min-height:28px;display:grid;place-items:center">${ownerTag(S.owners[q.id])||`<span class="pm">ยังว่าง</span>`}</div></div>`).join("")}</div>`;
+  await modal({eyebrow:"สถานี",title:NAME[s],html});
+}
+
+// ================= HOME / LOCAL SETUP =================
+function previewBoard(){ newGame(["รถไฟแดง","รถไฟน้ำเงิน","รถไฟเขียว"],1); S.phase="setup"; UI={mode:"idle",opts:null,dice:[],busy:false,msg:""}; render(); }
+async function home(){
+  MODE="local"; closeModal(); previewBoard();
+  let saved=null; try{saved=JSON.parse(localStorage.getItem("rotfai-save")||"null");}catch(e){}
+  let lastRoom=null; try{lastRoom=localStorage.getItem("rotfai-room");}catch(e){}
+  const html=`<div class="stack">
+    ${saved&&saved.phase==="play"?`<button class="mode-btn primary" data-val="resume"><b>เล่นเกมที่ค้างไว้ต่อ</b><span>เครื่องเดียว · ${MONTHS[saved.month]} ปีที่ ${saved.year}</span></button>`:""}
+    <button class="mode-btn" data-val="online"><b>เล่นออนไลน์กับเพื่อน</b><span>แต่ละคนใช้มือถือตัวเอง ผลัดกันเล่นทีละเทิร์น</span></button>
+    ${lastRoom?`<button class="mode-btn" data-val="rejoin"><b>กลับเข้าห้อง ${esc(lastRoom)}</b><span>ห้องออนไลน์ล่าสุดของคุณ</span></button>`:""}
+    <button class="mode-btn" data-val="local"><b>เล่นเครื่องเดียว</b><span>2–4 คน ส่งมือถือหรือ iPad ต่อกัน</span></button>
+    <button class="mode-btn" data-val="art"><b>ภาพการ์ด</b><span>อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ</span></button>
+  </div>`;
+  const v=await modal({eyebrow:"สายเหนือ · ทดลองเล่น v0.2",title:"รถไฟเศรษฐีไทย",html,buttons:[]});
+  if(v==="resume"){ MODE="local"; S=saved; render(); return beginTurn(); }
+  if(v==="local") return setupLocal();
+  if(v==="online") return onlineLobby();
+  if(v==="rejoin") return onlineLobby(lastRoom);
+  if(v==="art"){ await manageArt(); return home(); }
+  return home();
+}
+async function setupLocal(){
+  let n=3, years=1;
+  const names=PCOL.map(c=>"รถไฟ"+c[0]);
+  const bots=[false,true,true,true];
+  let quizOn=true, qTime=5;
+  while(true){
+    const html=`<div class="field"><div class="label">จำนวนผู้เล่น</div><div class="seg">${[2,3,4].map(v=>`<button data-val="n${v}" aria-pressed="${v===n}">${v} คน</button>`).join("")}</div></div>
+      <div class="field"><div class="label">ชื่อบริษัท</div><div class="names">${names.slice(0,n).map((v,k)=>`<label><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><input id="nm${k}" value="${esc(v)}" maxlength="18" aria-label="ชื่อผู้เล่น ${k+1}">${k===0?`<span class="pm" style="min-width:64px;text-align:center">คุณ</span>`:`<button class="btn" style="flex:none;min-height:42px;padding:0 10px;font-size:14px;min-width:64px" data-val="b${k}" aria-pressed="${bots[k]}">${bots[k]?"บอท":"คน"}</button>`}</label>`).join("")}</div><p class="note" style="margin-top:6px">แตะปุ่มด้านขวาเพื่อสลับ คน / บอท</p></div>
+      <div class="field"><div class="label">ความยาวเกม</div><div class="seg"><button data-val="y1" aria-pressed="${years===1}">1 ปี · ราว 45 นาที</button><button data-val="y2" aria-pressed="${years===2}">2 ปี · มีรางใหม่</button></div></div>
+      <div class="field"><div class="label">ควิซ</div><div class="seg"><button data-val="qz1" aria-pressed="${quizOn}">เปิด</button><button data-val="qz0" aria-pressed="${!quizOn}">ปิด</button></div><p class="note" style="margin-top:6px">ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส</p></div>
+      ${quizOn?`<div class="field"><div class="label">เวลาตอบควิซ</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?t+" วิ":"ไม่จับเวลา"}</button>`).join("")}</div></div>`:""}`;
+    const v=await modal({eyebrow:"เล่นเครื่องเดียว",title:"ตั้งค่าเกม",html,buttons:[{label:"กลับ",value:"back"},{label:"เริ่มเกม",value:"start",primary:true}]});
+    for(let k=0;k<n;k++){const el=$("nm"+k); if(el&&el.value.trim()) names[k]=el.value.trim();}
+    if(v==="back") return home();
+    if(v&&v[0]==="n"){n=+v.slice(1);continue;}
+    if(v&&v[0]==="b"){const k=+v.slice(1);bots[k]=!bots[k];continue;}
+    if(v&&v.startsWith("qt")&&host){ try{await ON.ref.update({qTime:+v.slice(2)});}catch(e){} return; }
+  if(v==="qz1"||v==="qz0"){quizOn=v==="qz1";continue;}
+    if(v&&v.startsWith("qt")){qTime=+v.slice(2);continue;}
+    if(v&&v[0]==="y"){years=+v.slice(1);continue;}
+    if(v==="start") break;
+  }
+  MODE="local"; newGame(names.slice(0,n),years);
+  S.players.forEach((p,k)=>{p.bot=k>0&&bots[k];}); S.quiz=quizOn; S.qTime=qTime;
+  render(); focusNode("BKK",false);
+  await info("จุดหมายแรก",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> คนแรกที่ไปถึงได้ ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
+  await startMonth(); commit();
+  beginTurn();
+}
+
+// ================= ONLINE =================
+async function initOnline(){
+  if(ON.db&&ON.me) return true;
+  const [db,user]=await Promise.all([window.claude?.use?.("db")??null, window.claude?.use?.("user")??null]);
+  ON.db=db; ON.user=user;
+  let uid=user?await user.id():null;
+  if(!uid){ try{uid=localStorage.getItem("rotfai-pid");}catch(e){}
+    if(!uid){ uid="p_"+Math.random().toString(36).slice(2,12); try{localStorage.setItem("rotfai-pid",uid);}catch(e){} } }
+  ON.me=uid;
+  return !!db;
+}
+function genCode(){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return s;}
+function leaveOnline(){
+  if(ON.unsub){ON.unsub();ON.unsub=null;} if(ON.listUnsub){ON.listUnsub();ON.listUnsub=null;}
+  ON.ref=null; ON.meta=null; ON.handledTurn=null; ON.seenMove=null; ON.seenReport=null; ON.shownOver=false; ON.seenLog=0;
+  MODE="local";
+}
+async function onlineLobby(rejoin){
+  closeModal();
+  modal({title:"กำลังเชื่อมต่อ…",html:"",buttons:[]});
+  const ok=await initOnline();
+  if(!ok){
+    await modal({title:"เล่นออนไลน์ไม่ได้ในตอนนี้",html:"<p>หน้านี้เชื่อมต่อที่เก็บห้องเกมไม่ได้ ลองเปิดลิงก์ใหม่ในเว็บ claude.ai โดยล็อกอินด้วยอีเมลที่ได้รับเชิญ</p><p>ยังเล่นแบบเครื่องเดียวได้ตามปกติ</p>",buttons:[{label:"กลับ",value:1,primary:true}]});
+    return home();
+  }
+  const canW=await ON.user.can("data.write");
+  if(canW===false){
+    await modal({title:"บัญชีนี้ดูได้อย่างเดียว",html:"<p>บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของเกมกด Share แล้วตั้งสิทธิ์ของคุณเป็น Can edit และตั้ง Who has access เป็น Only you (ไม่เปิดลิงก์สาธารณะ)</p><p>เปลี่ยนแล้วให้โหลดหน้านี้ใหม่</p>",buttons:[{label:"กลับ",value:1,primary:true}]});
+    return home();
+  }
+  if(rejoin) return joinRoom(rejoin);
+  return roomList();
+}
+async function roomList(){
+  let rooms=[]; let profs={};
+  let resolve; const done=new Promise(r=>resolve=r);
+  const draw=async()=>{
+    const ids=[...new Set(rooms.flatMap(r=>(r.seats||[]).map(s=>s.uid)))];
+    profs=ids.length?await ON.user.profiles(ids):{};
+    if(!ON.listUnsub) return;
+    const open=rooms.filter(r=>r.status==="lobby"||(r.status==="play"&&(r.seats||[]).some(s=>s.uid===ON.me)));
+    const html=`<div class="stack"><button class="mode-btn primary" data-val="create"><b>สร้างห้องใหม่</b><span>ได้รหัสห้อง 4 ตัวให้เพื่อนกดเข้า</span></button></div>
+      <div class="field"><div class="label">ห้องที่เปิดอยู่</div><div class="stack">${open.length?open.map(r=>{const host=(r.seats||[])[0];const mine=(r.seats||[]).some(s=>s.uid===ON.me);return `<button class="room" data-val="join:${esc(r.code)}"><span class="rn">${esc(r.code)}</span><span><span class="rm">${r.status==="play"?"กำลังเล่น · ":""}${(r.seats||[]).length}/4 คน · ห้องของ${esc((host&&profs[host.uid]?.name)||"เพื่อน")}</span></span><span class="pick" style="display:inline-flex;align-items:center;min-height:36px">${mine?"กลับเข้า":"เข้าร่วม"}</span></button>`;}).join(""):`<p class="note" style="margin:0">ยังไม่มีห้อง สร้างห้องแล้วบอกรหัสให้เพื่อน</p>`}</div></div>`;
+    modal({eyebrow:"เล่นออนไลน์",title:"เลือกห้อง",html,buttons:[{label:"กลับ",value:"back"}]}).then(v=>{if(v!==undefined)resolve(v);});
+  };
+  ON.listUnsub=ON.db.collection("games").where("status","in",["lobby","play"]).limit(50).onSnapshot(snap=>{
+    rooms=snap.docs.map(d=>d.data()).filter(Boolean).sort((a,b)=>(b.created||0)-(a.created||0)); draw();
+  },()=>{rooms=[];draw();});
+  const v=await done;
+  if(ON.listUnsub){ON.listUnsub();ON.listUnsub=null;}
+  if(v==="back") return home();
+  if(v==="create") return createRoom();
+  if(typeof v==="string"&&v.startsWith("join:")) return joinRoom(v.slice(5));
+  return home();
+}
+async function createRoom(){
+  const code=genCode(); const ref=ON.db.doc("games/"+code);
+  try{ await ref.set({code,status:"lobby",host:ON.me,created:Date.now(),years:1,seats:[{uid:ON.me,co:"รถไฟแดง"}],rev:0}); }
+  catch(e){ await info("สร้างห้องไม่ได้",e&&e.code==="invalid_argument"?"บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของแชร์แบบ Editor":"ลองใหม่อีกครั้ง"); return roomList(); }
+  enterRoom(code);
+}
+async function joinRoom(code){
+  const ref=ON.db.doc("games/"+code);
+  try{
+    const l=await ref.acquire({holder:ON.me,ttlMs:4000});
+    if(!l.acquired){ toast("มีคนกำลังเข้าห้องนี้ ลองอีกครั้ง"); return roomList(); }
+    const s=await ref.get();
+    if(!s.exists){ toast("ไม่พบห้อง "+code); try{localStorage.removeItem("rotfai-room");}catch(e){} return roomList(); }
+    const d=s.data(); const seats=[...(d.seats||[])];
+    if(!seats.some(x=>x.uid===ON.me)){
+      if(d.status!=="lobby"){ toast("ห้องนี้เริ่มเล่นไปแล้ว"); return roomList(); }
+      if(seats.length>=4){ toast("ห้องเต็มแล้ว"); return roomList(); }
+      seats.push({uid:ON.me,co:"รถไฟ"+PCOL[seats.length][0]});
+      await ref.update({seats});
+    }
+  }catch(e){ toast("เข้าห้องไม่ได้ ลองใหม่"); return roomList(); }
+  enterRoom(code);
+}
+function enterRoom(code){
+  ON.ref=ON.db.doc("games/"+code);
+  try{localStorage.setItem("rotfai-room",code);}catch(e){}
+  if(ON.unsub) ON.unsub();
+  ON.unsub=ON.ref.onSnapshot(onRoomSnap,()=>{toast("หลุดการเชื่อมต่อกับห้อง"); leaveOnline(); home();});
+}
+let lobbyDrawn=null;
+async function onRoomSnap(snap){
+  if(!snap.exists){ toast("ห้องนี้ถูกปิดแล้ว"); try{localStorage.removeItem("rotfai-room");}catch(e){} leaveOnline(); return home(); }
+  const d=snap.data(); const {S:gs,...meta}=d; ON.meta=meta;
+  if(d.status==="lobby"){ MODE="online"; return drawRoom(d); }
+  if(!gs) return;
+  lobbyDrawn=null;
+  if(S&&MODE==="online"&&S.code===d.code&&(d.rev||0)<=(S.rev||0)) return; // own write or stale
+  const next=JSON.parse(JSON.stringify(gs)); next.code=d.code;
+  ON.applyQ=ON.applyQ.then(()=>applyRemote(next));
+}
+async function applyRemote(next){
+  const fresh=!(S&&MODE==="online"&&S.code===next.code);
+  if(!fresh&&(next.rev||0)<=(S.rev||0)) return;
+  MODE="online";
+  if(fresh){ closeModal(); ON.seenLog=next.logN||0; ON.seenMove=next.lastMove?.id; ON.seenReport=next.report?.id; }
+  const prevLog=ON.seenLog;
+  S=next;
+  if(!isMyTurn()) UI={mode:"idle",opts:null,dice:[],busy:false,msg:""};
+  if(!fresh&&S.lastMove&&S.lastMove.id!==ON.seenMove){ ON.seenMove=S.lastMove.id; render(); await animateMove(S.lastMove); }
+  render();
+  if(!fresh){
+    const n=(S.logN||0)-prevLog; for(let k=Math.min(n,S.log.length)-1;k>=0;k--) toast(S.log[k]);
+  }
+  ON.seenLog=S.logN||0;
+  if(S.phase==="over"){ if(!ON.shownOver) await showGameOver(); return; }
+  if(!fresh&&S.report&&S.report.id!==ON.seenReport){ ON.seenReport=S.report.id; if(!modalResolve) await modal({eyebrow:"มีนาคม",title:S.report.title,html:S.report.html}); }
+  if(S.turn===mySeat()&&ON.handledTurn!==S.turnId) startTurn();
+  else if(isBotTurn()&&ON.handledTurn!==S.turnId) botTurn();
+  else if(fresh) focusNode(cur().node,false);
+}
+async function drawRoom(d){
+  const seats=d.seats||[]; const host=d.host===ON.me; const me=seats.findIndex(s=>s.uid===ON.me);
+  const profs=seats.length?await ON.user.profiles(seats.map(s=>s.uid)):{};
+  if(!ON.meta||ON.meta.status!=="lobby") return;
+  const focusedId=document.activeElement&&document.activeElement.id;
+  const html=`<p>บอกรหัสนี้ให้เพื่อน แล้วให้เพื่อนเปิดลิงก์เดียวกัน กด "เล่นออนไลน์" และเลือกห้องนี้</p><div class="code" style="margin-top:6px">${esc(d.code)}</div>
+    <div class="field"><div class="label">ผู้เล่น ${seats.length}/4</div>${seats.map((s,k)=>`<div class="seat"><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><div>${k===me?`<input id="coName" value="${esc(s.co)}" maxlength="18" aria-label="ชื่อบริษัทของคุณ">`:`<b>${esc(s.co)}</b>`}<div class="who-n">${s.bot?"บอท":esc(profs[s.uid]?.name||"เพื่อน")}${k===me?" · คุณ":""}${s.uid===d.host?" · เจ้าของห้อง":""}</div></div></div>`).join("")}</div>
+    <div class="field"><div class="label">ความยาวเกม${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="y1"':"disabled"} aria-pressed="${d.years===1}">1 ปี</button><button ${host?'data-val="y2"':"disabled"} aria-pressed="${d.years===2}">2 ปี · มีรางใหม่</button></div></div>
+    <div class="field"><div class="label">ควิซ${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="qz1"':"disabled"} aria-pressed="${d.quiz!==false}">เปิด</button><button ${host?'data-val="qz0"':"disabled"} aria-pressed="${d.quiz===false}">ปิด</button></div></div>
+    ${d.quiz!==false?`<div class="field"><div class="label">เวลาตอบควิซ${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg">${[5,10,15,0].map(t=>`<button ${host?`data-val="qt${t}"`:"disabled"} aria-pressed="${(d.qTime??5)===t}">${t?t+" วิ":"ไม่จับเวลา"}</button>`).join("")}</div></div>`:""}
+    <p class="note">${host?(seats.length<2?"รอเพื่อนหรือเพิ่มบอทอย่างน้อย 1 คน":"พร้อมแล้วกดเริ่มเกม · บอทเล่นบนเครื่องของคุณ ถ้าคุณปิดเกม ตาของบอทจะหยุดรอ"):"รอเจ้าของห้องกดเริ่มเกม"}</p>`;
+  const btns=[{label:host?"ปิดห้อง":"ออกจากห้อง",value:"leave"}];
+  if(host&&seats.length<4) btns.push({label:"เพิ่มบอท",value:"addbot"});
+  if(host&&seats.some(s=>s.bot)) btns.push({label:"ลบบอท",value:"delbot"});
+  if(host) btns.push({label:"เริ่มเกม",value:"start",primary:true,disabled:seats.length<2});
+  lobbyDrawn=d;
+  const p=modal({eyebrow:"ห้องออนไลน์",title:"รอเพื่อนเข้าห้อง",html,buttons:btns});
+  const inp=$("coName");
+  if(inp){ if(focusedId==="coName"){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
+    inp.onchange=async()=>{ const v=inp.value.trim().slice(0,18); if(!v||v===seats[me].co) return; const ns=seats.map((s,k)=>k===me?{...s,co:v}:s); try{await ON.ref.update({seats:ns});}catch(e){} }; }
+  const v=await p;
+  if(v===undefined||lobbyDrawn!==d) return;
+  if(v==="addbot"&&host&&seats.length<4){ const ns=[...seats,{uid:"bot_"+Math.random().toString(36).slice(2,8),co:"รถไฟ"+PCOL[seats.length][0],bot:true}]; try{await ON.ref.update({seats:ns});}catch(e){} return; }
+  if(v==="delbot"&&host){ const k=seats.map(s=>!!s.bot).lastIndexOf(true); if(k>=0){ const ns=seats.filter((_,j)=>j!==k); try{await ON.ref.update({seats:ns});}catch(e){} } return; }
+  if(v==="qz1"||v==="qz0"){ try{await ON.ref.update({quiz:v==="qz1"});}catch(e){} return; }
+  if(v==="y1"||v==="y2"){ try{await ON.ref.update({years:+v.slice(1)});}catch(e){} return; }
+  if(v==="leave"){
+    const ref=ON.ref;
+    if(host){ try{await ref.delete();}catch(e){} }
+    else { try{await ref.update({seats:seats.filter(s=>s.uid!==ON.me)});}catch(e){} }
+    try{localStorage.removeItem("rotfai-room");}catch(e){}
+    leaveOnline(); return home();
+  }
+  if(v==="start"&&host) return hostStart(d);
+}
+async function hostStart(d){
+  const seats=d.seats;
+  MODE="online"; ON.meta={...d,status:"play"};
+  newGame(seats.map(s=>s.co),d.years); S.quiz=d.quiz!==false; S.qTime=d.qTime??5;
+  S.players.forEach((p,k)=>{p.uid=seats[k].uid; p.bot=!!seats[k].bot;}); S.code=d.code; S.hostUid=ON.me;
+  ON.seenLog=S.logN; ON.handledTurn=null;
+  closeModal(); render(); focusNode("BKK",false);
+  commit();
+  await info("จุดหมายแรก",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> คนแรกที่ไปถึงได้ ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
+  await startMonth(); commit();
+  advance();
+}
+
+// ================= MENU / EVENTS =================
+$("menuBtn").onclick=async()=>{
+  if(!S||S.phase==="setup") return;
+  if(modalResolve) return;
+  const online=MODE==="online";
+  const v=await modal({title:"เมนู",html:online&&ON.meta?`<p>ห้อง <b>${esc(ON.meta.code)}</b> · คุณคือ ${esc(S.players[mySeat()]?.name||"ผู้ชม")}</p>`:"",buttons:[{label:"กติกาย่อ",value:"rules"},{label:"ภาพการ์ด",value:"art"},{label:online?"ออกไปหน้าแรก":"เริ่มเกมใหม่",value:"new"},{label:"ปิด",value:null,primary:true}]});
+  if(v==="art") return manageArt();
+  if(v==="rules") await modal({title:"กติกาย่อ",html:`<ul class="rules">
+    <li>หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล</li>
+    <li>ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง</li>
+    <li>ถึงจุดหมายคนแรกได้เงินรางวัล แล้วผีไปติดคนที่อยู่ไกลที่สุด</li>
+    <li>ผีทำเรื่องวุ่นทุกต้นเทิร์น อยู่ครบ 3 เทิร์นกลายร่างยักษ์ เดินผ่านคนอื่นเพื่อส่งผีต่อ</li>
+    <li>หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2</li>
+    <li>เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา</li>
+    <li>จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ</li></ul>`});
+  if(v==="new"){
+    if(online){ leaveOnline(); return home(); }
+    const ok=await modal({title:"เริ่มเกมใหม่?",html:"เกมที่เล่นอยู่บนเครื่องนี้จะหายไป",buttons:[{label:"ยกเลิก",value:false},{label:"เริ่มใหม่",value:true,primary:true}]});
+    if(ok){ try{localStorage.removeItem("rotfai-save");}catch(e){} home(); }
+  }
+};
+svg.addEventListener("click",e=>{
+  const t=e.target.closest("[data-node]"); if(t) return onPick(t.dataset.node);
+  const s=e.target.closest("[data-stn]"); if(s&&S&&S.phase==="play") return showStation(s.dataset.stn);
+});
+svg.addEventListener("keydown",e=>{const t=e.target.closest("[data-node]");if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onPick(t.dataset.node);}});
+$("zin").onclick=()=>{zoom=Math.min(1.8,zoom+0.25);sizeBoard();if(S)focusNode(cur().node,false);};
+$("zout").onclick=()=>{zoom=Math.max(0.6,zoom-0.25);sizeBoard();if(S)focusNode(cur().node,false);};
+addEventListener("resize",()=>{sizeBoard();});
+try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{});}catch(e){}
+
+// ================= BOOT =================
+window.claude?.hot?.snapshot?.(()=>({save:MODE==="local"?SAFE:null,room:MODE==="online"&&ON.meta?ON.meta.code:null}));
+function start(data){
+  buildBoard(); sizeBoard(); initArt();
+  if(data&&data.room) return onlineLobby(data.room);
+  if(data&&data.save&&data.save.phase==="play"){ MODE="local"; S=data.save; render(); return beginTurn(); }
+  home();
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+
+<script src="p2p.js"></script>
+</body>
+</html>
