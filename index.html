@@ -39,7 +39,7 @@ button:focus-visible,input:focus-visible,[data-node]:focus-visible{outline:3px s
 /* top bar */
 .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .brand{font-family:var(--font-d);font-weight:600;font-size:18px;color:var(--rail);margin-right:auto;white-space:nowrap}
-@media (max-width:520px){.brand{font-size:0;margin-right:auto}.brand::before{content:"";}.top{flex-wrap:nowrap}.chip{padding:5px 10px;font-size:13px}}
+@media (max-width:520px){.brand{font-size:0;margin-right:auto}.brand::before{content:"";}.top{flex-wrap:nowrap;gap:6px}.chip{padding:5px 9px;font-size:13px}.chip.dest{min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;display:block}.iconbtn{flex:none;width:36px;height:36px}#netChip{flex:none;padding:5px 8px}#netChip .t{display:none}.chip.dest .lbl,.chip.dest .ml{display:none}.chip.dest::before{content:"⚑ ";color:#C8361E}.chip .yl{display:none}.top>.chip{padding:5px 8px}.iconbtn{width:34px;height:34px}.top{gap:5px}}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13.5px;white-space:nowrap}
 .chip b{font-family:var(--font-d);font-weight:500}
 .chip.dest{border-color:#C8361E}
@@ -118,6 +118,7 @@ svg.newrail .barrier{display:none}
 .log div:first-child{color:var(--ink)}
 
 /* modal */
+[hidden]{display:none!important}
 .modal-wrap{position:fixed;inset:0;background:rgba(10,18,22,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:12px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 @media (min-width:600px){.modal-wrap{align-items:center}}
 .modal{background:var(--surface);color:var(--ink);border-radius:20px;box-shadow:var(--shadow);width:100%;max-width:460px;max-height:86%;overflow:auto;padding:18px 18px 16px;animation:up .2s ease-out}
@@ -263,6 +264,7 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
     <div class="brand">รถไฟเศรษฐีไทย</div>
     <span class="chip" id="chipMonth"><b>เม.ย.</b> ปีที่ 1</span>
     <span class="chip dest" id="chipDest">จุดหมาย <b>—</b></span>
+    <button class="iconbtn" id="bgmBtn" aria-label="เพลงประกอบ" aria-pressed="true"></button>
     <button class="iconbtn" id="menuBtn" aria-label="เมนู"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
   </header>
   <main class="stage">
@@ -517,8 +519,8 @@ async function animateMove(lm){
 function dieHTML(v){const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[v]||[];return `<div class="die" aria-label="ลูกเต๋า ${v}">${[...Array(9)].map((_,i)=>`<i class="${on.includes(i)?"on":""}"></i>`).join("")}</div>`;}
 function tokSVG(c,s=34){return `<svg class="tokbig" width="${s}" height="${s}" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="${c}"/><rect x="8" y="11" width="18" height="10" rx="3" fill="#fff"/><rect x="10.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="15.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="20.5" y="13" width="3.5" height="3.5" rx="1" fill="${c}"/><circle cx="12" cy="23.5" r="1.8" fill="#fff"/><circle cx="22" cy="23.5" r="1.8" fill="#fff"/></svg>`;}
 function renderTop(){
-  $("chipMonth").innerHTML=`<b>${MONTHS[S.month]}</b> ปีที่ ${S.year}/${S.years}`;
-  $("chipDest").innerHTML=S.dest?`จุดหมาย <b>${NAME[S.dest]}</b> ${REWARD[S.dest]} ล้าน`:"จุดหมาย —";
+  $("chipMonth").innerHTML=`<b>${MONTHS[S.month]}</b> ปี<span class="yl">ที่</span> ${S.year}/${S.years}`;
+  $("chipDest").innerHTML=S.dest?`<span class="lbl">จุดหมาย </span><b>${NAME[S.dest]}</b> ${REWARD[S.dest]}<span class="ml"> ล้าน</span>`:"จุดหมาย —";
 }
 function renderPanel(){
   const p=cur(), i=S.turn, me=mySeat();
@@ -1250,7 +1252,8 @@ async function home(){
     <button class="mode-btn" data-val="local"><b>เล่นเครื่องเดียว</b><span>2–4 คน ส่งมือถือหรือ iPad ต่อกัน</span></button>
     <button class="mode-btn" data-val="art"><b>ภาพการ์ด</b><span>อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ</span></button>
   </div>`;
-  const v=await modal({eyebrow:"เหนือ · กลาง · ตะวันออก · ตะวันตก · v0.3",title:"รถไฟเศรษฐีไทย",html,buttons:[]});
+  const v=await modal({eyebrow:"เหนือ · กลาง · ตะวันออก · ตะวันตก · v0.3",title:"รถไฟเศรษฐีไทย",html,buttons:[{label:BGM.on?"♪ ปิดเพลง":"♪ เปิดเพลง",value:"bgm"}]});
+  if(v==="bgm"){ bgmToggle(); return home(); }
   if(v==="resume"){ MODE="local"; S=saved; render(); return beginTurn(); }
   if(v==="local") return setupLocal();
   if(v==="online") return onlineLobby();
@@ -1489,6 +1492,46 @@ addEventListener("resize",()=>{sizeBoard();});
 let wakeLk=null;
 function keepAwake(){ try{ if(!navigator.wakeLock||document.hidden||(wakeLk&&!wakeLk.released)) return; navigator.wakeLock.request("screen").then(l=>{wakeLk=l;}).catch(()=>{}); }catch(e){} }
 keepAwake(); document.addEventListener("visibilitychange",keepAwake); addEventListener("pointerdown",keepAwake,{passive:true});
+
+// ================= BGM =================
+// เพลงวนแบบไม่มีช่องว่างด้วย Web Audio เริ่มเล่นหลังแตะจอครั้งแรก (เบราว์เซอร์มือถือห้ามเล่นเสียงเอง)
+const BGM={ctx:null,gain:null,buf:null,src:null,loading:null,on:true,vol:0.32};
+try{ BGM.on=localStorage.getItem("rotfai-bgm")!=="off"; }catch(e){}
+const ICON_ON=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13"/><circle cx="5.8" cy="15" r="2.2"/><circle cx="13.8" cy="13" r="2.2"/></svg>`;
+const ICON_OFF=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13" opacity=".45"/><circle cx="5.8" cy="15" r="2.2" opacity=".45"/><circle cx="13.8" cy="13" r="2.2" opacity=".45"/><path d="M3 3l14 14"/></svg>`;
+function bgmIcon(){ const b=$("bgmBtn"); if(!b) return; b.innerHTML=BGM.on?ICON_ON:ICON_OFF; b.setAttribute("aria-pressed",String(BGM.on)); b.setAttribute("aria-label",BGM.on?"ปิดเพลง":"เปิดเพลง"); }
+function bgmLoad(){
+  if(BGM.loading) return BGM.loading;
+  BGM.loading=fetch("bgm.mp3").then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
+    .then(a=>new Promise((ok,no)=>BGM.ctx.decodeAudioData(a,ok,no))).then(b=>{BGM.buf=b;return b;})
+    .catch(()=>{ BGM.loading=null; return null; });
+  return BGM.loading;
+}
+async function bgmStart(){
+  if(!BGM.on||document.hidden) return;
+  try{
+    if(!BGM.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; BGM.ctx=new AC(); BGM.gain=BGM.ctx.createGain(); BGM.gain.gain.value=0; BGM.gain.connect(BGM.ctx.destination); }
+    if(BGM.ctx.state!=="running") await BGM.ctx.resume();
+    if(!BGM.src){
+      const buf=await bgmLoad(); if(!buf||BGM.src||!BGM.on) return;
+      const s=BGM.ctx.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(BGM.gain); s.start(); BGM.src=s;
+    }
+    const t=BGM.ctx.currentTime; BGM.gain.gain.cancelScheduledValues(t); BGM.gain.gain.setValueAtTime(BGM.gain.gain.value,t); BGM.gain.gain.linearRampToValueAtTime(BGM.vol,t+1.2);
+  }catch(e){}
+}
+function bgmStop(){
+  if(!BGM.ctx||!BGM.src) return;
+  const t=BGM.ctx.currentTime; BGM.gain.gain.cancelScheduledValues(t); BGM.gain.gain.setValueAtTime(BGM.gain.gain.value,t); BGM.gain.gain.linearRampToValueAtTime(0,t+0.4);
+  const s=BGM.src; BGM.src=null; setTimeout(()=>{ try{s.stop();}catch(e){} },450);
+}
+function bgmToggle(){
+  BGM.on=!BGM.on; try{localStorage.setItem("rotfai-bgm",BGM.on?"on":"off");}catch(e){}
+  bgmIcon(); if(BGM.on) bgmStart(); else bgmStop();
+}
+$("bgmBtn").onclick=e=>{ e.stopPropagation(); bgmToggle(); };
+addEventListener("pointerdown",e=>{ if(BGM.on&&!BGM.src&&!(e.target.closest&&e.target.closest("#bgmBtn"))) bgmStart(); },{capture:true,passive:true});
+document.addEventListener("visibilitychange",()=>{ if(!BGM.ctx) return; if(document.hidden) BGM.ctx.suspend().catch(()=>{}); else if(BGM.on) BGM.ctx.resume().catch(()=>{}); });
+bgmIcon();
 
 // ================= BOOT =================
 window.claude?.hot?.snapshot?.(()=>({save:MODE==="local"?SAFE:null,room:MODE==="online"&&ON.meta?ON.meta.code:null}));

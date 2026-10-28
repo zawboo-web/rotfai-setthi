@@ -21,7 +21,7 @@ function setNet(text,level){
   if(!P2P.inRoom){ if(el) el.remove(); return; }
   if(!el){ el=document.createElement("span"); el.id="netChip"; el.className="chip"; el.setAttribute("aria-live","polite"); const m=document.getElementById("menuBtn"); m.parentNode.insertBefore(el,m); }
   const col=level==="bad"?"var(--minus)":level==="warn"?"var(--accent)":"#2E9A4E";
-  el.innerHTML=`<span style="width:9px;height:9px;border-radius:50%;background:${col};display:inline-block"></span>${text}`;
+  el.innerHTML=`<span style="width:9px;height:9px;border-radius:50%;background:${col};display:inline-block;flex:none"></span><span class="t">${text}</span>`; el.title=text;
 }
 function warnOnce(msg){ const now=Date.now(); if(now-lastNetToast>8000){ lastNetToast=now; toast(msg); } }
 
