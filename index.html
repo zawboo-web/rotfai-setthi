@@ -1406,7 +1406,10 @@ svg.addEventListener("keydown",e=>{const t=e.target.closest("[data-node]");if(t&
 $("zin").onclick=()=>{zoom=Math.min(1.8,zoom+0.25);sizeBoard();if(S)focusNode(cur().node,false);};
 $("zout").onclick=()=>{zoom=Math.max(0.6,zoom-0.25);sizeBoard();if(S)focusNode(cur().node,false);};
 addEventListener("resize",()=>{sizeBoard();});
-try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{});}catch(e){}
+// กันจอดับระหว่างเล่น (จอดับ = มือถือตัดการเชื่อมต่อ) ขอใหม่ทุกครั้งที่กลับมาที่หน้าเกมหรือแตะจอ
+let wakeLk=null;
+function keepAwake(){ try{ if(!navigator.wakeLock||document.hidden||(wakeLk&&!wakeLk.released)) return; navigator.wakeLock.request("screen").then(l=>{wakeLk=l;}).catch(()=>{}); }catch(e){} }
+keepAwake(); document.addEventListener("visibilitychange",keepAwake); addEventListener("pointerdown",keepAwake,{passive:true});
 
 // ================= BOOT =================
 window.claude?.hot?.snapshot?.(()=>({save:MODE==="local"?SAFE:null,room:MODE==="online"&&ON.meta?ON.meta.code:null}));
