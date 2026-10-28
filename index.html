@@ -16,8 +16,8 @@
   --rail:#1F4E9C; --accent:#F2B705; --accent-ink:#2B2100; --bus:#9AA29A; --new:#E2711D;
   --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
   --shadow:0 10px 30px rgba(20,35,40,.18);
-  --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai',sans-serif;
-  --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai',sans-serif;
+  --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Maru Gothic ProN','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
+  --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
@@ -119,6 +119,7 @@ svg.newrail .barrier{display:none}
 
 /* modal */
 [hidden]{display:none!important}
+.money b,.money small{white-space:nowrap}
 .modal-wrap{position:fixed;inset:0;background:rgba(10,18,22,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:12px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 @media (min-width:600px){.modal-wrap{align-items:center}}
 .modal{background:var(--surface);color:var(--ink);border-radius:20px;box-shadow:var(--shadow);width:100%;max-width:460px;max-height:86%;overflow:auto;padding:18px 18px 16px;animation:up .2s ease-out}
@@ -247,7 +248,7 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
 .room .rm{font-size:12.5px;color:var(--muted)}
 .seat{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:center;padding:6px 0}
 .seat>div{min-width:0}
-.seat input{min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);padding:0 10px;font:inherit;width:100%;min-width:0}
+.seat input{min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);padding:0 10px;font:inherit;width:100%;min-width:0;box-sizing:border-box}
 .seat .who-n{font-size:12.5px;color:var(--muted)}
 .you{font-size:11.5px;background:var(--rail);color:#fff;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px}
 .note{font-size:13px;color:var(--muted);margin-top:10px}
@@ -280,6 +281,1593 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
 
 <script>
 'use strict';
+// ================= I18N =================
+// ภาษาของเครื่องนี้ (แต่ละคนในห้องออนไลน์เลือกภาษาของตัวเองได้)
+let LANG="th"; try{ const l=localStorage.getItem("rotfai-lang"); if(l==="en"||l==="ja") LANG=l; }catch(e){}
+const LANGS=[["th","ไทย"],["en","English"],["ja","日本語"]];
+const LI=()=>LANG==="en"?0:1;
+// ข้อความแปล: ภาษาไทยคือคีย์ → [อังกฤษ, ญี่ปุ่น]  ตัวแปรเขียนในวงเล็บปีกกา เช่น {p}
+const TR={};
+function money(n){ n=Number(n); const a=Math.abs(n).toLocaleString(LANG==="ja"?"ja-JP":LANG==="en"?"en-US":"th-TH"), s=n<0?"−":"";
+  return LANG==="en"?`${s}฿${a}M`:LANG==="ja"?`${s}${a}百万`:`${s}${a} ล้าน`; }
+function stN(id){ if(!NAME[id]) return id; return LANG==="th"?NAME[id]:STN_TR[id][LI()]; }
+function propN(p){ if(typeof p==="number") p=PROPS[p]; return LANG==="th"?p.n:PROP_TR[p.id][LI()]; }
+function itemF(k,f){ const v=ITEMS[k][f]; return LANG==="th"?v:(ITEM_TR[k][f]||[v,v])[LI()]; }
+const itemN=k=>itemF(k,"n");
+function typeN(t){ return LANG==="th"?t:({"อาหาร":["Food","グルメ"],"เกษตร":["Farm","農業"],"ท่องเที่ยว":["Tourism","観光"],"อุตสาหกรรม":["Industry","工業"]}[t]||[t,t])[LI()]; }
+function monthN(m){ return LANG==="th"?MONTHS[m]:(LANG==="en"?["Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar"]:["4月","5月","6月","7月","8月","9月","10月","11月","12月","1月","2月","3月"])[m]; }
+function colorN(k){ return LANG==="th"?PCOL[k][0]:[["Red","赤"],["Blue","青"],["Green","緑"],["Yellow","黄"]][k][LI()]; }
+function defaultCo(k){ return LANG==="th"?"รถไฟ"+PCOL[k][0]:LANG==="en"?colorN(k)+" Rail":colorN(k)+"鉄道"; }
+// แทนค่าตัวแปร: st=สถานี, pr=กิจการ, it=ไอเทม, m=เงิน, mo=เดือน, prs=รายการกิจการ, sts=รายการสถานี
+function fillVars(s,a){ return s.replace(/\{(\w+)\}/g,(_,k)=>{ const v=a?a[k]:undefined; if(v===undefined) return "";
+  const b=k.replace(/\d+$/,"");
+  if(b==="st") return stN(v); if(b==="pr") return propN(v); if(b==="it") return itemN(v);
+  if(b==="m") return money(v); if(b==="mo") return monthN(v);
+  if(b==="prs") return v.map(propN).join(", "); if(b==="sts") return v.map(stN).join(", ");
+  if(b==="t") return T(v); return v; }); }
+const TH_AT={"@off":"ปิด","@lobbyhint":"บอกรหัสนี้ให้เพื่อน แล้วให้เพื่อนเปิดลิงก์เดียวกัน กด \"เล่นออนไลน์\" และเลือกห้องนี้"};
+function T(s,a){ if(LANG!=="th"){ const e=TR[s]; if(e) s=e[LI()]; } else if(s[0]==="@") s=TH_AT[s]||s; return fillVars(s,a); }
+const logText=e=>typeof e==="string"?e:T(e[0],e[1]);
+function setLang(l){
+  LANG=l; try{localStorage.setItem("rotfai-lang",l);}catch(e){}
+  applyStaticLang();
+  try{ buildBoard(); sizeBoard(); if(S) render(); }catch(e){}
+}
+function applyStaticLang(){
+  document.documentElement.lang=LANG; document.title=T("รถไฟเศรษฐีไทย");
+  const br=document.querySelector(".brand"); if(br) br.textContent=T("รถไฟเศรษฐีไทย");
+  $("menuBtn").setAttribute("aria-label",T("เมนู")); $("zin").setAttribute("aria-label",T("ซูมเข้า")); $("zout").setAttribute("aria-label",T("ซูมออก"));
+  try{ bgmIcon(); }catch(e){}
+}
+const langSeg=()=>`<div class="seg langseg" role="group" aria-label="Language">${LANGS.map(([k,n])=>`<button data-val="lang_${k}" aria-pressed="${LANG===k}">${n}</button>`).join("")}</div>`;
+
+const STN_TR={BKK:["Bangkok","バンコク"],AYT:["Ayutthaya","アユタヤ"],LOP:["Lopburi","ロッブリー"],NSW:["Nakhon Sawan","ナコーンサワン"],PSL:["Phitsanulok","ピッサヌローク"],SKT:["Sukhothai","スコータイ"],UTD:["Uttaradit","ウッタラディット"],DNC:["Den Chai","デンチャイ"],PHR:["Phrae","プレー"],NAN:["Nan","ナーン"],LPG:["Lampang","ランパーン"],LPN:["Lamphun","ランプーン"],CMI:["Chiang Mai","チェンマイ"],PAI:["Pai","パーイ"],PYO:["Phayao","パヤオ"],CRI:["Chiang Rai","チェンライ"],
+ SRB:["Saraburi","サラブリー"],CCO:["Chachoengsao","チャチューンサオ"],CBI:["Chonburi","チョンブリー"],PTY:["Pattaya","パタヤ"],RYG:["Rayong","ラヨーン"],CTI:["Chanthaburi","チャンタブリー"],TRT:["Trat","トラート"],NPT:["Nakhon Pathom","ナコーンパトム"],KRI:["Kanchanaburi","カンチャナブリー"],RBR:["Ratchaburi","ラーチャブリー"],PBI:["Phetchaburi","ペッチャブリー"],HHN:["Hua Hin","ホアヒン"]};
+const PROP_TR=[["Chicken Rice Stall","カオマンガイ屋"],["Weekend Market Stall","週末マーケットの屋台"],["Cargo Port","貨物港"],["Roti Sai Mai Shop","ロティサイマイ屋"],["Grilled River Prawns","川エビ焼き屋"],["Island City Boat Tour","島めぐりボートツアー"],["Industrial Estate","工業団地"],["Sunflower Fields","ひまわり畑"],["Monkey Town Souvenirs","サルの町みやげ店"],["Rice Mill","精米所"],["Pak Nam Pho Mochi Shop","パークナームポーの餅屋"],["Chao Phraya River Port","チャオプラヤー川の港"],["Dangling-Legs Noodle Shop","足ぶらクイッティアオ屋"],["Dried Banana Factory","干しバナナ工場"],["Sukhothai Noodle Shop","スコータイ麺の店"],["Old City Bike Tour","古都サイクリングツアー"],["Lap Lae Durian Orchard","ラップレーのドリアン園"],["Langsat Orchard","ランサット園"],["Indigo Cloth Factory","藍染め布工場"],["Khanom Jeen Nam Ngiao","カノムチン・ナムニャオ屋"],["Old Town Homestay","古い町のホームステイ"],["Mountain Coffee Shop","山のコーヒー店"],["Golden Orange Orchard","金色みかん園"],["Rooster Bowl Factory","ニワトリ柄どんぶり工場"],["Horse Carriage Tours","観光馬車"],["Longan Orchard","ロンガン園"],["Brocade Silk Weaving","錦織シルク工房"],["Khao Soi Shop","カオソーイ屋"],["Sai Ua Sausage Shop","サイウア(ソーセージ)屋"],["Bo Sang Umbrella Workshop","ボーサーンの傘工房"],["Mae Rim Resort","メーリムのリゾート"],["Hill-View Café","山が見えるカフェ"],["Pai Riverside Homestay","パーイ川のホームステイ"],["Kwan Phayao Fish Restaurant","パヤオ湖の魚料理店"],["Lake Cruise","湖の遊覧船"],["Mountain Tea Plantation","山の茶畑"],["Nang Lae Pineapple Farm","ナーンレーのパイナップル畑"],["Golden Triangle Resort","ゴールデントライアングルのリゾート"],
+ ["Muak Lek Dairy Farm","ムアックレックの牧場"],["Fresh-Milk Steakhouse","牧場ステーキ店"],["Cement Plant","セメント工場"],["Paet Rio Chicken Farm","ペートリウ養鶏場"],["Bang Khla Floating Market","バーンクラー水上マーケット"],["Car Assembly Plant","自動車組立工場"],["Nong Mon Bamboo Sticky Rice","ノーンモンのカオラーム屋"],["Ang Sila Oyster Farm","アーンシラーの牡蠣養殖場"],["Laem Chabang Deep-Sea Port","レムチャバン深海港"],["Beachfront Seafood","ビーチのシーフード店"],["Koh Larn Ferry","ラン島行きフェリー"],["Pattaya Beach Hotel","パタヤのビーチホテル"],["Rayong Fish Sauce Shop","ラヨーンの魚醤店"],["Rayong Durian Orchard","ラヨーンのドリアン園"],["Koh Samet Speedboat","サメット島行きボート"],["Map Ta Phut Petrochemical Estate","マプタプット石油化学団地"],["Crab Fried Noodles","カニ炒め麺の店"],["Mangosteen Orchard","マンゴスチン園"],["Gem Cutting Shop","宝石研磨店"],["Trat Golden Pineapple Farm","トラートの黄金パイナップル畑"],["Koh Chang Resort","チャーン島のリゾート"],["Red Pork Rice Shop","カオムーデーン屋"],["Nakhon Chai Si Pomelo Orchard","ナコーンチャイシーの文旦園"],["Don Wai Floating Market","ドンワイ水上マーケット"],["River Kwai Restaurant","クウェー川のレストラン"],["River Kwai Raft House","クウェー川の水上コテージ"],["Bo Phloi Sapphire Mine","ボープローイの宝石鉱山"],["Dragon Jar Pottery","竜の水がめ工房"],["Damnoen Saduak Floating Market","ダムヌンサドゥアク水上マーケット"],["Khanom Mo Kaeng Shop","カノムモーケーン屋"],["Rose Apple Orchard","ローズアップル園"],["Ban Laem Salt Fields","バーンレムの塩田"],["Hua Hin Seafood","ホアヒンのシーフード店"],["Pranburi Pineapple Farm","プラーンブリーのパイナップル畑"],["Hua Hin Seaside Resort","ホアヒンの海辺リゾート"]];
+const ITEM_TR={
+  exp:{n:["Express Train","急行列車"],when:["Before rolling","サイコロの前"],eff:["Roll 2 dice","サイコロ2個で進む"]},
+  sexp:{n:["Special Express","特急列車"],when:["Before rolling","サイコロの前"],eff:["Roll 3 dice","サイコロ3個で進む"]},
+  home:{n:["Ticket Home","帰宅きっぷ"],when:["Instead of rolling","サイコロの代わり"],eff:["Go straight to Bangkok","すぐバンコクへ移動"]},
+  drive:{n:["Drive Yourself","自分で運転"],when:["Instead of rolling","サイコロの代わり"],eff:["Choose to move 1–6 spaces","1〜6マス好きなだけ進む"]},
+  mob:{n:["Road Protest","道路デモ"],when:["Before rolling","サイコロの前"],eff:["One player can't move next turn","1人を次のターン足止め"]},
+  amulet:{n:["Lucky Amulet","お守り"],when:["Keep","持っておく"],eff:["Cancels one ghost result","おばけの効果を1回打ち消す"]},
+  pass:{n:["Ghost Pass","おばけ押しつけ券"],when:["Before rolling","サイコロの前"],eff:["Send your ghost to another player","取りついたおばけを他の人へ"]},
+  lotto:{n:["Lottery","宝くじ"],when:["Before rolling","サイコロの前"],eff:["Roll 6: win ฿30M · 1–5: lose ฿1M","6で30百万当たり・1〜5は1百万の損"]},
+  viral:{n:["Viral Review","バズった口コミ"],when:["Before rolling","サイコロの前"],eff:["Earn one business's yearly profit now","物件1つの年間利益をすぐ受け取る"]},
+  insure:{n:["Insurance","保険"],when:["Keep","持っておく"],eff:["Skip one red-space or event payment","赤マスかイベントの支払いを1回免除"]},
+  plane:{n:["Charter Plane","チャーター機"],when:["Instead of rolling · Year 2","サイコロの代わり・2年目"],eff:["Fly straight to the destination","目的地へ直行"]}
+};
+
+// ควิซฉบับแปล เรียงตรงกับ QUIZ: [อังกฤษ: คำถาม, คำตอบ, [ผิด 3], เกร็ด] , [ญี่ปุ่น: ...]
+const QUIZ_TR=[
+[["What is the official name of the old station everyone calls \"Hua Lamphong\"?","Bangkok Station",["Bang Sue Station","Thon Buri Station","Sam Sen Station"],"Hua Lamphong opened in 1916 and was Thailand's main station for over 100 years"],["「フアランポーン」と呼ばれる古い駅の正式名称は?","クルンテープ駅",["バーンスー駅","トンブリー駅","サームセーン駅"],"フアランポーンは1916年開業、100年以上タイの中心駅だった"]],
+[["What is the name of Bangkok's new central station for long-distance trains?","Krung Thep Aphiwat Central Terminal",["Makkasan Station","Hua Mak Station","Don Mueang Station"],"It's in the Bang Sue area and replaced Hua Lamphong as the long-distance hub"],["バンコクの新しい長距離列車の中央駅の名前は?","クルンテープ・アピワット中央駅",["マッカサン駅","フアマーク駅","ドンムアン駅"],"バーンスー地区にあり、フアランポーンに代わる長距離列車の拠点"]],
+[["Which main river flows through Bangkok?","Chao Phraya",["Tha Chin","Mae Klong","Pa Sak"],"The Chao Phraya flows into the Gulf of Thailand at Samut Prakan"],["バンコクを流れる大きな川は?","チャオプラヤー川",["ターチーン川","メークローン川","パーサック川"],"チャオプラヤー川はサムットプラーカーンでタイ湾に注ぐ"]],
+[["What is Bangkok's biggest weekend market called?","Chatuchak Weekend Market",["Amphawa Floating Market","Maeklong Railway Market","Ton Lamyai Market"],"Chatuchak has thousands of shops"],["バンコク最大の週末市場は?","チャトゥチャック・ウィークエンドマーケット",["アムパワー水上マーケット","メークロン線路市場","トンラムヤイ市場"],"チャトゥチャックには何千もの店がある"]],
+[["About how long was Ayutthaya the capital of Siam?","417 years",["100 years","250 years","600 years"],"Ayutthaya was the capital from 1350 to 1767"],["アユタヤはおよそ何年間タイの都だった?","417年",["100年","250年","600年"],"アユタヤは1350年から1767年まで都だった"]],
+[["Ayutthaya's island city is ringed by 3 rivers. Which is NOT one of them?","Tha Chin River",["Chao Phraya River","Pa Sak River","Lopburi River"],"The Chao Phraya, Pa Sak and Lopburi rivers surround the city, making it an island"],["アユタヤの島を囲む3つの川。違うのはどれ?","ターチーン川",["チャオプラヤー川","パーサック川","ロッブリー川"],"チャオプラヤー・パーサック・ロッブリーの3川に囲まれ島になっている"]],
+[["What famous Ayutthaya sweet wraps fluffy sugar threads in thin crepes?","Roti sai mai",["Khanom pia","Thong muan","Khanom chan"],"Thin crepes wrapped around colourful candy floss — a favourite souvenir"],["薄い生地でふわふわの糸あめを包むアユタヤ名物は?","ロティサイマイ",["カノムピア","トンムアン","カノムチャン"],"カラフルな糸あめを薄い生地で包む人気のおみやげ"]],
+[["What type of World Heritage Site is the Historic City of Ayutthaya?","Cultural heritage",["Natural heritage","Memory of the World","Global Geopark"],"It was listed as a cultural World Heritage Site in 1991"],["古都アユタヤはどの種類の世界遺産?","文化遺産",["自然遺産","世界の記憶","世界ジオパーク"],"1991年に世界文化遺産に登録された"]],
+[["Which animal gets a yearly banquet feast in Lopburi?","Monkeys",["Elephants","Peacocks","Fish"],"The Monkey Buffet Festival is held at Phra Prang Sam Yot"],["ロッブリーで毎年ごちそうの宴が開かれる動物は?","サル",["ゾウ","クジャク","魚"],"サルの宴はプラ・プラーン・サームヨートで開かれる"]],
+[["What is Lopburi's three-towered Khmer-style monument called?","Phra Prang Sam Yot",["Phimai Historical Park","Phanom Rung","Three Pagodas"],"It's the symbol of Lopburi"],["ロッブリー中心にある3つの塔のクメール遺跡は?","プラ・プラーン・サームヨート",["ピマーイ遺跡","パノムルン遺跡","スリーパゴダ"],"ロッブリーのシンボル"]],
+[["Lopburi is famous for fields of which flower in the cool season?","Sunflowers",["Tulips","Mexican sunflowers","Lavender"],"The sunflower fields bloom from about November to January"],["ロッブリーで涼しい季節に有名な花畑は?","ひまわり",["チューリップ","ブアトーン","ラベンダー"],"ひまわり畑は11月〜1月ごろ満開になる"]],
+[["King Narai made Lopburi a second capital during which era?","Ayutthaya",["Sukhothai","Thonburi","Rattanakosin"],"He often stayed at the Phra Narai Ratchaniwet palace"],["ナーラーイ王がロッブリーを第二の都にしたのはどの時代?","アユタヤ時代",["スコータイ時代","トンブリー時代","ラタナコーシン時代"],"王はナーラーイ宮殿によく滞在した"]],
+[["The Ping and Nan rivers meet at Pak Nam Pho to form which river?","Chao Phraya",["Tha Chin","Yom","Pa Sak"],"Pak Nam Pho is known as the source of the Chao Phraya"],["ピン川とナーン川がパークナームポーで合流してできる川は?","チャオプラヤー川",["ターチーン川","ヨム川","パーサック川"],"パークナームポーはチャオプラヤー川の始まりとして知られる"]],
+[["What is Nakhon Sawan's most famous Chinese New Year tradition?","The Pak Nam Pho deity procession",["Rocket Festival","Phi Ta Khon","Candle Procession"],"Golden dragons and lion dances parade through the whole city"],["ナコーンサワンの春節で一番有名な行事は?","パークナームポーの神様パレード",["ロケット祭り","ピーターコーン","ろうそく祭り"],"金の龍や獅子舞が街じゅうを練り歩く"]],
+[["Thailand's largest freshwater swamp is in Nakhon Sawan. What is it?","Bueng Boraphet",["Nong Han","Kwan Phayao","Bueng Si Fai"],"Bueng Boraphet is home to many kinds of water birds"],["ナコーンサワンにあるタイ最大の淡水湖沼は?","ブンボーラペット",["ノーンハーン","パヤオ湖","ブンシーファイ"],"多くの水鳥がすむ"]],
+[["What is Nakhon Sawan's popular nickname?","Pak Nam Pho",["Pak Kret","Pak Chong","Pak Phanang"],"It's named after the point where the rivers meet"],["ナコーンサワンの別名は?","パークナームポー",["パークレット","パークチョン","パークパナン"],"川が合流する地点にちなんだ名前"]],
+[["Which river runs through the middle of Phitsanulok?","Nan",["Ping","Wang","Yom"],"Floating raft houses line the Nan River"],["ピッサヌロークの中心を流れる川は?","ナーン川",["ピン川","ワン川","ヨム川"],"ナーン川沿いには水上家屋が並ぶ"]],
+[["Which Buddha image in Phitsanulok is called one of the most beautiful in Thailand?","Phra Phuttha Chinnarat",["Emerald Buddha","Luang Pho Sothon","Phra Si Sakyamuni"],"It's enshrined at Wat Phra Si Rattana Mahathat (Wat Yai)"],["タイで最も美しい仏像の一つとされるピッサヌロークの仏像は?","プラ・プッタチンナラート",["エメラルド仏","ルアンポー・ソートーン","プラ・シーサーカヤムニー"],"ワット・プラシーラタナマハータート(ワット・ヤイ)に安置"]],
+[["Which Phitsanulok noodle soup do you eat with your legs dangling?","Dangling-legs noodles",["Boat noodles","Tom yum noodles","Fish-ball noodles"],"You sit on a high platform by the river and let your legs hang"],["足をぶらぶらさせて食べるピッサヌローク名物の麺は?","足ぶらクイッティアオ",["ボートヌードル","トムヤム麺","魚団子麺"],"川辺の高い台に座って足を垂らして食べる"]],
+[["Which king was born in Phitsanulok?","King Naresuan the Great",["King Taksin the Great","King Ramkhamhaeng the Great","King Narai the Great"],"The city has the Chan Palace where he lived as a boy"],["ピッサヌロークで生まれた王は?","ナレースワン大王",["タークシン大王","ラームカムヘーン大王","ナーラーイ大王"],"幼少期を過ごしたチャン宮殿がある"]],
+[["What does the name \"Sukhothai\" mean?","Dawn of happiness",["City of lotuses","City of the sun","Golden land"],"Sukho means happiness and uthai means dawn"],["「スコータイ」の意味は?","幸福の夜明け",["ハスの町","太陽の都","黄金の地"],"スコーは幸福、ウタイは夜明けという意味"]],
+[["Who created the Thai script in the Sukhothai era?","King Ramkhamhaeng the Great",["King Si Inthrathit","King Li Thai","King Ban Mueang"],"His script is the ancestor of today's Thai alphabet"],["スコータイ時代にタイ文字を作ったのは?","ラームカムヘーン大王",["シーインタラーティット王","リタイ王","バーンムアン王"],"今のタイ文字のもとになった"]],
+[["What is Sukhothai's Loy Krathong festival specially called?","Phao Thian Len Fai (candles and fireworks)",["Yi Peng","Lai Ruea Fai","Chak Phra"],"It's held every year at Sukhothai Historical Park"],["スコータイのロイクラトン祭りの特別な名前は?","パオティアン・レンファイ(ろうそくと花火)",["イーペン","ライルアファイ","チャックプラ"],"毎年スコータイ歴史公園で開かれる"]],
+[["Lotus-bud shaped stupas are the trademark of which art period?","Sukhothai",["Ayutthaya","Lanna","Dvaravati"],"Many can be seen in Sukhothai Historical Park"],["ハスのつぼみ形の仏塔はどの時代の様式?","スコータイ",["アユタヤ","ラーンナー","ドヴァーラヴァティー"],"スコータイ歴史公園に多く見られる"]],
+[["What is Uttaradit's famous durian variety?","Long Lap Lae",["Monthong","Kan Yao","Chanee"],"It's grown on steep mountains in Lap Lae district"],["ウッタラディット名物のドリアンの品種は?","ロンラップレー",["モントーン","ガーンヤーオ","チャニー"],"ラップレー郡の急な山で育てられる"]],
+[["Who is Uttaradit's hero who fought until his sword broke?","Phraya Phichai Dap Hak",["Phraya Phahon","Khun Rong Palat Chu","Phanthai Norasing"],"His statue stands in front of the provincial hall"],["刀が折れるまで戦ったウッタラディットの英雄は?","プラヤー・ピチャイ・ダープハック",["プラヤー・パホン","クンローン・パラット・チュー","パンターイ・ノーラシン"],"県庁前に像が立っている"]],
+[["Thailand's largest earth-fill dam is in Uttaradit. What is it called?","Sirikit Dam",["Bhumibol Dam","Srinagarind Dam","Pasak Jolasid Dam"],"It dams the Nan River in Tha Pla district"],["ウッタラディットにあるタイ最大のアースダムは?","シリキットダム",["プミポンダム","シーナカリンダム","パーサック・チョラシットダム"],"タープラー郡でナーン川をせき止めている"]],
+[["Which round pale fruit is Uttaradit famous for, alongside durian?","Langsat",["Mangosteen","Rambutan","Lychee"],"Lap Lae langsat has its own festival every year"],["ドリアンと並ぶウッタラディット名物の丸い淡い色の果物は?","ランサット",["マンゴスチン","ランブータン","ライチ"],"ラップレーのランサットは毎年お祭りがある"]],
+[["What is Phrae's famous deep-blue indigo cloth called?","Mo Hom cloth",["Praewa silk","Teen chok skirt","Batik"],"The best-known source is Ban Thung Hong"],["プレー名物の藍染めの布は?","モーホーム布",["プレーワー絹","ティーンチョック","バティック"],"有名な産地はバーン・トゥンホン"]],
+[["What is the lovely teak-house museum in Phrae called?","Baan Wongburi",["Ruean Kham Thiang","Baan Sao Hai","Khum Chao Luang Lampang"],"A pink teak house covered in gingerbread fretwork"],["プレーにある美しいチーク材の家の博物館は?","バーン・ウォンブリー",["ルアン・カムティアン","バーン・サオハイ","クム・チャオルアン・ランパーン"],"ジンジャーブレッド模様の透かし彫りのピンクのチーク館"]],
+[["Which Phrae national park has strangely shaped earth pillars?","Phae Mueang Phi",["Pha Taem","Sam Phan Bok","Op Luang"],"Rain and wind carved them over thousands of years"],["奇妙な土の柱があるプレーの国立公園は?","ペー・ムアンピー",["パーテーム","サームパンボーク","オップルアン"],"雨と風が何千年もかけて削った"]],
+[["Which important northern line junction is in Phrae province?","Den Chai",["Ban Dara","Sila At","Nakhon Lampang"],"It's the start of the new Den Chai–Chiang Rai–Chiang Khong line"],["プレー県にある北線の重要な分岐駅は?","デンチャイ",["バーンダーラー","シラアート","ナコーンランパーン"],"新線デンチャイ〜チェンライ〜チェンコーンの起点"]],
+[["Which temple in Nan has the \"Pu Man Ya Man\" mural?","Wat Phumin",["Wat Phra That Chae Haeng","Wat Phra That Lampang Luang","Wat Si Chum"],"The mural is nicknamed \"the whisper of love\""],["「プーマーン・ヤーマーン」の壁画があるナーンの寺は?","ワット・プーミン",["ワット・プラタート・チェーヘーン","ワット・プラタート・ランパーンルアン","ワット・シーチュム"],"「愛のささやき」と呼ばれる壁画"]],
+[["Which river begins in Nan province?","Nan River",["Ping River","Kok River","Mekong River"],"The Nan is one of the sources of the Chao Phraya"],["ナーン県に源流がある川は?","ナーン川",["ピン川","コック川","メコン川"],"ナーン川はチャオプラヤー川の源流の一つ"]],
+[["What rare tree grows on Doi Phu Kha in Nan?","Chomphu Phu Kha",["Wild Himalayan cherry","Golden shower","White orchid tree"],"It blooms pink around February"],["ナーンのプーカー山に生える珍しい木は?","チョムプー・プーカー",["ヒマラヤザクラ","ゴールデンシャワー","白いバウヒニア"],"2月ごろピンクの花を咲かせる"]],
+[["Which golden-skinned fruit is Nan famous for?","Golden oranges",["Pomelo","Bang Mot tangerines","Kumquats"],"They grow well in the cool climate"],["ナーン名物の金色の皮の果物は?","金色みかん",["文旦","バーンモットみかん","キンカン"],"涼しい気候でよく育つ"]],
+[["Lampang is nicknamed the city of what, because you can still ride them around town?","Horse carriages",["Three mists","Lotuses","White elephants"],"Lampang's carriages have served the town for over 100 years"],["今も町を回れることから、ランパーンは何の町と呼ばれる?","馬車の町",["三つの霧の町","ハスの町","白象の町"],"ランパーンの馬車は100年以上町を走っている"]],
+[["What is Lampang's famous animal-pattern bowl?","Rooster bowl",["Blue-and-white bowl","Benjarong bowl","Sangkhalok bowl"],"Lampang has excellent white clay, so it's a ceramics town"],["ランパーン名物の動物柄のどんぶりは?","ニワトリどんぶり",["染付の器","ベンジャロン焼","サンカローク焼"],"良質な白い粘土があり、陶磁器の町"]],
+[["Which province is home to the Thai Elephant Conservation Center?","Lampang",["Surin","Chiang Mai","Lamphun"],"It's on the Lampang–Chiang Mai highway"],["タイゾウ保護センターがある県は?","ランパーン",["スリン","チェンマイ","ランプーン"],"ランパーン〜チェンマイ間の国道沿いにある"]],
+[["What is the old railway tunnel between Lampang and Lamphun, Thailand's longest?","Khun Tan Tunnel",["Huai Mae Lan Tunnel","Pang Tub Kob Tunnel","Khao Phlueng Tunnel"],"About 1.3 km long, opened around 1918"],["ランパーンとランプーンの間にあるタイ最長の古い鉄道トンネルは?","クンターン・トンネル",["フアイメーラーン・トンネル","パーントゥップコープ・トンネル","カオプルン・トンネル"],"長さ約1.3km、1918年ごろ開通"]],
+[["What was Lamphun's ancient name?","Hariphunchai",["Yonok Nakhon","Hiran Nakhon Ngoen Yang","Khelang Nakhon"],"It's one of the oldest cities in the North"],["ランプーンの古い名前は?","ハリプンチャイ",["ヨーノック","ヒランナコーン・グンヤーン","ケーラーンナコーン"],"北部で最も古い町の一つ"]],
+[["What is Lamphun's most famous fruit?","Longan",["Lychee","Mango","Strawberry"],"Lamphun holds a longan festival every year"],["ランプーンで一番有名な果物は?","ロンガン",["ライチ","マンゴー","イチゴ"],"毎年ロンガン祭りが開かれる"]],
+[["What kind of silk is Lamphun famous for?","Brocade silk (yok dok)",["Mudmee silk","Praewa silk","Hang krarok silk"],"Patterns are woven in with gold or silver threads"],["ランプーン名物のシルクは?","錦織シルク(ヨックドーク)",["マットミー","プレーワー","ハーンクラロック"],"金糸や銀糸で模様を織り込む"]],
+[["According to legend, who was the first queen of Hariphunchai?","Queen Chamadevi",["Queen Sam Phio","Queen Chiraprapha","Princess Suphankanlaya"],"Her statue stands in Lamphun"],["伝説でハリプンチャイ最初の女王は?","チャーマテーウィー女王",["サームピウ女王","チラプラパー女王","スパンカンラヤー王女"],"ランプーンに女王の像がある"]],
+[["Khao soi is noodles in what kind of broth?","Coconut curry",["Clear soup","Creamy tom yum","Blood broth"],"It's topped with crispy fried noodles"],["カオソーイはどんなスープの麺?","ココナッツカレー",["澄んだスープ","濃厚トムヤム","ナムトック(血入り)"],"揚げた麺がのっている"]],
+[["In which Chiang Mai village are the famous paper umbrellas made?","Bo Sang",["Thawai","Ban Chiang","Thung Hong"],"There's a Bo Sang umbrella festival every January"],["チェンマイの紙の傘で有名な村は?","ボーサーン",["タワーイ","バーンチエン","トゥンホン"],"毎年1月にボーサーン傘祭りがある"]],
+[["What is the northern festival of floating lanterns on the 12th full moon called?","Yi Peng",["Songkran","Tan Kuay Salak","Poy Sang Long"],"Yi Peng means the full moon of the second month in the Lanna calendar"],["12月の満月にランタンを飛ばす北部の祭りは?","イーペン",["ソンクラーン","タンクアイサラーク","ポイサーンローン"],"ラーンナー暦の2月の満月という意味"]],
+[["Thailand's highest mountain is in Chiang Mai. What is it?","Doi Inthanon",["Doi Suthep","Doi Chiang Dao","Doi Phu Kha"],"It's about 2,565 m above sea level"],["チェンマイにあるタイ最高峰は?","ドイ・インタノン",["ドイ・ステープ","ドイ・チェンダーオ","ドイ・プーカー"],"標高約2,565m"]],
+[["Which province is Pai district in?","Mae Hong Son",["Chiang Mai","Chiang Rai","Tak"],"Pai is Mae Hong Son's most famous tourist town"],["パーイはどの県にある?","メーホンソーン",["チェンマイ","チェンライ","ターク"],"パーイはメーホンソーンで一番有名な観光地"]],
+[["Mae Hong Son is nicknamed the city of what?","Three mists",["Horse carriages","Three rivers","Flowers"],"Mist covers it almost all year"],["メーホンソーンは何の町と呼ばれる?","三つの霧の町",["馬車の町","三つの川の町","花の町"],"ほぼ一年じゅう霧に包まれる"]],
+[["What is the Thai name of the narrow ridge viewpoint called Pai Canyon?","Kong Lan",["Pha Cho","Phae Mueang Phi","Op Luang"],"A popular sunset spot in Pai"],["パーイ・キャニオンと呼ばれる細い尾根のタイ語名は?","コンラーン",["パーチョー","ペー・ムアンピー","オップルアン"],"パーイで人気の夕日スポット"]],
+[["What is the road from Chiang Mai to Pai famous for?","Lots and lots of curves",["Thailand's longest straight","A coastal road","A desert road"],"People say it has 762 curves"],["チェンマイからパーイへの道は何で有名?","カーブがものすごく多い",["タイ一長い直線","海沿いの道","砂漠の道"],"762カーブあると言われる"]],
+[["What is the big freshwater lake in the middle of Phayao called?","Kwan Phayao",["Bueng Boraphet","Nong Han","Thale Noi"],"One of the largest freshwater lakes in the North"],["パヤオの町の真ん中にある大きな淡水湖は?","クワーン・パヤオ",["ブンボーラペット","ノーンハーン","タレーノーイ"],"北部有数の大きな淡水湖"]],
+[["In northern Thai, what does \"kwan\" mean?","A large lake or body of water",["A high mountain","A teak forest","A rice field"],"So Kwan Phayao means the great lake of Phayao"],["北部タイ語で「クワーン」の意味は?","大きな湖や水場",["高い山","チーク林","田んぼ"],"クワーン・パヤオはパヤオの大きな湖という意味"]],
+[["What is the temple in the middle of Kwan Phayao called?","Wat Tilok Aram",["Wat Rong Khun","Wat Phumin","Wat Phra That Doi Suthep"],"You take a boat to pray in the middle of the lake"],["クワーン・パヤオの真ん中にある寺は?","ワット・ティロークアーラーム",["ワット・ロンクン","ワット・プーミン","ワット・プラタート・ドイステープ"],"ボートで湖の真ん中までお参りに行く"]],
+[["At the Golden Triangle, Thailand meets which countries?","Laos and Myanmar",["Laos and Cambodia","Myanmar and China","Malaysia and Laos"],"It's in Chiang Saen district on the Mekong"],["ゴールデントライアングルでタイと接する国は?","ラオスとミャンマー",["ラオスとカンボジア","ミャンマーと中国","マレーシアとラオス"],"メコン川沿いのチェンセーン郡にある"]],
+[["Which big river flows past the Golden Triangle?","Mekong",["Kok","Salween","Ing"],"The Mekong flows through six countries"],["ゴールデントライアングルを流れる大河は?","メコン川",["コック川","サルウィン川","イン川"],"メコン川は6か国を流れる"]],
+[["Which Chiang Rai mountain is famous for tea plantations?","Doi Mae Salong",["Doi Inthanon","Doi Suthep","Doi Phu Kha"],"Oolong tea terraces line the slopes"],["お茶畑で有名なチェンライの山は?","ドイ・メーサロン",["ドイ・インタノン","ドイ・ステープ","ドイ・プーカー"],"斜面に烏龍茶の段々畑が広がる"]],
+[["What is Chiang Rai's famous pineapple variety?","Nang Lae",["Pattavia","Sriracha","Trat Si Thong"],"Small, sweet and fragrant with golden flesh"],["チェンライ名物のパイナップルの品種は?","ナーンレー",["パッタウィア","シーラーチャー","トラート・シートーン"],"小ぶりで甘く香り高い金色の果肉"]],
+[["What is the white temple designed by Chalermchai Kositpipat called?","Wat Rong Khun",["Wat Rong Suea Ten","Wat Phra Kaew","Wat Chedi Luang"],"It's Chiang Rai's most famous attraction"],["チャルームチャイ・コーシピパット設計の白い寺は?","ワット・ロンクン",["ワット・ロンスアテン","ワット・プラケオ","ワット・チェディルアン"],"チェンライで一番有名な観光地"]],
+[["Where does the northern line from Bangkok end?","Chiang Mai",["Chiang Rai","Lampang","Mae Hong Son"],"The total distance is about 750 km"],["バンコクからの北線の終点は?","チェンマイ",["チェンライ","ランパーン","メーホンソーン"],"全長約750km"]],
+[["How wide is most railway track in Thailand?","1 metre (metre gauge)",["1.435 metres","1.6 metres","2 metres"],"The high-speed line under construction uses 1.435 m track"],["タイの線路の多くは幅何メートル?","1メートル(メーターゲージ)",["1.435メートル","1.6メートル","2メートル"],"建設中の高速鉄道は1.435mの線路を使う"]],
+[["Which industry is Saraburi especially known for?","Cement",["Steel","Sugar","Paper"],"Saraburi has many limestone hills, making it a major cement producer"],["サラブリーが特に有名な産業は?","セメント",["鉄鋼","砂糖","紙"],"石灰岩の山が多く、国内有数のセメント産地"]],
+[["Which Saraburi district is famous for dairy farms and fresh milk?","Muak Lek",["Kaeng Khoi","Sao Hai","Nong Khae"],"Muak Lek's cool weather and grasslands make it a key dairy area"],["酪農と牛乳で有名なサラブリーの郡は?","ムアックレック",["ケーンコーイ","サオハイ","ノーンケー"],"涼しい気候と草原で酪農が盛ん"]],
+[["Which important Saraburi temple has a Buddha footprint?","Wat Phra Phutthabat",["Wat Sothon","Wat Phra That Phanom","Wat Rai Khing"],"It holds a flower-offering festival every year"],["仏足跡があるサラブリーの重要な寺は?","ワット・プラプッタバート",["ワット・ソートーン","ワット・プラタート・パノム","ワット・ライキン"],"毎年花を捧げる祭りがある"]],
+[["What is Chachoengsao's popular nickname?","Paet Rio",["Pak Nam","Mae Klong","Monkey Town"],"\"Paet Rio\" (eight strips) comes from snakehead fish big enough to cut into eight strips"],["チャチューンサオの別名は?","ペートリウ",["パークナーム","メークローン","サルの町"],"8切れに切れるほど大きな雷魚が由来"]],
+[["At which temple is the revered Luang Pho Sothon Buddha image?","Wat Sothon Wararam",["Wat Rai Khing","Wat Phra Pathom Chedi","Wat Phra Phutthabat"],"Wat Sothon Wararam Worawihan is on the Bang Pakong River"],["ルアンポー・ソートーン仏が祀られている寺は?","ワット・ソートーン",["ワット・ライキン","ワット・プラパトムチェディ","ワット・プラプッタバート"],"バーンパコン川沿いにある"]],
+[["Which main river flows through Chachoengsao town?","Bang Pakong",["Mae Klong","Tha Chin","Pa Sak"],"It flows into the Gulf of Thailand, where you can see Irrawaddy dolphins"],["チャチューンサオの町を流れる川は?","バーンパコン川",["メークローン川","ターチーン川","パーサック川"],"タイ湾に注ぎ、河口ではイラワジイルカが見られる"]],
+[["Chonburi's famous bamboo sticky rice comes from which market?","Nong Mon",["Bang Saen","Ang Sila","Sattahip"],"Nong Mon market is known for khao lam and seaside snacks"],["チョンブリー名物の竹筒もち米はどの市場が有名?","ノーンモン",["バーンセーン","アーンシラー","サッタヒープ"],"ノーンモン市場はカオラームや海の名物で有名"]],
+[["Which famous chili sauce is named after a Chonburi district?","Sriracha sauce",["Bang Saen sauce","Phanat Nikhom sauce","Bang Lamung sauce"],"Sriracha has become a name for chili sauce worldwide"],["チョンブリーの郡名がついた有名なチリソースは?","シラチャーソース",["バーンセーンソース","パナットニコムソース","バーンラムンソース"],"シラチャーは世界中でチリソースの名前になった"]],
+[["What is Thailand's largest deep-sea port, in Chonburi?","Laem Chabang Port",["Khlong Toei Port","Map Ta Phut Port","Songkhla Port"],"Laem Chabang handles the most containers in the country"],["チョンブリーにあるタイ最大の深海港は?","レムチャバン港",["クロントイ港","マプタプット港","ソンクラー港"],"国内で最も多くのコンテナを扱う"]],
+[["Chonburi's famous tradition is a race of which animal?","Water buffalo",["Elephants","Horses","Cows"],"The buffalo races have been held at the end of Buddhist Lent for over 100 years"],["チョンブリーの有名な伝統行事は何のレース?","水牛",["ゾウ","馬","牛"],"水牛レースは100年以上、雨安居明けに開かれている"]],
+[["Which island near Pattaya is the most popular boat trip?","Koh Larn",["Koh Samet","Koh Chang","Koh Kood"],"The boat from Bali Hai Pier takes under an hour"],["パタヤ近くで一番人気の船旅の島は?","ラン島",["サメット島","チャーン島","クート島"],"バリハイ桟橋から1時間かからない"]],
+[["Which province is Pattaya in?","Chonburi",["Rayong","Chachoengsao","Chanthaburi"],"Pattaya is in Bang Lamung district, Chonburi"],["パタヤはどの県にある?","チョンブリー",["ラヨーン","チャチューンサオ","チャンタブリー"],"チョンブリー県バーンラムン郡にある"]],
+[["Besides Bangkok, which place has a special form of local government?","Pattaya City",["Chiang Mai","Phuket","Hat Yai"],"Bangkok and Pattaya City elect their own leaders in a special way"],["バンコクのほかに特別な地方自治制度がある所は?","パタヤ市",["チェンマイ","プーケット","ハジャイ"],"バンコクとパタヤ市は特別な方法で首長を選ぶ"]],
+[["Which Rayong island is believed to be a setting in Sunthorn Phu's Phra Aphai Mani?","Koh Samet",["Koh Larn","Koh Chang","Koh Si Chang"],"Koh Samet has statues of Phra Aphai and the mermaid"],["スントーン・プーの『プラアパイマニー』の舞台とされるラヨーンの島は?","サメット島",["ラン島","チャーン島","シーチャン島"],"島にはプラアパイと人魚の像がある"]],
+[["The Sunthorn Phu monument in Klaeng district is in which province?","Rayong",["Chonburi","Chanthaburi","Trat"],"Klaeng was the hometown of the poet's father"],["クレーン郡のスントーン・プー記念碑がある県は?","ラヨーン",["チョンブリー","チャンタブリー","トラート"],"クレーンは詩人の父の故郷"]],
+[["What is Rayong's huge petrochemical industrial estate called?","Map Ta Phut",["Laem Chabang","Bang Poo","Lat Krabang"],"Map Ta Phut is the petrochemical hub of the East"],["ラヨーンの巨大な石油化学工業団地は?","マプタプット",["レムチャバン","バーンプー","ラートクラバン"],"東部の石油化学の中心地"]],
+[["Chanthaburi is famous for trading which gemstones?","Gems (sapphires and rubies)",["Gold","Jade","Pearls"],"Chanthaburi's gem market is busy every weekend"],["チャンタブリーで取引が有名な宝飾品は?","宝石(サファイアやルビー)",["金","ヒスイ","真珠"],"チャンタブリーの宝石市場は毎週末にぎわう"]],
+[["Which fruit, nicknamed the \"queen of fruits\", grows widely in Chanthaburi?","Mangosteen",["Durian","Rambutan","Longkong"],"Durian is the king of fruits and mangosteen the queen"],["「果物の女王」と呼ばれ、チャンタブリーで多く育つのは?","マンゴスチン",["ドリアン","ランブータン","ロンコン"],"ドリアンは果物の王様、マンゴスチンは女王"]],
+[["Which noodles are used for Chanthaburi's crab fried noodles?","Sen Chan rice noodles",["Rice vermicelli","Glass noodles","Egg noodles"],"Chewy Sen Chan noodles are a famous Chanthaburi souvenir"],["チャンタブリーのカニ炒め麺に使う麺は?","センチャン(米麺)",["ビーフン","春雨","中華麺"],"もちもちのセンチャンはチャンタブリーの名物みやげ"]],
+[["What is Trat's biggest island, and Thailand's second largest?","Koh Chang",["Koh Kood","Koh Mak","Koh Samui"],"Thailand's largest island is Phuket, then Koh Chang"],["トラート最大、タイで2番目に大きい島は?","チャーン島",["クート島","マーク島","サムイ島"],"タイ最大の島はプーケット、次がチャーン島"]],
+[["Which country does Trat border?","Cambodia",["Laos","Myanmar","Malaysia"],"Trat is Thailand's easternmost province, next to Cambodia"],["トラート県が国境を接する国は?","カンボジア",["ラオス","ミャンマー","マレーシア"],"トラートはタイ最東端の県でカンボジアと接する"]],
+[["\"Trat Si Thong\" is a variety of which fruit?","Pineapple",["Mango","Pomelo","Durian"],"Small, sweet and crunchy"],["「トラート・シートーン」は何の果物の品種?","パイナップル",["マンゴー","文旦","ドリアン"],"小ぶりで甘くシャキシャキ"]],
+[["What is Thailand's tallest stupa, in Nakhon Pathom?","Phra Pathom Chedi",["Phra That Phanom","Phra That Doi Suthep","The Golden Mount"],"Phra Pathom Chedi is about 120 m tall"],["ナコーンパトムにあるタイで一番高い仏塔は?","プラ・パトムチェディ",["プラタート・パノム","プラタート・ドイステープ","黄金の丘"],"高さ約120m"]],
+[["Which fruit is Nakhon Chai Si district famous for?","Pomelo",["Longan","Durian","Mangosteen"],"Nakhon Chai Si pomelos grow along the Tha Chin River"],["ナコーンチャイシー郡で有名な果物は?","文旦(ポメロ)",["ロンガン","ドリアン","マンゴスチン"],"ターチーン川沿いで育つ"]],
+[["What is the famous floating market in Sam Phran, Nakhon Pathom?","Don Wai Floating Market",["Amphawa Floating Market","Damnoen Saduak Floating Market","Bang Khla Floating Market"],"Don Wai is famous for braised duck"],["ナコーンパトム県サームプラーンの有名な水上マーケットは?","ドンワイ水上マーケット",["アムパワー水上マーケット","ダムヌンサドゥアク水上マーケット","バーンクラー水上マーケット"],"アヒルの煮込みが名物"]],
+[["What is Kanchanaburi's world-famous railway bridge, built in World War II?","The Bridge on the River Kwai",["Rama VIII Bridge","Mon Bridge","Dechatiwong Bridge"],"It's part of the Thailand–Burma Railway"],["第二次世界大戦中に造られたカンチャナブリーの世界的に有名な鉄道橋は?","クウェー川鉄橋",["ラーマ8世橋","モン橋","デーチャーティウォン橋"],"泰緬鉄道の一部"]],
+[["What is the Thailand–Burma Railway built in World War II often called?","The Death Railway",["Maeklong Railway","Eastern Line","Red Line"],"Many builders died; trains still run as far as Nam Tok station"],["第二次世界大戦中に造られた泰緬鉄道の別名は?","死の鉄道",["メークロン線","東線","レッドライン"],"多くの人が犠牲になった。今もナムトック駅まで列車が走る"]],
+[["Which famous Kanchanaburi waterfall has 7 tiers?","Erawan Falls",["Mae Ya Falls","Thi Lo Su Falls","Phlio Falls"],"Erawan has turquoise pools full of big fish"],["7段あるカンチャナブリーの有名な滝は?","エラワンの滝",["メーヤーの滝","ティーロースーの滝","プリウの滝"],"青緑色の滝つぼに大きな魚がいる"]],
+[["Ratchaburi is famous for which kind of pottery?","Dragon jars",["Benjarong ware","Koh Kret pottery","Rooster bowls"],"Brown glazed jars with dragon designs are Ratchaburi's symbol"],["ラーチャブリーで有名な焼き物は?","竜の水がめ(オーンマンコーン)",["ベンジャロン焼","クレット島の焼き物","ニワトリどんぶり"],"竜の模様の茶色い水がめがラーチャブリーのシンボル"]],
+[["What is Ratchaburi's famous floating market?","Damnoen Saduak Floating Market",["Amphawa Floating Market","Don Wai Floating Market","Taling Chan Floating Market"],"Vendors paddle boats selling fruit and boat noodles along the canal"],["ラーチャブリーの有名な水上マーケットは?","ダムヌンサドゥアク水上マーケット",["アムパワー水上マーケット","ドンワイ水上マーケット","タリンチャン水上マーケット"],"運河で果物やボートヌードルを舟から売る"]],
+[["What is Phetchaburi's famous dessert?","Khanom mo kaeng (Thai custard)",["Khanom pia","Thong muan","Khanom chan"],"Phetchaburi has many sugar palms, so its sweets use fragrant palm sugar"],["ペッチャブリー名物のお菓子は?","カノムモーケーン(タイ風カスタード)",["カノムピア","トンムアン","カノムチャン"],"砂糖ヤシが多く、香り高いヤシ砂糖を使う"]],
+[["What is the official name of Phetchaburi's hilltop palace, known locally as \"Khao Wang\"?","Phra Nakhon Khiri",["Bang Pa-In Palace","Klai Kangwon Palace","Sanam Chandra Palace"],"King Rama IV built Phra Nakhon Khiri on a three-peaked hill"],["地元で「カオワン」と呼ばれるペッチャブリーの丘の宮殿の正式名は?","プラナコーンキーリー",["バーンパイン宮殿","クライカンウォン宮殿","サナームチャン宮殿"],"ラーマ4世が三つの峰の丘に建てた"]],
+[["What is Phetchaburi's famous rose apple variety?","Phet Sai Rung",["Thapthim Chan","Mamiao","Thun Klao"],"Green-pink skin, sweet and crunchy"],["ペッチャブリー名物のローズアップルの品種は?","ペット・サーイルン",["タップティム・チャン","マミアオ","トゥーンクラオ"],"緑とピンクの皮で甘くシャキシャキ"]],
+[["Which province is Hua Hin in?","Prachuap Khiri Khan",["Phetchaburi","Ratchaburi","Chumphon"],"Hua Hin is a district of Prachuap Khiri Khan"],["ホアヒンはどの県にある?","プラチュワップキーリーカン",["ペッチャブリー","ラーチャブリー","チュムポーン"],"ホアヒンはプラチュワップキーリーカン県の郡"]],
+[["What is Hua Hin's palace whose name means \"far from worries\"?","Klai Kangwon Palace",["Phra Nakhon Khiri","Bang Pa-In Palace","Bhubing Palace"],"King Rama VII built it by the sea at Hua Hin"],["「心配から遠く離れて」という意味のホアヒンの宮殿は?","クライカンウォン宮殿",["プラナコーンキーリー","バーンパイン宮殿","プーピン宮殿"],"ラーマ7世がホアヒンの海辺に建てた"]],
+[["Hua Hin's beaches face which sea?","The Gulf of Thailand",["The Andaman Sea","The Bay of Bengal","The Red Sea"],"The beaches from Chonburi to Hua Hin are all on the Gulf of Thailand"],["ホアヒンの海はどの海に面している?","タイ湾",["アンダマン海","ベンガル湾","紅海"],"チョンブリーからホアヒンまでの浜辺はタイ湾沿い"]],
+[["The eastern line from Bangkok passes through which province before branching to Chonburi?","Chachoengsao",["Samut Prakan","Prachinburi","Nakhon Nayok"],"Chachoengsao Junction splits toward Chonburi–Sattahip and Aranyaprathet"],["バンコクからの東線がチョンブリー方面に分かれる前に通る県は?","チャチューンサオ",["サムットプラーカーン","プラーチーンブリー","ナコーンナーヨック"],"チャチューンサオ分岐駅でチョンブリー・サッタヒープ方面とアランヤプラテート方面に分かれる"]],
+[["Leaving Bangkok, the southern line enters which province first in the West region?","Ratchaburi",["Kanchanaburi","Phetchaburi","Prachuap Khiri Khan"],"It passes Nakhon Pathom (Central), then Ratchaburi, Phetchaburi and Hua Hin"],["バンコクを出た南線が西部で最初に入る県は?","ラーチャブリー",["カンチャナブリー","ペッチャブリー","プラチュワップキーリーカン"],"ナコーンパトム(中部)の次にラーチャブリー、ペッチャブリー、ホアヒンを通る"]]
+];
+function quizIn(i){ const q=QUIZ[i]; if(LANG==="th"||!QUIZ_TR[i]) return q; const t=QUIZ_TR[i][LI()]; return [q[0],t[0],t[1],t[2],t[3]]; }
+
+Object.assign(TR,{
+"@off":["Off","オフ"],"@lobbyhint":["Share this code. Friends open the same link, tap \"Play online\" and pick this room","このコードを友だちに伝えよう。同じリンクを開いて「オンライン」からこのルームを選びます"],"ซูมเข้า":["Zoom in","拡大"],"ซูมออก":["Zoom out","縮小"],
+"เริ่มเกม ทุกคนออกจาก{st}พร้อมเงิน {m}": [
+"Game start! Everyone leaves {st} with {m}",
+"ゲーム開始!全員{m}を持って{st}を出発"
+],
+"บันทึกไม่ได้: บัญชีนี้ยังไม่มีสิทธิ์แก้ไขเกม ให้เจ้าของแชร์แบบ Editor": [
+"Can't save: this account can't edit the game. Ask the owner to share it as Editor",
+"保存できません:このアカウントには編集権限がありません。オーナーに編集者として共有してもらってください"
+],
+"การเชื่อมต่อมีปัญหา เกมอาจไม่ซิงก์": [
+"Connection problem — the game may be out of sync",
+"接続に問題があります。ゲームが同期されないかもしれません"
+],
+"ภาคเหนือ": [
+"North",
+"北部"
+],
+"ภาคกลาง": [
+"Central",
+"中部"
+],
+"ภาคตะวันออก": [
+"East",
+"東部"
+],
+"ภาคตะวันตก": [
+"West",
+"西部"
+],
+"รางใหม่ เปิด เม.ย. ปีที่ 2": [
+"New line opens Apr, Year 2",
+"新線 2年目4月に開通"
+],
+"ลูกเต๋า": [
+"Die",
+"サイコロ"
+],
+"ปี<span class=\"yl\">ที่</span> {y}/{ys}": [
+"Y<span class=\"yl\">ear</span> {y}/{ys}",
+"{y}/{ys}<span class=\"yl\">年目</span>"
+],
+"จุดหมาย": [
+"Destination",
+"目的地"
+],
+"การ์ดในมือ {n} ใบ": [
+"{n} cards in hand",
+"手札 {n} 枚"
+],
+"ยังไม่มีการ์ด": [
+"No cards yet",
+"カードなし"
+],
+"จบเกมแล้ว": [
+"Game over",
+"ゲーム終了"
+],
+"ตั้งค่าเกม": [
+"Game setup",
+"ゲーム設定"
+],
+"{p} (บอท) กำลังเล่น…": [
+"{p} (bot) is playing…",
+"{p}(ボット)がプレイ中…"
+],
+"รอ{p}เล่นอยู่… ทุกอย่างจะอัปเดตบนจอคุณเอง": [
+"Waiting for {p}… your screen updates by itself",
+"{p}のプレイを待っています…画面は自動で更新されます"
+],
+"ผีเจ้าที่ขี้งอน: เทิร์นนี้เดินได้ 1 ช่อง": [
+"Sulky spirit: you can move only 1 space this turn",
+"すねた土地神:このターンは1マスしか進めない"
+],
+"ใช้การ์ดแล้ว ทอยเต๋าได้เลย": [
+"Card used — roll the dice!",
+"カードを使いました。サイコロをどうぞ"
+],
+"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย": [
+"Use 1 card before rolling, or just roll",
+"サイコロの前にカードを1枚使えます。そのまま振ってもOK"
+],
+"ใช้การ์ด": [
+"Use card",
+"カードを使う"
+],
+"เดิน 1 ช่อง": [
+"Move 1 space",
+"1マス進む"
+],
+"ทอยเต๋า": [
+"Roll",
+"サイコロを振る"
+],
+"ทอยเต๋า {n} ลูก": [
+"Roll {n} dice",
+"サイコロ{n}個を振る"
+],
+"ได้ {n} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง": [
+"You rolled {n}. Tap a yellow space on the map or pick below",
+"{n}が出ました。地図の黄色いマスをタップするか下から選んでね"
+],
+"บอท": [
+"Bot",
+"ボット"
+],
+"คุณ": [
+"You",
+"あなた"
+],
+"ผี {n}/3": [
+"Ghost {n}/3",
+"おばけ {n}/3"
+],
+"ติดม็อบ": [
+"Blocked",
+"足止め"
+],
+"รวม {n}": [
+"Total {n}",
+"総資産 {n}"
+],
+"อยู่ที่{x}": [
+"At {x}",
+"現在地:{x}"
+],
+"ผีติดตัว {n}/3": [
+"Haunted {n}/3",
+"おばけ付き {n}/3"
+],
+"ทรัพย์สินรวม {m}": [
+"Total assets {m}",
+"総資産 {m}"
+],
+"อันดับ · แตะเพื่อดูกิจการ": [
+"Ranking · tap to see businesses",
+"ランキング・タップで物件を見る"
+],
+"ข่าวล่าสุด": [
+"Latest news",
+"最新ニュース"
+],
+"ช่องน้ำเงิน": [
+"a blue space",
+"青マス"
+],
+"ช่องแดง": [
+"a red space",
+"赤マス"
+],
+"ช่องการ์ด": [
+"a card space",
+"カードマス"
+],
+"ทางรถทัวร์": [
+"the bus route",
+"バス路線"
+],
+"ตกลง": [
+"OK",
+"OK"
+],
+"ราคา {a} · กำไร {b}/ปี": [
+"price {a} · profit {b}/yr",
+"価格 {a}・利益 {b}/年"
+],
+"ยกเลิก": [
+"Cancel",
+"キャンセル"
+],
+"ปัดซ้ายขวาดูการ์ด": [
+"Swipe to see cards",
+"左右にスワイプしてカードを見る"
+],
+"ใช้": [
+"Use",
+"使う"
+],
+"(มี {n} ใบ)": [
+"(×{n})",
+"({n}枚)"
+],
+"ใช้อัตโนมัติเมื่อถึงเวลา": [
+"Used automatically when needed",
+"必要なとき自動で使います"
+],
+"ใช้ตอนนี้ไม่ได้": [
+"Can't use now",
+"今は使えません"
+],
+"การ์ดในมือ": [
+"Your cards",
+"手札"
+],
+"ปิด": [
+"Close",
+"閉じる"
+],
+"{p} ใช้{it}": [
+"{p} used {it}",
+"{p}が{it}を使った"
+],
+"เลือกจำนวนช่องที่จะเดิน": [
+"How many spaces?",
+"何マス進みますか"
+],
+"{p} ขับเอง {n} ช่อง": [
+"{p} drove {n} spaces",
+"{p}は自分で{n}マス運転"
+],
+"{p} เหมาเครื่องบินไป{st}": [
+"{p} chartered a plane to {st}",
+"{p}はチャーター機で{st}へ"
+],
+"ม็อบปิดถนนใคร": [
+"Block whose road?",
+"誰の道をふさぐ?"
+],
+"คนที่เลือกจะเดินไม่ได้ในเทิร์นหน้าของเขา": [
+"That player can't move on their next turn",
+"選んだ人は次のターン動けません"
+],
+"{p} ส่งม็อบไปปิดถนน{q}": [
+"{p} sent a protest to block {q}",
+"{p}がデモで{q}の道をふさいだ"
+],
+"ฝากผีให้ใคร": [
+"Give the ghost to whom?",
+"おばけを誰に押しつける?"
+],
+"{p} ฝากผีให้{q}": [
+"{p} passed the ghost to {q}",
+"{p}がおばけを{q}に押しつけた"
+],
+"{p} ถูกลอตเตอรี่ รับ {m}": [
+"{p} won the lottery: {m}",
+"{p}が宝くじに当選!{m}"
+],
+"ถูกรางวัล!": [
+"You won!",
+"当たり!"
+],
+"ทอยได้ 6 รับ <b>{m}</b>": [
+"Rolled a 6 — win <b>{m}</b>",
+"6が出た!<b>{m}</b>獲得"
+],
+"{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}": [
+"{p} lost the lottery: −{m}",
+"{p}は宝くじはずれ、{m}の損"
+],
+"ไม่ถูก": [
+"No luck",
+"はずれ"
+],
+"ทอยได้ {d} เสีย {m}": [
+"Rolled {d} — lose {m}",
+"{d}が出た…{m}の損"
+],
+"{pr}ของ{p} ดังในโซเชียล รับ {m}": [
+"{p}'s {pr} went viral: +{m}",
+"{p}の{pr}がSNSでバズった!{m}獲得"
+],
+"สงกรานต์รถติด แต้มเดิน −1": [
+"Songkran traffic jam: −1 to your move",
+"ソンクラーン渋滞:進むマス −1"
+],
+"กำลังเดินทาง…": [
+"Travelling…",
+"移動中…"
+],
+"ผีกระโดดจาก{p}ไปหา{q}": [
+"The ghost jumped from {p} to {q}",
+"おばけが{p}から{q}に乗り移った"
+],
+"ผีย้ายบ้าน!": [
+"The ghost moved!",
+"おばけが引っ越し!"
+],
+"ระหว่างทางเจอ{q} ผีเลยกระโดดไปติดแทน": [
+"You passed {q} on the way, so the ghost jumped onto them",
+"途中で{q}とすれ違い、おばけが乗り移った"
+],
+"ต้องจ่าย {m}": [
+"You must pay {m}",
+"{m}の支払い"
+],
+"มีการ์ดประกันภัย ใช้เพื่อไม่ต้องจ่ายไหม": [
+"You have Insurance. Use it to skip paying?",
+"保険カードがあります。使って支払いを免除しますか?"
+],
+"ใช้ประกันภัย": [
+"Use Insurance",
+"保険を使う"
+],
+"จ่ายเอง": [
+"Pay",
+"支払う"
+],
+"{p} ใช้ประกันภัย ไม่ต้องจ่าย {m}": [
+"{p} used Insurance and skipped paying {m}",
+"{p}は保険で{m}の支払いを免除"
+],
+"{p} ถึง{st}คนแรก รับ {m}": [
+"{p} reached {st} first: +{m}",
+"{p}が{st}に一番乗り!{m}獲得"
+],
+"ถึงจุดหมาย": [
+"Destination reached",
+"目的地到着"
+],
+"{p} ถึง{st}คนแรก!": [
+"{p} reached {st} first!",
+"{p}が{st}に一番乗り!"
+],
+"จุดหมายใหม่: {st} รางวัล {m}": [
+"New destination: {st}, prize {m}",
+"新しい目的地:{st} 賞金{m}"
+],
+"จุดหมายใหม่": [
+"New destination",
+"新しい目的地"
+],
+"ทุกคนมุ่งหน้าไป <b>{st}</b> รางวัล {m}": [
+"Everyone heads for <b>{st}</b> — prize {m}",
+"全員<b>{st}</b>を目指そう!賞金{m}"
+],
+"จับฉลาก": [
+"Lucky draw",
+"抽選"
+],
+"{p} ได้ {m}จากช่องน้ำเงิน": [
+"{p} got {m} from a blue space",
+"{p}は青マスで{m}獲得"
+],
+"ได้เงิน {m}": [
+"You earn {m}",
+"{m}ゲット"
+],
+"ทอยได้ {d} × {m}": [
+"Rolled {d} × {m}",
+"{d} × {m}"
+],
+"{p} เสีย {m}ที่ช่องแดง": [
+"{p} lost {m} on a red space",
+"{p}は赤マスで{m}失った"
+],
+"เสียเงิน {m}": [
+"You lose {m}",
+"{m}を失った"
+],
+"{p} ได้การ์ดไอเทม": [
+"{p} got an item card",
+"{p}がアイテムカードをゲット"
+],
+"ได้การ์ดไอเทม": [
+"Item card!",
+"アイテムカード!"
+],
+"บอทเก็บการ์ดไว้ในมือ": [
+"The bot keeps the card",
+"ボットはカードを手札にしまった"
+],
+"มือเต็ม": [
+"Hand full",
+"手札がいっぱい"
+],
+"ถือการ์ดได้สูงสุด 5 ใบ รอบนี้ไม่ได้จั่ว": [
+"You can hold up to 5 cards — no draw this time",
+"カードは5枚まで。今回は引けません"
+],
+"ควิซประจำสถานี{st}": [
+"{st} station quiz",
+"{st}駅クイズ"
+],
+"ตอบถูกได้ {m} · ตอบผิดเสีย {m2}": [
+"Right: +{m} · Wrong: −{m2}",
+"正解で{m}・不正解で{m2}の損"
+],
+"{p} ได้โบนัสควิซ {m}": [
+"{p} won a quiz bonus of {m}",
+"{p}がクイズボーナス{m}獲得"
+],
+"เงินคงเหลือ": [
+"Cash",
+"所持金"
+],
+"ซื้อ {m}": [
+"Buy {m}",
+"{m}で買う"
+],
+"สถานี{st}": [
+"{st} station",
+"{st}駅"
+],
+"ซื้อกิจการ": [
+"Buy businesses",
+"物件を買う"
+],
+"เสร็จ": [
+"Done",
+"完了"
+],
+"{p} ซื้อ{pr} {m}": [
+"{p} bought {pr} for {m}",
+"{p}が{pr}を{m}で購入"
+],
+"ผีไปติด{q} คนที่อยู่ไกลที่สุด": [
+"The ghost haunts {q}, the farthest player",
+"一番遠い{q}におばけが取りついた"
+],
+"ผีมาแล้ว": [
+"The ghost is here!",
+"おばけが来た!"
+],
+"{q} อยู่ไกล{st}ที่สุด ({n} ช่อง) ผีตามไปติดตัว": [
+"{q} is farthest from {st} ({n} spaces), so the ghost follows them",
+"{q}が{st}から一番遠い({n}マス)ので、おばけが取りついた"
+],
+"ผีปอบ": [
+"Phi Pop",
+"ピーポープ"
+],
+"ผีติดตัว": [
+"Haunted",
+"おばけ付き"
+],
+"ผีปอบกลายร่างเป็นร่างยักษ์!": [
+"The ghost turned GIANT!",
+"おばけが巨大化!"
+],
+"ผีปอบจะทำอะไรนะ": [
+"What will the ghost do?",
+"おばけは何をする?"
+],
+"อยู่ด้วยกันครบ 3 เทิร์น ผีโตขึ้นแล้ว": [
+"3 turns together — the ghost has grown",
+"3ターン一緒にいたので、おばけが大きくなった"
+],
+"ทอยเต๋าดูตารางผี": [
+"Roll on the ghost table",
+"おばけ表でサイコロを振ろう"
+],
+"ทอยตารางผี": [
+"Roll ghost table",
+"おばけ表を振る"
+],
+"ผีทอยได้ {d}": [
+"Ghost rolled {d}",
+"おばけの目 {d}"
+],
+"ตารางร่างยักษ์": [
+"Giant table",
+"巨大化表"
+],
+"ตารางผี": [
+"Ghost table",
+"おばけ表"
+],
+"อาละวาด": [
+"Rampage",
+"大暴れ"
+],
+"กิจการทั้งหมดในสถานีที่คุณมีมากที่สุดคืนธนาคารฟรี": [
+"Lose all businesses at the station where you own the most",
+"一番多く持っている駅の物件をすべて銀行に没収"
+],
+"ช้อปหนัก": [
+"Shopping Spree",
+"爆買い"
+],
+"เสียเงินสดครึ่งหนึ่ง": [
+"Lose half your cash",
+"所持金の半分を失う"
+],
+"ฉีกการ์ด": [
+"Card Shredder",
+"カードびりびり"
+],
+"ทิ้งการ์ดทั้งหมด": [
+"Discard all your cards",
+"カードを全部捨てる"
+],
+"ขายของ": [
+"Fire Sale",
+"投げ売り"
+],
+"ขายกิจการแพงที่สุดคืนธนาคารครึ่งราคา": [
+"Sell your priciest business to the bank at half price",
+"一番高い物件を半額で銀行に売る"
+],
+"ผีปอบสายช้อป": [
+"Shopaholic Ghost",
+"買い物好きおばけ"
+],
+"เสียเงิน 5 ล้าน": [
+"Lose ฿5M",
+"5百万を失う"
+],
+"ทิ้งการ์ด 1 ใบแบบสุ่ม": [
+"Discard 1 random card",
+"カードを1枚ランダムに捨てる"
+],
+"ผีกระสือเล่นหุ้น": [
+"Stock-Trading Ghost",
+"株好きおばけ"
+],
+"ขายกิจการถูกที่สุดคืนธนาคารครึ่งราคา": [
+"Sell your cheapest business to the bank at half price",
+"一番安い物件を半額で銀行に売る"
+],
+"ผีเจ้าที่ขี้งอน": [
+"Sulky Spirit",
+"すねた土地神"
+],
+"เทิร์นนี้เดินได้ 1 ช่อง ห้ามใช้การ์ดเคลื่อนที่": [
+"Move only 1 space this turn, no movement cards",
+"このターンは1マスだけ。移動カード禁止"
+],
+"ผีหลับ": [
+"Sleepy Ghost",
+"居眠りおばけ"
+],
+"ไม่มีอะไรเกิดขึ้น": [
+"Nothing happens",
+"何も起きない"
+],
+"ผีเลี้ยงหมูกระทะ": [
+"BBQ Party Ghost",
+"焼肉おごりおばけ"
+],
+"จ่ายผู้เล่นคนอื่นคนละ 3 ล้าน": [
+"Pay every other player ฿3M",
+"他の全員に3百万ずつ払う"
+],
+"ผีปอบร่างยักษ์": [
+"Giant Phi Pop",
+"巨大ピーポープ"
+],
+"ทอยได้ {d}": [
+"Rolled {d}",
+"出目 {d}"
+],
+"ผีท้าตอบควิซ!": [
+"The ghost challenges you to a quiz!",
+"おばけのクイズ挑戦!"
+],
+"ตอบควิซถูก ผีจะหนีไปไม่แกล้ง": [
+"Answer correctly and the ghost runs away",
+"正解すればおばけは逃げていく"
+],
+"รับคำท้า": [
+"Accept",
+"受けて立つ"
+],
+"ผีถามควิซ": [
+"Ghost quiz",
+"おばけクイズ"
+],
+"ผีจะ: {x} · ตอบถูกรอดตัว": [
+"Ghost will: {x} · answer right to escape",
+"おばけの効果:{x}・正解なら回避"
+],
+"{p} ตอบถูก ผีหนีไปไม่แกล้ง": [
+"{p} answered right and the ghost fled",
+"{p}が正解!おばけは逃げた"
+],
+"มีพระเครื่อง ใช้ยกเลิกผลนี้ไหม": [
+"You have a Lucky Amulet. Use it to cancel this?",
+"お守りがあります。使って打ち消しますか?"
+],
+"ใช้พระเครื่อง": [
+"Use Amulet",
+"お守りを使う"
+],
+"รับผล": [
+"Accept",
+"受け入れる"
+],
+"{p} ใช้พระเครื่องไล่ผี": [
+"{p} used a Lucky Amulet on the ghost",
+"{p}はお守りでおばけを追い払った"
+],
+"ผีปอบช้อปด้วยเงิน{p} {m}": [
+"The ghost went shopping with {p}'s money: −{m}",
+"おばけが{p}のお金で買い物:−{m}"
+],
+"ผีทิ้งการ์ด{it}ของ{p}": [
+"The ghost threw away {p}'s {it}",
+"おばけが{p}の{it}を捨てた"
+],
+"ผีขาย{pr}ของ{p}": [
+"The ghost sold {p}'s {pr}",
+"おばけが{p}の{pr}を売った"
+],
+"ผีเจ้าที่งอน {p}เดินได้ 1 ช่อง": [
+"Sulky spirit: {p} can move only 1 space",
+"すねた土地神:{p}は1マスだけ"
+],
+"ผีของ{p}หลับอยู่": [
+"{p}'s ghost is asleep",
+"{p}のおばけは居眠り中"
+],
+"{p} โดนผีพาเลี้ยงหมูกระทะทุกคน": [
+"The ghost made {p} treat everyone to BBQ",
+"おばけのせいで{p}が全員に焼肉をおごった"
+],
+"ผีปอบยักษ์อาละวาดที่{st} {p}เสียกิจการทั้งหมดที่นั่น": [
+"The giant ghost rampaged in {st}: {p} lost every business there",
+"巨大おばけが{st}で大暴れ!{p}はそこの物件をすべて失った"
+],
+"ผีปอบยักษ์อาละวาด แต่{p}ไม่มีกิจการ": [
+"The giant ghost rampaged, but {p} owns nothing",
+"巨大おばけが大暴れ…でも{p}は物件なし"
+],
+"ผีปอบยักษ์ช้อปหนัก {p}เสีย {m}": [
+"Giant ghost shopping spree: {p} lost {m}",
+"巨大おばけの爆買い:{p}は{m}失った"
+],
+"ผีปอบยักษ์ฉีกการ์ดของ{p}ทั้งหมด": [
+"The giant ghost shredded all of {p}'s cards",
+"巨大おばけが{p}のカードを全部びりびり"
+],
+"ผีปอบยักษ์ขาย{pr}ของ{p}": [
+"The giant ghost sold {p}'s {pr}",
+"巨大おばけが{p}の{pr}を売った"
+],
+"{p} ติดลบ ต้องขาย{prs}": [
+"{p} went into debt and had to sell {prs}",
+"{p}が赤字になり{prs}を売却"
+],
+"เงินติดลบ!": [
+"In debt!",
+"赤字!"
+],
+"{p} ขายกิจการคืนธนาคารครึ่งราคา: {prs}": [
+"{p} sells to the bank at half price: {prs}",
+"{p}は物件を半額で銀行に売却:{prs}"
+],
+"{p} ตอบควิซ": [
+"{p} answers the quiz",
+"{p}がクイズに回答"
+],
+"ตอบว่า": [
+"Answer:",
+"答え:"
+],
+"ควิซ!": [
+"Quiz!",
+"クイズ!"
+],
+"กขคง": [
+"ABCD",
+"アイウエ"
+],
+"{p} ตอบควิซถูก": [
+"{p} got the quiz right",
+"{p}がクイズに正解"
+],
+"{p} ตอบควิซไม่ทัน": [
+"{p} ran out of time on the quiz",
+"{p}はクイズ時間切れ"
+],
+"{p} ตอบควิซผิด": [
+"{p} got the quiz wrong",
+"{p}はクイズ不正解"
+],
+"ถูกต้อง!": [
+"Correct!",
+"正解!"
+],
+"หมดเวลา!": [
+"Time's up!",
+"時間切れ!"
+],
+"ยังไม่ถูก": [
+"Not quite",
+"不正解"
+],
+"คำตอบคือ": [
+"The answer is",
+"正解は"
+],
+"{n} แต้ม": [
+"{n}!",
+"{n}マス"
+],
+"สงกรานต์รถติด −1": [
+"Songkran jam −1",
+"ソンクラーン渋滞 −1"
+],
+"{p} ซื้อกิจการ": [
+"{p} buys businesses",
+"{p}が物件を購入"
+],
+"{p} ใช้การ์ด": [
+"{p} uses a card",
+"{p}がカードを使用"
+],
+"{p} ติดม็อบ เดินไม่ได้": [
+"{p} is blocked by a protest",
+"{p}はデモで足止め"
+],
+"{p} ติดม็อบปิดถนน": [
+"{p} is stuck behind a protest",
+"{p}はデモで通れない"
+],
+"เทิร์นนี้เดินไม่ได้": [
+"No moving this turn",
+"このターンは動けません"
+],
+"ตาของ{p}": [
+"{p}'s turn",
+"{p}の番"
+],
+"{mo} ปีที่ {y}": [
+"{mo}, Year {y}",
+"{y}年目 {mo}"
+],
+"ส่งเครื่องให้{p} แล้วกดเริ่ม": [
+"Pass the device to {p}, then tap Start",
+"{p}に端末を渡して「スタート」"
+],
+"เริ่มเทิร์น": [
+"Start turn",
+"ターン開始"
+],
+"ถึงตาคุณแล้ว": [
+"Your turn!",
+"あなたの番です"
+],
+"{p} อยู่ที่{x} · จุดหมาย{st}": [
+"{p} is at {x} · destination {st}",
+"{p}は{x}にいます・目的地は{st}"
+],
+"รางใหม่เด่นชัย–แพร่–พะเยาเปิดแล้ว": [
+"The Den Chai–Phrae–Phayao line is open",
+"デンチャイ〜プレー〜パヤオ線が開通"
+],
+"รถไฟสายเด่นชัย–แพร่–พะเยาเปิดใช้ เดินทางขึ้นเหนือได้อีกเส้นทาง": [
+"The Den Chai–Phrae–Phayao line opens — another way north",
+"デンチャイ〜プレー〜パヤオ線が開通。北へのもう一つのルート"
+],
+"ข่าวการรถไฟ": [
+"Railway news",
+"鉄道ニュース"
+],
+"({n} แห่ง)": [
+"({n} businesses)",
+"({n}件)"
+],
+"ไม่มีใครได้รับผล": [
+"Nobody is affected",
+"対象者なし"
+],
+"อีเวนต์ประจำเดือน": [
+"Monthly event",
+"今月のイベント"
+],
+"สงกรานต์": [
+"Songkran",
+"ソンクラーン"
+],
+"ฤดูผลไม้": [
+"Fruit Season",
+"フルーツの季節"
+],
+"น้ำท่วม": [
+"Flood",
+"洪水"
+],
+"ลอยกระทง / ยี่เป็ง": [
+"Loy Krathong / Yi Peng",
+"ロイクラトン/イーペン"
+],
+"ปีใหม่": [
+"New Year",
+"お正月"
+],
+"ฝุ่น PM2.5": [
+"PM2.5 Haze",
+"PM2.5の煙害"
+],
+"ตรุษจีน": [
+"Chinese New Year",
+"春節"
+],
+"เดือนปิดงบ": [
+"Year-End Closing",
+"決算月"
+],
+"เปิดรางใหม่!": [
+"New Line Opens!",
+"新線開通!"
+],
+"เปิดรางใหม่": [
+"New Line Opens",
+"新線開通"
+],
+"สงกรานต์ รถติดทั้งเดือน กิจการท่องเที่ยวได้คนละ 2 ล้านต่อแห่ง": [
+"Songkran! Traffic all month; tourism businesses get ฿2M each",
+"ソンクラーン!一か月渋滞、観光物件は1件につき2百万"
+],
+"เดือนนี้รถติด ทุกคนเดิน −1 ช่อง (ต่ำสุด 1)": [
+"Traffic jams this month: everyone moves −1 (minimum 1)",
+"今月は渋滞:全員 −1マス(最低1)"
+],
+"ฤดูผลไม้ กิจการเกษตรรับ 3 ล้านต่อแห่ง": [
+"Fruit season: farm businesses get ฿3M each",
+"フルーツの季節:農業物件は1件につき3百万"
+],
+"เจ้าของกิจการเกษตรรับ 3 ล้านต่อแห่ง": [
+"Farm business owners get ฿3M per business",
+"農業物件のオーナーは1件につき3百万"
+],
+"เจ้าของกิจการเกษตรจ่ายค่าซ่อม 2 ล้านต่อแห่ง": [
+"Farm business owners pay ฿2M repairs per business",
+"農業物件のオーナーは1件につき修理代2百万"
+],
+"ค่าซ่อมหลังน้ำท่วม": [
+"Flood repairs",
+"洪水の修理代"
+],
+"น้ำท่วม กิจการเกษตรจ่ายค่าซ่อม": [
+"Flood: farm businesses pay for repairs",
+"洪水:農業物件が修理代を支払い"
+],
+"ลอยกระทง/ยี่เป็ง กิจการเชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง": [
+"Loy Krathong / Yi Peng: Chiang Mai and Sukhothai businesses get ฿5M each",
+"ロイクラトン/イーペン:チェンマイとスコータイの物件は1件につき5百万"
+],
+"เจ้าของกิจการที่เชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง": [
+"Owners in Chiang Mai and Sukhothai get ฿5M per business",
+"チェンマイとスコータイの物件オーナーは1件につき5百万"
+],
+"ได้การ์ด 1 ใบ": [
+"got 1 card",
+"カード1枚ゲット"
+],
+"ปีใหม่ ทุกคนได้การ์ดไอเทม": [
+"New Year: everyone gets an item card",
+"お正月:全員アイテムカードをゲット"
+],
+"ทุกคนจั่วการ์ดไอเทม 1 ใบ": [
+"Everyone draws 1 item card",
+"全員アイテムカードを1枚引く"
+],
+"เจ้าของกิจการท่องเที่ยวในภาคเหนือจ่าย 2 ล้านต่อแห่ง": [
+"Tourism owners in the North pay ฿2M per business",
+"北部の観光物件オーナーは1件につき2百万支払い"
+],
+"นักท่องเที่ยวหายเพราะฝุ่น": [
+"Tourists stayed away because of the haze",
+"煙害で観光客が激減"
+],
+"ฝุ่น PM2.5 ท่องเที่ยวภาคเหนือจ่าย 2 ล้านต่อแห่ง": [
+"PM2.5 haze: northern tourism pays ฿2M per business",
+"PM2.5:北部の観光物件は1件につき2百万支払い"
+],
+"ตรุษจีน กิจการนครสวรรค์รับ 5 ล้านต่อแห่ง": [
+"Chinese New Year: Nakhon Sawan businesses get ฿5M each",
+"春節:ナコーンサワンの物件は1件につき5百万"
+],
+"เจ้าของกิจการที่นครสวรรค์รับ 5 ล้านต่อแห่ง": [
+"Owners in Nakhon Sawan get ฿5M per business",
+"ナコーンサワンの物件オーナーは1件につき5百万"
+],
+"เดือนปิดงบ จบเดือนนี้ทุกกิจการจ่ายกำไร": [
+"Closing month: all businesses pay profit at month's end",
+"決算月:月末に全物件が利益を支払う"
+],
+"จบเดือนนี้ทุกกิจการจ่ายกำไรให้เจ้าของ": [
+"At the end of this month every business pays its owner",
+"今月末、全物件がオーナーに利益を支払います"
+],
+"บริษัท": [
+"Company",
+"会社"
+],
+"กำไรปีนี้": [
+"Profit",
+"今年の利益"
+],
+"ทรัพย์สินรวม": [
+"Total assets",
+"総資産"
+],
+"ผูกขาด {sts}": [
+"Monopoly: {sts}",
+"独占:{sts}"
+],
+"ปิดงบปีที่ {y}": [
+"Year {y} closing",
+"{y}年目の決算"
+],
+"ปิดงบปีที่ {y} ทุกกิจการจ่ายกำไร": [
+"Year {y} closing: every business pays profit",
+"{y}年目の決算:全物件が利益を支払った"
+],
+"อันดับ": [
+"Rank",
+"順位"
+],
+"จบเกม": [
+"Game over",
+"ゲーム終了"
+],
+"{p} คือเศรษฐีรถไฟ!": [
+"{p} is the Railway Tycoon!",
+"{p}が鉄道王に!"
+],
+"กลับหน้าแรก": [
+"Back to title",
+"タイトルへ戻る"
+],
+"ภาพ": [
+"Art",
+"画像"
+],
+"ราคาซื้อ": [
+"Price",
+"購入価格"
+],
+"ล้านบาท": [
+"million ฿",
+"百万バーツ"
+],
+"กำไรต่อปี": [
+"Profit / year",
+"年間利益"
+],
+"ครบ {n} แห่ง = ผูกขาด ×2": [
+"Own all {n} = monopoly ×2",
+"{n}件そろえると独占 ×2"
+],
+"คนแรกที่ไปถึงได้รับ": [
+"First to arrive wins",
+"一番乗りの賞金"
+],
+"การ์ดไอเทม": [
+"Item card",
+"アイテムカード"
+],
+"ใช้แล้วทิ้ง · ถือได้สูงสุด 5 ใบ": [
+"One use · hold up to 5",
+"使い切り・最大5枚"
+],
+"ผีป่วน!": [
+"Ghost trouble!",
+"おばけ騒動!"
+],
+"รถติด ทุกคนเดิน −1 ช่อง · กิจการท่องเที่ยวรับ 2 ล้าน/แห่ง": [
+"Traffic: everyone −1 space · tourism gets ฿2M each",
+"渋滞で全員 −1マス・観光物件に1件2百万"
+],
+"กิจการเกษตรรับ 3 ล้าน/แห่ง": [
+"Farm businesses get ฿3M each",
+"農業物件に1件3百万"
+],
+"กิจการเกษตรจ่ายค่าซ่อม 2 ล้าน/แห่ง": [
+"Farm businesses pay ฿2M repairs each",
+"農業物件は1件2百万の修理代"
+],
+"กิจการเชียงใหม่และสุโขทัยรับ 5 ล้าน/แห่ง": [
+"Chiang Mai & Sukhothai businesses get ฿5M each",
+"チェンマイとスコータイの物件に1件5百万"
+],
+"ท่องเที่ยวภาคเหนือจ่าย 2 ล้าน/แห่ง": [
+"Northern tourism pays ฿2M each",
+"北部の観光物件は1件2百万支払い"
+],
+"กิจการนครสวรรค์รับ 5 ล้าน/แห่ง": [
+"Nakhon Sawan businesses get ฿5M each",
+"ナコーンサワンの物件に1件5百万"
+],
+"จบเดือนนี้ทุกกิจการจ่ายกำไร ผูกขาด ×2": [
+"Every business pays profit this month · monopoly ×2",
+"今月末に全物件が利益を支払う・独占 ×2"
+],
+"รางเด่นชัย–แพร่–พะเยาเปิดใช้": [
+"Den Chai–Phrae–Phayao line opens",
+"デンチャイ〜プレー〜パヤオ線開通"
+],
+"มีภาพแล้ว": [
+"Cards with art:",
+"画像あり:"
+],
+"อัปโหลดได้เฉพาะเจ้าของเกมหรือคนที่ได้สิทธิ์ Can edit ที่ล็อกอินอยู่": [
+"Only the game owner or signed-in editors can upload",
+"アップロードできるのはオーナーか編集権限のある人だけです"
+],
+"ยังขาด:": [
+"Missing:",
+"未設定:"
+],
+"ภาพการ์ด": [
+"Card art",
+"カード画像"
+],
+"การ์ด:": [
+"Cards:",
+"カード:"
+],
+"ไม่มี": [
+"none",
+"なし"
+],
+"{n} ใบ (ซ่อนไว้)": [
+"{n} (hidden)",
+"{n}枚(非公開)"
+],
+"ยังไม่มีกิจการ": [
+"No businesses yet",
+"物件なし"
+],
+"ชุมทาง ไม่มีกิจการ หยุดแล้วจั่วการ์ดไอเทม": [
+"Junction — no businesses. Stop here to draw an item card",
+"分岐駅・物件なし。止まるとアイテムカードを引く"
+],
+"รางวัลถ้าเป็นจุดหมาย {m}": [
+"Prize when it's the destination: {m}",
+"目的地になったときの賞金:{m}"
+],
+"ยังว่าง": [
+"Available",
+"空き"
+],
+"สถานี": [
+"Station",
+"駅"
+],
+"เล่นเกมที่ค้างไว้ต่อ": [
+"Continue saved game",
+"続きから遊ぶ"
+],
+"เครื่องเดียว": [
+"One device",
+"1台プレイ"
+],
+"เล่นออนไลน์กับเพื่อน": [
+"Play online with friends",
+"友だちとオンライン"
+],
+"แต่ละคนใช้มือถือตัวเอง ผลัดกันเล่นทีละเทิร์น": [
+"Everyone on their own phone, taking turns",
+"それぞれ自分のスマホで順番にプレイ"
+],
+"กลับเข้าห้อง {c}": [
+"Rejoin room {c}",
+"ルーム{c}に戻る"
+],
+"ห้องออนไลน์ล่าสุดของคุณ": [
+"Your last online room",
+"前回のオンラインルーム"
+],
+"เล่นเครื่องเดียว": [
+"Play on one device",
+"1台で遊ぶ"
+],
+"2–4 คน ส่งมือถือหรือ iPad ต่อกัน": [
+"2–4 players passing one phone or iPad",
+"2〜4人でスマホやiPadを回して遊ぶ"
+],
+"อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ": [
+"Upload generated art for the cards",
+"生成した画像をカードにアップロード"
+],
+"เหนือ · กลาง · ตะวันออก · ตะวันตก": [
+"North · Central · East · West",
+"北部・中部・東部・西部"
+],
+"รถไฟเศรษฐีไทย": [
+"Thai Railway Tycoon",
+"タイ鉄道王"
+],
+"ปิดเพลง": [
+"Music off",
+"音楽オフ"
+],
+"เปิดเพลง": [
+"Music on",
+"音楽オン"
+],
+"ปิดเสียงเอฟเฟกต์": [
+"Sound FX off",
+"効果音オフ"
+],
+"เปิดเสียงเอฟเฟกต์": [
+"Sound FX on",
+"効果音オン"
+],
+"จำนวนผู้เล่น": [
+"Players",
+"人数"
+],
+"{n} คน": [
+"{n}",
+"{n}人"
+],
+"ชื่อบริษัท": [
+"Company names",
+"会社名"
+],
+"ชื่อผู้เล่น": [
+"Player name",
+"プレイヤー名"
+],
+"คน": [
+"Human",
+"人間"
+],
+"แตะปุ่มด้านขวาเพื่อสลับ คน / บอท": [
+"Tap the right button to switch human / bot",
+"右のボタンで人間/ボットを切り替え"
+],
+"ความยาวเกม": [
+"Game length",
+"ゲームの長さ"
+],
+"1 ปี · ราว 45 นาที": [
+"1 year · ~45 min",
+"1年・約45分"
+],
+"2 ปี · มีรางใหม่": [
+"2 years · new line",
+"2年・新線あり"
+],
+"แผนที่": [
+"Map",
+"マップ"
+],
+"ทุกภาค · 27 สถานี": [
+"All regions · 27 stations",
+"全地域・27駅"
+],
+"สายเหนือ · 15 สถานี": [
+"Northern line · 15 stations",
+"北線・15駅"
+],
+"สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า": [
+"Northern line: destinations come only from the original northern line — a shorter game",
+"北線:目的地は元の北線からだけ選ばれ、ゲームが短めになります"
+],
+"ควิซ": [
+"Quiz",
+"クイズ"
+],
+"เปิด": [
+"On",
+"オン"
+],
+"ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส": [
+"Ghosts challenge you to a quiz before causing trouble, and some stations have bonus quizzes",
+"おばけはいたずら前にクイズで挑戦。駅のボーナスクイズもあります"
+],
+"เวลาตอบควิซ": [
+"Quiz timer",
+"クイズの制限時間"
+],
+"{n} วิ": [
+"{n}s",
+"{n}秒"
+],
+"ไม่จับเวลา": [
+"No timer",
+"なし"
+],
+"กลับ": [
+"Back",
+"戻る"
+],
+"เริ่มเกม": [
+"Start game",
+"ゲーム開始"
+],
+"จุดหมายแรก": [
+"First destination",
+"最初の目的地"
+],
+"ทุกคนมุ่งหน้าไป <b>{st}</b> คนแรกที่ไปถึงได้ {m}": [
+"Everyone heads for <b>{st}</b> — first to arrive wins {m}",
+"全員<b>{st}</b>を目指そう!一番乗りは{m}"
+],
+"กำลังเชื่อมต่อ…": [
+"Connecting…",
+"接続中…"
+],
+"เล่นออนไลน์ไม่ได้ในตอนนี้": [
+"Online play isn't available right now",
+"今はオンラインで遊べません"
+],
+"หน้านี้เชื่อมต่อที่เก็บห้องเกมไม่ได้ ลองเปิดลิงก์ใหม่ในเว็บ claude.ai โดยล็อกอินด้วยอีเมลที่ได้รับเชิญ": [
+"This page can't reach the room storage. Open the link on claude.ai, signed in with the invited email",
+"ルームの保存先に接続できません。招待されたメールでclaude.aiにログインしてリンクを開いてください"
+],
+"ยังเล่นแบบเครื่องเดียวได้ตามปกติ": [
+"You can still play on one device",
+"1台プレイはそのまま遊べます"
+],
+"บัญชีนี้ดูได้อย่างเดียว": [
+"This account is view-only",
+"このアカウントは閲覧のみです"
+],
+"บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของเกมกด Share แล้วตั้งสิทธิ์ของคุณเป็น Can edit และตั้ง Who has access เป็น Only you (ไม่เปิดลิงก์สาธารณะ)": [
+"This account can't edit yet. Ask the owner to open Share and give you Can edit",
+"まだ編集権限がありません。オーナーに「Share」から「Can edit」を付けてもらってください"
+],
+"เปลี่ยนแล้วให้โหลดหน้านี้ใหม่": [
+"Then reload this page",
+"変更後、このページを再読み込みしてください"
+],
+"สร้างห้องใหม่": [
+"Create a room",
+"ルームを作る"
+],
+"ได้รหัสห้อง 4 ตัวให้เพื่อนกดเข้า": [
+"Get a 4-letter code for friends to join",
+"友だちが入れる4文字のコードがもらえます"
+],
+"ห้องที่เปิดอยู่": [
+"Open rooms",
+"開いているルーム"
+],
+"กำลังเล่น": [
+"Playing",
+"プレイ中"
+],
+"ห้องของ{p}": [
+"{p}'s room",
+"{p}のルーム"
+],
+"เพื่อน": [
+"Friend",
+"友だち"
+],
+"กลับเข้า": [
+"Rejoin",
+"戻る"
+],
+"เข้าร่วม": [
+"Join",
+"参加"
+],
+"ยังไม่มีห้อง สร้างห้องแล้วบอกรหัสให้เพื่อน": [
+"No rooms yet — create one and share the code",
+"ルームがありません。作ってコードを友だちに伝えよう"
+],
+"เล่นออนไลน์": [
+"Online",
+"オンライン"
+],
+"เลือกห้อง": [
+"Choose a room",
+"ルームを選ぶ"
+],
+"สร้างห้องไม่ได้": [
+"Couldn't create a room",
+"ルームを作れませんでした"
+],
+"บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของแชร์แบบ Editor": [
+"This account can't edit yet. Ask the owner to share as Editor",
+"まだ編集権限がありません。オーナーに編集者として共有してもらってください"
+],
+"ลองใหม่อีกครั้ง": [
+"Please try again",
+"もう一度お試しください"
+],
+"มีคนกำลังเข้าห้องนี้ ลองอีกครั้ง": [
+"Someone else is joining — try again",
+"他の人が参加中です。もう一度どうぞ"
+],
+"ไม่พบห้อง {c}": [
+"Room {c} not found",
+"ルーム{c}が見つかりません"
+],
+"ห้องนี้เริ่มเล่นไปแล้ว": [
+"That game has already started",
+"このルームはもう始まっています"
+],
+"ห้องเต็มแล้ว": [
+"Room is full",
+"ルームは満員です"
+],
+"เข้าห้องไม่ได้ ลองใหม่": [
+"Couldn't join — try again",
+"参加できませんでした。もう一度どうぞ"
+],
+"หลุดการเชื่อมต่อกับห้อง": [
+"Disconnected from the room",
+"ルームから切断されました"
+],
+"ห้องนี้ถูกปิดแล้ว": [
+"This room was closed",
+"このルームは閉じられました"
+],
+"บอกรหัสนี้ให้เพื่อน แล้วให้เพื่อนเปิดลิงก์เดียวกัน กด \"เล่นออนไลน์\" และเลือกห้องนี้": [
+"Share this code. Friends open the same link, tap \"Play online\" and pick this room",
+"このコードを友だちに伝えよう。同じリンクを開いて「オンライン」からこのルームを選びます"
+],
+"ผู้เล่น": [
+"Players",
+"プレイヤー"
+],
+"เจ้าของห้อง": [
+"Host",
+"ホスト"
+],
+"(เจ้าของห้องเลือก)": [
+"(host decides)",
+"(ホストが選択)"
+],
+"1 ปี": [
+"1 year",
+"1年"
+],
+"ทุกภาค": [
+"All regions",
+"全地域"
+],
+"สายเหนือ": [
+"Northern line",
+"北線"
+],
+"รอเพื่อนหรือเพิ่มบอทอย่างน้อย 1 คน": [
+"Wait for a friend or add at least 1 bot",
+"友だちを待つか、ボットを1人以上追加してください"
+],
+"พร้อมแล้วกดเริ่มเกม · บอทเล่นบนเครื่องของคุณ ถ้าคุณปิดเกม ตาของบอทจะหยุดรอ": [
+"Ready — tap Start. Bots run on your device; if you close the game, bot turns wait",
+"準備OKならスタート。ボットはあなたの端末で動きます。閉じるとボットの番は止まります"
+],
+"รอเจ้าของห้องกดเริ่มเกม": [
+"Waiting for the host to start",
+"ホストの開始を待っています"
+],
+"ปิดห้อง": [
+"Close room",
+"ルームを閉じる"
+],
+"ออกจากห้อง": [
+"Leave room",
+"ルームを出る"
+],
+"เพิ่มบอท": [
+"Add bot",
+"ボット追加"
+],
+"ลบบอท": [
+"Remove bot",
+"ボット削除"
+],
+"ห้องออนไลน์": [
+"Online room",
+"オンラインルーム"
+],
+"รอเพื่อนเข้าห้อง": [
+"Waiting for friends",
+"友だちを待っています"
+],
+"เมนู": [
+"Menu",
+"メニュー"
+],
+"ห้อง <b>{c}</b> · คุณคือ {p}": [
+"Room <b>{c}</b> · you are {p}",
+"ルーム<b>{c}</b>・あなたは{p}"
+],
+"ผู้ชม": [
+"spectator",
+"観戦者"
+],
+"กติกาย่อ": [
+"Quick rules",
+"かんたんルール"
+],
+"ออกไปหน้าแรก": [
+"Leave to title",
+"タイトルへ"
+],
+"เริ่มเกมใหม่": [
+"New game",
+"新しいゲーム"
+],
+"หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล": [
+"Each month everyone takes 1 turn. Months start with a seasonal event",
+"1か月に全員が1ターンずつ。月の始めに季節のイベント"
+],
+"ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง": [
+"Use up to 1 card, roll, then pick a highlighted space. No backtracking mid-move",
+"カードを1枚まで使ってサイコロ。光ったマスを選ぶ。途中で引き返しはなし"
+],
+"ถึงจุดหมายคนแรกได้เงินรางวัล แล้วผีไปติดคนที่อยู่ไกลที่สุด": [
+"First to the destination wins the prize; the ghost haunts whoever is farthest",
+"目的地に一番乗りで賞金。おばけは一番遠い人に取りつく"
+],
+"ผีทำเรื่องวุ่นทุกต้นเทิร์น อยู่ครบ 3 เทิร์นกลายร่างยักษ์ เดินผ่านคนอื่นเพื่อส่งผีต่อ": [
+"The ghost causes trouble every turn and turns giant after 3 turns. Pass another player to hand it on",
+"おばけは毎ターンいたずら。3ターンで巨大化。他の人とすれ違うと移せる"
+],
+"หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2": [
+"Stop at stations to buy businesses. In March every business pays profit; own a whole station for ×2",
+"駅で物件を購入。3月の決算で利益、駅を独占すると ×2"
+],
+"เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา": [
+"In debt at turn end? Your cheapest businesses are sold to the bank at half price",
+"ターン終了時に赤字なら、安い物件から半額で銀行に売却"
+],
+"จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ": [
+"Most total assets (cash + business value) wins",
+"最後に総資産(現金+物件価格)が一番多い人の勝ち"
+],
+"เริ่มเกมใหม่?": [
+"Start a new game?",
+"新しいゲームを始めますか?"
+],
+"เกมที่เล่นอยู่บนเครื่องนี้จะหายไป": [
+"The game on this device will be lost",
+"この端末のゲームは消えます"
+],
+"เริ่มใหม่": [
+"Start over",
+"やり直す"
+]
+});
+const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล แล้วผีไปติดคนที่อยู่ไกลที่สุด", "ผีทำเรื่องวุ่นทุกต้นเทิร์น อยู่ครบ 3 เทิร์นกลายร่างยักษ์ เดินผ่านคนอื่นเพื่อส่งผีต่อ", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
 const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
@@ -384,7 +1972,7 @@ const ON={db:null,user:null,me:null,ref:null,unsub:null,listUnsub:null,meta:null
 let zoom=1;
 const $=id=>document.getElementById(id);
 const rnd=n=>1+Math.floor(Math.random()*n);
-const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("th-TH")+" ล้าน";
+const fmt=n=>money(n);
 const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 const sleep=ms=>new Promise(r=>setTimeout(r,reduced()?Math.min(ms,40):ms));
 const cur=()=>S.players[S.turn];
@@ -395,7 +1983,7 @@ const botNow=()=>!!(S&&S.phase==="play"&&S.players[S.turn]&&S.players[S.turn].bo
 const isBotTurn=()=>botNow()&&amHost();
 const assets=i=>S.players[i].money+PROPS.filter(p=>S.owners[p.id]===i).reduce((t,p)=>t+p.price,0);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function log(t){S.log.unshift(t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1; sfxLog(t);}
+function log(t,a){S.log.unshift(a?[t,a]:t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1; sfxLog(t);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
 function newGame(names,years,map){
@@ -405,7 +1993,7 @@ function newGame(names,years,map){
      owners:{},deck:shuffle(deck),discard:[],ghost:{holder:-1,count:0},skip:names.map(()=>false),
      dest:null,map:map||"all",log:[],logN:0,songkran:false,stage:"begin",turnId:1,rev:0,tf:{nDice:1,cardUsed:false,locked:false},lastMove:null,report:null};
   S.dest=drawDest(true);
-  log("เริ่มเกม ทุกคนออกจากกรุงเทพฯ พร้อมเงิน 100 ล้าน");
+  log("เริ่มเกม ทุกคนออกจาก{st}พร้อมเงิน {m}",{st:"BKK",m:100});
 }
 function drawDest(first){
   const taken=new Set(S.players.map(p=>p.node));
@@ -434,7 +2022,7 @@ function commit(){
   ON.meta.status=body.status;
   const ref=ON.ref;
   ON.writeQ=ON.writeQ.then(()=>ref.set(body)).catch(e=>{
-    if(!ON.warned){ON.warned=true; toast(e&&e.code==="invalid_argument"?"บันทึกไม่ได้: บัญชีนี้ยังไม่มีสิทธิ์แก้ไขเกม ให้เจ้าของแชร์แบบ Editor":"การเชื่อมต่อมีปัญหา เกมอาจไม่ซิงก์");}
+    if(!ON.warned){ON.warned=true; toast(T(e&&e.code==="invalid_argument"?"บันทึกไม่ได้: บัญชีนี้ยังไม่มีสิทธิ์แก้ไขเกม ให้เจ้าของแชร์แบบ Editor":"การเชื่อมต่อมีปัญหา เกมอาจไม่ซิงก์"));}
   });
 }
 
@@ -442,18 +2030,18 @@ function commit(){
 const svg=$("board");
 function buildBoard(){
   let h=`<rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><rect x="0" y="236" width="210" height="560" fill="var(--field-c)"/><path d="M104 487H210V796H104z" fill="var(--field-e)"/><path d="M0 588H104V796H0z" fill="var(--field-w)"/>`;
-  h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">ภาคตะวันออก ▶</text><text x="6" y="630" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ภาคตะวันตก</text>`;
-  h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ภาคเหนือ</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ภาคกลาง</text>`;
+  h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">${T("ภาคตะวันออก")} ▶</text><text x="6" y="630" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ${T("ภาคตะวันตก")}</text>`;
+  h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ${T("ภาคเหนือ")}</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ${T("ภาคกลาง")}</text>`;
   for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
   h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
-  h+=`<text class="barrier" x="${86+DX}" y="161" text-anchor="middle" font-size="3.4" font-weight="600" fill="#C8361E" font-family="Mitr">รางใหม่ เปิด เม.ย. ปีที่ 2</text>`;
+  h+=`<text class="barrier" x="${86+DX}" y="161" text-anchor="middle" font-size="3.4" font-weight="600" fill="#C8361E" font-family="Mitr">${T("รางใหม่ เปิด เม.ย. ปีที่ 2")}</text>`;
   for(const [id,n] of Object.entries(NODES)){
     if(n.t==="st"||n.t==="jn"){
       h+=`<circle class="stn-ring" cx="${n.x}" cy="${n.y}" r="6.4"/>`;
       if(n.t==="jn") h+=`<circle cx="${n.x}" cy="${n.y}" r="3.7" fill="var(--card)"/><text x="${n.x}" y="${n.y+1.5}" text-anchor="middle" font-size="4.2" font-weight="700" fill="#2B2100">?</text>`;
       else h+=`<text class="stn-num" x="${n.x}" y="${n.y+1.8}" text-anchor="middle">${PROPS_AT(id).length}</text>`;
-      const r=LABEL_R.has(id), tx=r?n.x+9:n.x-9;
-      h+=`<text class="stn-name" x="${tx}" y="${n.y+1}" text-anchor="${r?"start":"end"}">${NAME[id]}</text>`;
+      const r=LABEL_R.has(id), tx=r?n.x+9:n.x-9, nm=stN(id), avail=r?207-tx:tx-1.5, est=LANG==="th"?0:nm.length*(LANG==="ja"?6:3.15);
+      h+=`<text class="stn-name" x="${tx}" y="${n.y+1}" text-anchor="${r?"start":"end"}"${est>avail?` textLength="${avail.toFixed(1)}" lengthAdjust="spacingAndGlyphs"`:""}>${esc(nm)}</text>`;
       h+=`<circle class="stn-hit" data-stn="${id}" cx="${n.x}" cy="${n.y}" r="8"/>`;
     } else {
       const s=n.t==="g"?5.2:7.4;
@@ -516,52 +2104,52 @@ async function animateMove(lm){
 }
 
 // ================= PANEL =================
-function dieHTML(v){const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[v]||[];return `<div class="die" aria-label="ลูกเต๋า ${v}">${[...Array(9)].map((_,i)=>`<i class="${on.includes(i)?"on":""}"></i>`).join("")}</div>`;}
+function dieHTML(v){const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[v]||[];return `<div class="die" aria-label="${T("ลูกเต๋า")} ${v}">${[...Array(9)].map((_,i)=>`<i class="${on.includes(i)?"on":""}"></i>`).join("")}</div>`;}
 function tokSVG(c,s=34){return `<svg class="tokbig" width="${s}" height="${s}" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="${c}"/><rect x="8" y="11" width="18" height="10" rx="3" fill="#fff"/><rect x="10.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="15.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="20.5" y="13" width="3.5" height="3.5" rx="1" fill="${c}"/><circle cx="12" cy="23.5" r="1.8" fill="#fff"/><circle cx="22" cy="23.5" r="1.8" fill="#fff"/></svg>`;}
 function renderTop(){
-  $("chipMonth").innerHTML=`<b>${MONTHS[S.month]}</b> ปี<span class="yl">ที่</span> ${S.year}/${S.years}`;
-  $("chipDest").innerHTML=S.dest?`<span class="lbl">จุดหมาย </span><b>${NAME[S.dest]}</b> ${REWARD[S.dest]}<span class="ml"> ล้าน</span>`:"จุดหมาย —";
+  $("chipMonth").innerHTML=`<b>${monthN(S.month)}</b> ${T("ปี<span class=\"yl\">ที่</span> {y}/{ys}",{y:S.year,ys:S.years})}`;
+  $("chipDest").innerHTML=S.dest?`<span class="lbl">${T("จุดหมาย")} </span><b>${stN(S.dest)}</b> ${money(REWARD[S.dest])}`:T("จุดหมาย")+" —";
 }
 function renderPanel(){
   const p=cur(), i=S.turn, me=mySeat();
-  const handHTML=(MODE==="online"&&i!==me)?`<span class="label" style="font-weight:400">การ์ดในมือ ${p.cards.length} ใบ</span>`:p.cards.length?p.cards.map(k=>`<span class="mini">${ITEMS[k].n}</span>`).join(""):`<span class="label" style="font-weight:400">ยังไม่มีการ์ด</span>`;
+  const handHTML=(MODE==="online"&&i!==me)?`<span class="label" style="font-weight:400">${T("การ์ดในมือ {n} ใบ",{n:p.cards.length})}</span>`:p.cards.length?p.cards.map(k=>`<span class="mini">${itemN(k)}</span>`).join(""):`<span class="label" style="font-weight:400">${T("ยังไม่มีการ์ด")}</span>`;
   let prompt="", actions="";
   const ghostMine=S.ghost.holder===i;
-  if(S.phase!=="play"){ prompt=S.phase==="over"?"จบเกมแล้ว":"ตั้งค่าเกม"; }
-  else if(botNow()){ prompt=`${esc(p.name)} (บอท) กำลังเล่น…`; }
-  else if(!isMyTurn()){ prompt=`รอ${esc(p.name)}เล่นอยู่… ทุกอย่างจะอัปเดตบนจอคุณเอง`; }
+  if(S.phase!=="play"){ prompt=T(S.phase==="over"?"จบเกมแล้ว":"ตั้งค่าเกม"); }
+  else if(botNow()){ prompt=T("{p} (บอท) กำลังเล่น…",{p:esc(p.name)}); }
+  else if(!isMyTurn()){ prompt=T("รอ{p}เล่นอยู่… ทุกอย่างจะอัปเดตบนจอคุณเอง",{p:esc(p.name)}); }
   else if(UI.mode==="choose"){
     const usable=p.cards.some(k=>canUse(k));
-    prompt=S.tf.locked?"ผีเจ้าที่ขี้งอน: เทิร์นนี้เดินได้ 1 ช่อง":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย");
-    actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>ใช้การ์ด</button><button class="btn primary" id="aRoll">${S.tf.locked?"เดิน 1 ช่อง":`ทอยเต๋า${S.tf.nDice>1?` ${S.tf.nDice} ลูก`:""}`}</button>`;
+    prompt=T(S.tf.locked?"ผีเจ้าที่ขี้งอน: เทิร์นนี้เดินได้ 1 ช่อง":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย"));
+    actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>${T("ใช้การ์ด")}</button><button class="btn primary" id="aRoll">${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`;
   } else if(UI.mode==="pick"){
-    prompt=`ได้ ${UI.steps} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง`;
-    actions=`<div class="picks">${[...UI.opts.keys()].map(id=>`<button class="pick" data-pick="${id}">${labelOf(id)}${id===S.dest?`<small>จุดหมาย</small>`:""}</button>`).join("")}</div>`;
+    prompt=T("ได้ {n} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง",{n:UI.steps});
+    actions=`<div class="picks">${[...UI.opts.keys()].map(id=>`<button class="pick" data-pick="${id}">${labelOf(id)}${id===S.dest?`<small>${T("จุดหมาย")}</small>`:""}</button>`).join("")}</div>`;
   } else prompt=UI.msg||"…";
   const dice=UI.dice.length?`<div class="dice">${UI.dice.map(dieHTML).join("")}</div>`:"";
-  const rows=S.players.map((q,k)=>`<button class="prow ${k===i?"cur":""}" data-player="${k}"><span class="dot" style="background:${q.color}"></span><span class="n">${esc(q.name)}${q.bot?`<span class="you" style="background:#6B5E7A">บอท</span>`:""}${k===me?`<span class="you">คุณ</span>`:""}${S.ghost.holder===k?` <span class="ghostb">ผี ${S.ghost.count}/3</span>`:""}${S.skip[k]?` <span class="mini">ติดม็อบ</span>`:""}</span><span class="v ${q.money<0?"neg":""}">${fmt(q.money)}</span><span class="a">รวม ${assets(k)}</span></button>`).join("");
+  const rows=S.players.map((q,k)=>`<button class="prow ${k===i?"cur":""}" data-player="${k}"><span class="dot" style="background:${q.color}"></span><span class="n">${esc(q.name)}${q.bot?`<span class="you" style="background:#6B5E7A">${T("บอท")}</span>`:""}${k===me?`<span class="you">${T("คุณ")}</span>`:""}${S.ghost.holder===k?` <span class="ghostb">${T("ผี {n}/3",{n:S.ghost.count})}</span>`:""}${S.skip[k]?` <span class="mini">${T("ติดม็อบ")}</span>`:""}</span><span class="v ${q.money<0?"neg":""}">${fmt(q.money)}</span><span class="a">${T("รวม {n}",{n:assets(k)})}</span></button>`).join("");
   $("panel").innerHTML=`
   <section class="card" aria-live="polite">
-    <div class="who">${tokSVG(p.color)}<div><div class="nm">${esc(p.name)}${i===me?`<span class="you">คุณ</span>`:""}</div><div class="sub">อยู่ที่${labelOf(p.node)}${ghostMine?` · <span class="ghostb">ผีติดตัว ${S.ghost.count}/3</span>`:""}</div></div>
-      <div class="money"><b class="${p.money<0?"neg":""}">${fmt(p.money)}</b><small>ทรัพย์สินรวม ${assets(i)} ล้าน</small></div></div>
+    <div class="who">${tokSVG(p.color)}<div><div class="nm">${esc(p.name)}${i===me?`<span class="you">${T("คุณ")}</span>`:""}</div><div class="sub">${T("อยู่ที่{x}",{x:labelOf(p.node)})}${ghostMine?` · <span class="ghostb">${T("ผีติดตัว {n}/3",{n:S.ghost.count})}</span>`:""}</div></div>
+      <div class="money"><b class="${p.money<0?"neg":""}">${fmt(p.money)}</b><small>${T("ทรัพย์สินรวม {m}",{m:assets(i)})}</small></div></div>
     <div class="hand">${handHTML}</div>
     <div class="prompt">${prompt}</div>
     ${dice}
     <div class="actions">${actions}</div>
   </section>
-  <section class="card"><div class="label">อันดับ · แตะเพื่อดูกิจการ</div><div class="board-list">${rows}</div></section>
-  <section class="card"><div class="label">ข่าวล่าสุด</div><div class="log">${S.log.slice(0,5).map(t=>`<div>${esc(t)}</div>`).join("")}</div></section>`;
+  <section class="card"><div class="label">${T("อันดับ · แตะเพื่อดูกิจการ")}</div><div class="board-list">${rows}</div></section>
+  <section class="card"><div class="label">${T("ข่าวล่าสุด")}</div><div class="log">${S.log.slice(0,5).map(t=>`<div>${esc(logText(t))}</div>`).join("")}</div></section>`;
   if(isMyTurn()&&UI.mode==="choose"){ $("aRoll").onclick=onRoll; const c=$("aCard"); if(c) c.onclick=onCard; }
   document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>onPick(b.dataset.pick));
   document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
 }
-function labelOf(id){ if(NAME[id]) return NAME[id]; const t=NODES[id].t; return {b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ทางรถทัวร์"}[t]; }
+function labelOf(id){ if(NAME[id]) return stN(id); const t=NODES[id].t; return T({b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ทางรถทัวร์"}[t]); }
 function render(){ if(!S) return; renderTop(); renderBoard(); renderPanel(); }
 function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;$("toasts").appendChild(el);setTimeout(()=>el.remove(),3600);while($("toasts").children.length>3)$("toasts").firstChild.remove();}
 
 // ================= MODAL =================
 let modalResolve=null;
-function modal({eyebrow="",title,html="",buttons=[{label:"ตกลง",value:true,primary:true}]}){
+function modal({eyebrow="",title,html="",buttons=[{label:T("ตกลง"),value:true,primary:true}]}){
   if(modalResolve){const r=modalResolve;modalResolve=null;r(undefined);}
   $("modal").classList.remove("again");
   return new Promise(res=>{
@@ -579,12 +2167,12 @@ function closeModal(){ if(modalResolve){const r=modalResolve;modalResolve=null;r
 function brief(o,ms=1500){const p=modal({...o,buttons:[]});const r=modalResolve;setTimeout(()=>{if(modalResolve===r) closeModal();},reduced()?400:ms);return p;}
 const say=(o,ms)=>isBotTurn()?brief(o,ms):modal(o);
 const info=(title,html,eyebrow)=>say({title,html,eyebrow});
-function propRow(p,right){const c=TYPE_COL[p.t];return `<div class="prop"><div class="ic" style="background:${c}22">${typeIcon(p.t,c)}</div><div><div class="pn">${p.n}</div><div class="pm">${p.t} · ราคา ${p.price} · กำไร ${p.profit}/ปี</div></div><div>${right}</div></div>`;}
+function propRow(p,right){const c=TYPE_COL[p.t];return `<div class="prop"><div class="ic" style="background:${c}22">${typeIcon(p.t,c)}</div><div><div class="pn">${propN(p)}</div><div class="pm">${typeN(p.t)} · ${T("ราคา {a} · กำไร {b}/ปี",{a:p.price,b:p.profit})}</div></div><div>${right}</div></div>`;}
 function typeIcon(t,c){const g={[FOOD]:`<path d="M5 13h22a11 10 0 0 1-22 0z" fill="${c}"/><path d="M11 10c-1.5-2 1.5-3.5 0-6M16 10c-1.5-2 1.5-3.5 0-6M21 10c-1.5-2 1.5-3.5 0-6" stroke="${c}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`,[AGRI]:`<path d="M16 29V14" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/><path d="M16 16C8 16 5 10 6 4c7 0 10 4 10 12z" fill="${c}"/><path d="M16 19c7 0 10-5 9-10-6 0-9 4-9 10z" fill="${c}" opacity=".7"/>`,[TOUR]:`<path d="M3 27l10-16 6 9 4-5 7 12z" fill="${c}"/><path d="M13 11V4l6 2.5-6 2.5" fill="${c}" stroke="${c}" stroke-width="1.4"/>`,[IND]:`<path d="M3 28V15l7 5v-5l7 5v-5l7 5V6h4v22z" fill="${c}"/>`}[t];return `<svg width="22" height="22" viewBox="0 0 32 32">${g}</svg>`;}
 function ownerTag(o){return o===undefined?"":`<span class="owner-tag"><span class="dot" style="background:${S.players[o].color}"></span>${esc(S.players[o].name)}</span>`;}
 function choosePlayer(title,exclude,html=""){
   const btns=S.players.map((p,k)=>({label:esc(p.name),value:k})).filter(b=>b.value!==exclude);
-  return modal({title,html,buttons:[...btns,{label:"ยกเลิก",value:null}]});
+  return modal({title,html,buttons:[...btns,{label:T("ยกเลิก"),value:null}]});
 }
 
 // ================= ACTIONS =================
@@ -600,8 +2188,8 @@ async function onCard(){
   if(UI.busy||!isMyTurn()) return;
   const p=cur();
   const uniq=[...new Set(p.cards)];
-  const html=`<p class="note" style="margin-top:0">ปัดซ้ายขวาดูการ์ด</p><div class="gc-row">${uniq.map(k=>{const n=p.cards.filter(c=>c===k).length;return `<div class="gc-col">${itemCard(k)}${canUse(k)?`<button class="btn gold" data-val="${k}">ใช้${n>1?` (มี ${n} ใบ)`:""}</button>`:`<div class="pm" style="min-height:40px;display:grid;place-items:center">${k==="amulet"||k==="insure"?"ใช้อัตโนมัติเมื่อถึงเวลา":"ใช้ตอนนี้ไม่ได้"}${n>1?` · มี ${n} ใบ`:""}</div>`}</div>`;}).join("")}</div>`;
-  const k=await modal({title:"การ์ดในมือ",html,buttons:[{label:"ปิด",value:null}]});
+  const html=`<p class="note" style="margin-top:0">${T("ปัดซ้ายขวาดูการ์ด")}</p><div class="gc-row">${uniq.map(k=>{const n=p.cards.filter(c=>c===k).length;return `<div class="gc-col">${itemCard(k)}${canUse(k)?`<button class="btn gold" data-val="${k}">${T("ใช้")}${n>1?` ${T("(มี {n} ใบ)",{n})}`:""}</button>`:`<div class="pm" style="min-height:40px;display:grid;place-items:center">${T(k==="amulet"||k==="insure"?"ใช้อัตโนมัติเมื่อถึงเวลา":"ใช้ตอนนี้ไม่ได้")}${n>1?` · ${T("(มี {n} ใบ)",{n})}`:""}</div>`}</div>`;}).join("")}</div>`;
+  const k=await modal({title:T("การ์ดในมือ"),html,buttons:[{label:T("ปิด"),value:null}]});
   if(!k) return;
   UI.busy=true;
   const r=await useCard(k);
@@ -621,19 +2209,19 @@ async function teleport(to,arrived){
 async function useCard(k){
   const i=S.turn,p=cur();
   switch(k){
-    case "exp": S.tf.nDice=2; log(`${p.name} ใช้รถด่วน`); return "ok";
-    case "sexp": S.tf.nDice=3; log(`${p.name} ใช้รถด่วนพิเศษ`); return "ok";
+    case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); return "ok";
+    case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); return "ok";
     case "drive":{
-      const v=await modal({title:"ขับเองกำหนดเอง",html:"เลือกจำนวนช่องที่จะเดิน",buttons:[1,2,3,4,5,6].map(n=>({label:String(n),value:n})).concat([{label:"ยกเลิก",value:null}])});
-      if(!v) return "cancel"; log(`${p.name} ขับเอง ${v} ช่อง`); return v; }
-    case "home": discardCard(i,k); log(`${p.name} ใช้ตั๋วกลับบ้าน`); await teleport("BKK",S.dest==="BKK"); p.cards.push(k); return "moved";
-    case "plane": discardCard(i,k); log(`${p.name} เหมาเครื่องบินไป${NAME[S.dest]}`); await teleport(S.dest,true); p.cards.push(k); return "moved";
-    case "mob":{ const t=await choosePlayer("ม็อบปิดถนนใคร",i,"คนที่เลือกจะเดินไม่ได้ในเทิร์นหน้าของเขา"); if(t===null||t===undefined) return "cancel"; S.skip[t]=true; log(`${p.name} ส่งม็อบไปปิดถนน${S.players[t].name}`); return "ok"; }
-    case "pass":{ const t=await choosePlayer("ฝากผีให้ใคร",i); if(t===null||t===undefined) return "cancel"; S.ghost={holder:t,count:0}; log(`${p.name} ฝากผีให้${S.players[t].name}`); return "ok"; }
-    case "lotto":{ const d=rnd(6); UI.dice=[d]; render(); if(d===6){p.money+=30;log(`${p.name} ถูกลอตเตอรี่ รับ 30 ล้าน`);await info("ถูกรางวัล!",`ทอยได้ 6 รับ <b>30 ล้าน</b>`);} else {p.money-=1;log(`${p.name} ซื้อลอตเตอรี่ไม่ถูก เสีย 1 ล้าน`);await info("ไม่ถูก",`ทอยได้ ${d} เสีย 1 ล้าน`);} return "ok"; }
+      const v=await modal({title:itemN("drive"),html:T("เลือกจำนวนช่องที่จะเดิน"),buttons:[1,2,3,4,5,6].map(n=>({label:String(n),value:n})).concat([{label:T("ยกเลิก"),value:null}])});
+      if(!v) return "cancel"; log("{p} ขับเอง {n} ช่อง",{p:p.name,n:v}); return v; }
+    case "home": discardCard(i,k); log("{p} ใช้{it}",{p:p.name,it:"home"}); await teleport("BKK",S.dest==="BKK"); p.cards.push(k); return "moved";
+    case "plane": discardCard(i,k); log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); p.cards.push(k); return "moved";
+    case "mob":{ const t=await choosePlayer(T("ม็อบปิดถนนใคร"),i,T("คนที่เลือกจะเดินไม่ได้ในเทิร์นหน้าของเขา")); if(t===null||t===undefined) return "cancel"; S.skip[t]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
+    case "pass":{ const t=await choosePlayer(T("ฝากผีให้ใคร"),i); if(t===null||t===undefined) return "cancel"; S.ghost={holder:t,count:0}; log("{p} ฝากผีให้{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
+    case "lotto":{ const d=rnd(6); UI.dice=[d]; render(); if(d===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});await info(T("ถูกรางวัล!"),T("ทอยได้ 6 รับ <b>{m}</b>",{m:30}));} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});await info(T("ไม่ถูก"),T("ทอยได้ {d} เสีย {m}",{d,m:1}));} return "ok"; }
     case "viral":{ const mine=PROPS.filter(q=>S.owners[q.id]===i);
-      const v=await modal({title:"รีวิวไวรัล",html:`<div class="plist">${mine.map(q=>propRow(q,`<button class="btn gold" data-val="${q.id}">+${q.profit}</button>`)).join("")}</div>`,buttons:[{label:"ยกเลิก",value:null}]});
-      if(v===null||v===undefined) return "cancel"; const q=PROPS[+v]; p.money+=q.profit; log(`${q.n}ของ${p.name} ดังในโซเชียล รับ ${q.profit} ล้าน`); return "ok"; }
+      const v=await modal({title:itemN("viral"),html:`<div class="plist">${mine.map(q=>propRow(q,`<button class="btn gold" data-val="${q.id}">+${q.profit}</button>`)).join("")}</div>`,buttons:[{label:T("ยกเลิก"),value:null}]});
+      if(v===null||v===undefined) return "cancel"; const q=PROPS[+v]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); return "ok"; }
   }
   return "cancel";
 }
@@ -661,19 +2249,19 @@ function endpoints(start,steps){
 }
 function goMove(steps){
   UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(cur().node,steps);
-  if(S.songkran&&!S.tf.locked) log("สงกรานต์รถติด แต้มเดิน −1");
+  if(S.songkran&&!S.tf.locked) log("สงกรานต์รถติด แต้มเดิน −1",{});
   render();
   const first=[...UI.opts.keys()][0]; if(first) focusNode(first);
 }
 async function onPick(id,fromBot){
   if(botNow()&&!fromBot) return;
   if(UI.mode!=="pick"||UI.busy||!UI.opts||!UI.opts.has(id)) return;
-  UI.busy=true; const path=UI.opts.get(id); UI.mode="moving"; UI.msg="กำลังเดินทาง…"; UI.opts=null;
+  UI.busy=true; const path=UI.opts.get(id); UI.mode="moving"; UI.msg=T("กำลังเดินทาง…"); UI.opts=null;
   const i=S.turn,p=cur(); let passed=null;
   if(S.ghost.holder===i){ for(const n of path.slice(1)){ const o=S.players.findIndex((q,k)=>k!==i&&q.node===n); if(o>=0){passed=o;break;} } }
   const start=p.node;
   p.node=id;
-  if(passed!==null){ S.ghost={holder:passed,count:0}; log(`ผีกระโดดจาก${p.name}ไปหา${S.players[passed].name}`); }
+  if(passed!==null){ S.ghost={holder:passed,count:0}; log("ผีกระโดดจาก{p}ไปหา{q}",{p:p.name,q:S.players[passed].name}); }
   S.lastMove={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:i,path};
   ON.seenMove=S.lastMove.id;
   commit();
@@ -681,7 +2269,7 @@ async function onPick(id,fromBot){
   p.node=start; renderTokens();
   p.node=id; await animateMove(S.lastMove);
   render();
-  if(passed!==null) await info("ผีย้ายบ้าน!",`ระหว่างทางเจอ${esc(S.players[passed].name)} ผีเลยกระโดดไปติดแทน`);
+  if(passed!==null) await info(T("ผีย้ายบ้าน!"),T("ระหว่างทางเจอ{q} ผีเลยกระโดดไปติดแทน",{q:esc(S.players[passed].name)}));
   await resolveSquare(p.node,p.node===S.dest);
   UI.busy=false;
   endTurn();
@@ -691,31 +2279,31 @@ async function pay(i,amt,reason,insurable){
   if(insurable&&amt>0&&p.cards.includes("insure")){
     let use=true;
     if(!p.bot&&(MODE==="local"||i===mySeat())){
-      use=await modal({eyebrow:esc(p.name),title:`ต้องจ่าย ${amt} ล้าน`,html:`${reason}<p>มีการ์ดประกันภัย ใช้เพื่อไม่ต้องจ่ายไหม</p>`,buttons:[{label:"ใช้ประกันภัย",value:true,gold:true},{label:"จ่ายเอง",value:false}]});
+      use=await modal({eyebrow:esc(p.name),title:T("ต้องจ่าย {m}",{m:amt}),html:`${reason}<p>${T("มีการ์ดประกันภัย ใช้เพื่อไม่ต้องจ่ายไหม")}</p>`,buttons:[{label:T("ใช้ประกันภัย"),value:true,gold:true},{label:T("จ่ายเอง"),value:false}]});
     }
-    if(use){discardCard(i,"insure");log(`${p.name} ใช้ประกันภัย ไม่ต้องจ่าย ${amt} ล้าน`);return false;}
+    if(use){discardCard(i,"insure");log("{p} ใช้ประกันภัย ไม่ต้องจ่าย {m}",{p:p.name,m:amt});return false;}
   }
   p.money-=amt; return true;
 }
 async function resolveSquare(id,arrived){
   const i=S.turn,p=cur(),t=NODES[id].t;
   if(arrived){
-    const rw=REWARD[id]; p.money+=rw; log(`${p.name} ถึง${NAME[id]}คนแรก รับ ${rw} ล้าน`); commit(); render();
-    await say({eyebrow:"ถึงจุดหมาย",title:`${esc(p.name)} ถึง${NAME[id]}คนแรก!`,html:wrapCard(destCard(id))+`<div class="big-num" style="color:#C8361E;text-align:center">+${rw} ล้าน</div>`});
+    const rw=REWARD[id]; p.money+=rw; log("{p} ถึง{st}คนแรก รับ {m}",{p:p.name,st:id,m:rw}); commit(); render();
+    await say({eyebrow:T("ถึงจุดหมาย"),title:T("{p} ถึง{st}คนแรก!",{p:esc(p.name),st:id}),html:wrapCard(destCard(id))+`<div class="big-num" style="color:#C8361E;text-align:center">+${money(rw)}</div>`});
     await buySheet(id);
     await assignGhost(id);
-    S.dest=drawDest(false); log(`จุดหมายใหม่: ${NAME[S.dest]} รางวัล ${REWARD[S.dest]} ล้าน`); commit(); render(); focusNode(S.dest);
-    await info("จุดหมายใหม่",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> รางวัล ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
+    S.dest=drawDest(false); log("จุดหมายใหม่: {st} รางวัล {m}",{st:S.dest,m:REWARD[S.dest]}); commit(); render(); focusNode(S.dest);
+    await info(T("จุดหมายใหม่"),T("ทุกคนมุ่งหน้าไป <b>{st}</b> รางวัล {m}",{st:S.dest,m:REWARD[S.dest]}),T("จับฉลาก"));
     return;
   }
-  if(t==="b"){ const d=rnd(6); UI.dice=[d]; p.money+=d*2; log(`${p.name} ได้ ${d*2} ล้านจากช่องน้ำเงิน`); commit(); render(); await info(`ได้เงิน ${d*2} ล้าน`,`ทอยได้ ${d} × 2 ล้าน`,"ช่องน้ำเงิน"); }
-  else if(t==="r"){ const d=rnd(6); UI.dice=[d]; render(); if(await pay(i,d*2,`ทอยได้ ${d} × 2 ล้าน`,true)){log(`${p.name} เสีย ${d*2} ล้านที่ช่องแดง`); commit(); render(); await info(`เสียเงิน ${d*2} ล้าน`,`ทอยได้ ${d} × 2 ล้าน`,"ช่องแดง");} }
-  else if(t==="y"||t==="jn"){ const c=drawItem(i); commit(); render(); if(c){log(`${p.name} ได้การ์ดไอเทม`); await say({eyebrow:"ได้การ์ดไอเทม",title:ITEMS[c].n,html:(MODE==="online"&&p.bot)?"บอทเก็บการ์ดไว้ในมือ":wrapCard(itemCard(c))});} else await info("มือเต็ม","ถือการ์ดได้สูงสุด 5 ใบ รอบนี้ไม่ได้จั่ว"); }
+  if(t==="b"){ const d=rnd(6); UI.dice=[d]; p.money+=d*2; log("{p} ได้ {m}จากช่องน้ำเงิน",{p:p.name,m:d*2}); commit(); render(); await info(T("ได้เงิน {m}",{m:d*2}),T("ทอยได้ {d} × {m}",{d,m:2}),T("ช่องน้ำเงิน")); }
+  else if(t==="r"){ const d=rnd(6); UI.dice=[d]; render(); if(await pay(i,d*2,T("ทอยได้ {d} × {m}",{d,m:2}),true)){log("{p} เสีย {m}ที่ช่องแดง",{p:p.name,m:d*2}); commit(); render(); await info(T("เสียเงิน {m}",{m:d*2}),T("ทอยได้ {d} × {m}",{d,m:2}),T("ช่องแดง"));} }
+  else if(t==="y"||t==="jn"){ const c=drawItem(i); commit(); render(); if(c){log("{p} ได้การ์ดไอเทม",{p:p.name}); await say({eyebrow:T("ได้การ์ดไอเทม"),title:itemN(c),html:(MODE==="online"&&p.bot)?T("บอทเก็บการ์ดไว้ในมือ"):wrapCard(itemCard(c))});} else await info(T("มือเต็ม"),T("ถือการ์ดได้สูงสุด 5 ใบ รอบนี้ไม่ได้จั่ว")); }
   else if(t==="st"){
     if(S.quiz&&Math.random()<0.35){
       const r=S.year>=2?12:8;
-      const ok=await askQuiz(id,"ควิซประจำสถานี"+NAME[id],`ตอบถูกได้ ${r} ล้าน · ตอบผิดเสีย 2 ล้าน`);
-      if(ok){p.money+=r;log(`${p.name} ได้โบนัสควิซ ${r} ล้าน`);} else {p.money-=2;}
+      const ok=await askQuiz(id,T("ควิซประจำสถานี{st}",{st:id}),T("ตอบถูกได้ {m} · ตอบผิดเสีย {m2}",{m:r,m2:2}));
+      if(ok){p.money+=r;log("{p} ได้โบนัสควิซ {m}",{p:p.name,m:r});} else {p.money-=2;}
       commit(); render();
     }
     await buySheet(id);
@@ -729,13 +2317,13 @@ async function buySheet(s){
   while(true){
     const free=props.filter(q=>S.owners[q.id]===undefined);
     if(!free.length) break;
-    const html=`<p>เงินคงเหลือ <b>${fmt(p.money)}</b>${props.length>1?" · ปัดซ้ายขวาดูการ์ด":""}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}${S.owners[q.id]!==undefined?`<div style="min-height:40px;display:grid;place-items:center">${ownerTag(S.owners[q.id])}</div>`:`<button class="btn primary" data-val="${q.id}" ${p.money<q.price?"disabled":""}>ซื้อ ${q.price} ล้าน</button>`}</div>`).join("")}</div>`;
-    const mp=modal({eyebrow:"สถานี"+NAME[s],title:"ซื้อกิจการ",html,buttons:[{label:"เสร็จ",value:"done"}]});
+    const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b>${props.length>1?" · "+T("ปัดซ้ายขวาดูการ์ด"):""}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}${S.owners[q.id]!==undefined?`<div style="min-height:40px;display:grid;place-items:center">${ownerTag(S.owners[q.id])}</div>`:`<button class="btn primary" data-val="${q.id}" ${p.money<q.price?"disabled":""}>${T("ซื้อ {m}",{m:q.price})}</button>`}</div>`).join("")}</div>`;
+    const mp=modal({eyebrow:T("สถานี{st}",{st:s}),title:T("ซื้อกิจการ"),html,buttons:[{label:T("เสร็จ"),value:"done"}]});
     if(shown) $("modal").classList.add("again"); shown=true;
     const v=await mp;
     if(v==="done"||v===undefined) break;
     const q=PROPS[+v]; if(p.money<q.price) continue;
-    p.money-=q.price; S.owners[q.id]=i; log(`${p.name} ซื้อ${q.n} ${q.price} ล้าน`); commit(); render();
+    p.money-=q.price; S.owners[q.id]=i; log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:q.price}); commit(); render();
   }
 }
 async function assignGhost(dest){
@@ -743,53 +2331,53 @@ async function assignGhost(dest){
   S.players.forEach((q,k)=>{ if(k===S.turn) return; const v=d[q.node]??0; if(v>bd||(v===bd&&q.money>S.players[best].money)){bd=v;best=k;} });
   if(best<0) return;
   const was=S.ghost.holder; S.ghost={holder:best,count:was===best?S.ghost.count:0};
-  log(`ผีไปติด${S.players[best].name} คนที่อยู่ไกลที่สุด`); commit(); render();
-  await info("ผีมาแล้ว",`${esc(S.players[best].name)} อยู่ไกล${NAME[dest]}ที่สุด (${bd} ช่อง) ผีตามไปติดตัว`,"ผีปอบ");
+  log("ผีไปติด{q} คนที่อยู่ไกลที่สุด",{q:S.players[best].name}); commit(); render();
+  await info(T("ผีมาแล้ว"),T("{q} อยู่ไกล{st}ที่สุด ({n} ช่อง) ผีตามไปติดตัว",{q:esc(S.players[best].name),st:dest,n:bd}),T("ผีปอบ"));
 }
 async function ghostTurn(){
   const i=S.turn,p=cur(); const giant=S.ghost.count>=3;
-  await say({eyebrow:"ผีติดตัว",title:giant?"ผีปอบกลายร่างเป็นร่างยักษ์!":"ผีปอบจะทำอะไรนะ",html:giant?"อยู่ด้วยกันครบ 3 เทิร์น ผีโตขึ้นแล้ว":"ทอยเต๋าดูตารางผี",buttons:[{label:"ทอยตารางผี",value:1,primary:true}]});
+  await say({eyebrow:T("ผีติดตัว"),title:T(giant?"ผีปอบกลายร่างเป็นร่างยักษ์!":"ผีปอบจะทำอะไรนะ"),html:T(giant?"อยู่ด้วยกันครบ 3 เทิร์น ผีโตขึ้นแล้ว":"ทอยเต๋าดูตารางผี"),buttons:[{label:T("ทอยตารางผี"),value:1,primary:true}]});
   const d=rnd(6);
   S.lastRoll={id:Date.now()+"-g"+Math.random().toString(36).slice(2,5),p:i,vals:[d],kind:"ghost"}; ON.seenRoll=S.lastRoll.id; commit();
-  await diceFX([d],`ผีทอยได้ ${d}`,giant?"ตารางร่างยักษ์":"ตารางผี");
+  await diceFX([d],T("ผีทอยได้ {d}",{d}),T(giant?"ตารางร่างยักษ์":"ตารางผี"));
   UI.dice=[d]; render();
-  const T=giant?[[1,2,"อาละวาด","กิจการทั้งหมดในสถานีที่คุณมีมากที่สุดคืนธนาคารฟรี"],[3,4,"ช้อปหนัก","เสียเงินสดครึ่งหนึ่ง"],[5,5,"ฉีกการ์ด","ทิ้งการ์ดทั้งหมด"],[6,6,"ขายของ","ขายกิจการแพงที่สุดคืนธนาคารครึ่งราคา"]]
+  const GT=giant?[[1,2,"อาละวาด","กิจการทั้งหมดในสถานีที่คุณมีมากที่สุดคืนธนาคารฟรี"],[3,4,"ช้อปหนัก","เสียเงินสดครึ่งหนึ่ง"],[5,5,"ฉีกการ์ด","ทิ้งการ์ดทั้งหมด"],[6,6,"ขายของ","ขายกิจการแพงที่สุดคืนธนาคารครึ่งราคา"]]
               :[[1,1,"ผีปอบสายช้อป","เสียเงิน 5 ล้าน"],[2,2,"ผีปอบสายช้อป","ทิ้งการ์ด 1 ใบแบบสุ่ม"],[3,3,"ผีกระสือเล่นหุ้น","ขายกิจการถูกที่สุดคืนธนาคารครึ่งราคา"],[4,4,"ผีเจ้าที่ขี้งอน","เทิร์นนี้เดินได้ 1 ช่อง ห้ามใช้การ์ดเคลื่อนที่"],[5,5,"ผีหลับ","ไม่มีอะไรเกิดขึ้น"],[6,6,"ผีเลี้ยงหมูกระทะ","จ่ายผู้เล่นคนอื่นคนละ 3 ล้าน"]];
-  const row=T.find(r=>d>=r[0]&&d<=r[1]);
+  const row=GT.find(r=>d>=r[0]&&d<=r[1]);
   const gid=giant?"G06":({1:"G01",2:"G01",3:"G02",4:"G03",5:"G04",6:"G05"})[d];
-  const gface=wrapGhost(ghostCard(gid,giant?"ผีปอบร่างยักษ์":row[2],`ทอยได้ ${d}`,`<div class="gc-line">${row[3]}</div>`));
+  const gface=wrapGhost(ghostCard(gid,T(giant?"ผีปอบร่างยักษ์":row[2]),T("ทอยได้ {d}",{d}),`<div class="gc-line">${T(row[3])}</div>`));
   if(giant) S.ghost.count=0; else S.ghost.count++;
   const harmless=!giant&&d===5;
   if(!harmless&&S.quiz){
-    await say({eyebrow:`ทอยได้ ${d}`,title:"ผีท้าตอบควิซ!",html:`${gface}<p>ตอบควิซถูก ผีจะหนีไปไม่แกล้ง</p>`,buttons:[{label:"รับคำท้า",value:1,primary:true}]},1600);
-    const ok=await askQuiz(nearestStation(p.node),"ผีถามควิซ",`ผีจะ: ${row[3]} · ตอบถูกรอดตัว`);
-    if(ok){ log(`${p.name} ตอบถูก ผีหนีไปไม่แกล้ง`); render(); return; }
+    await say({eyebrow:T("ทอยได้ {d}",{d}),title:T("ผีท้าตอบควิซ!"),html:`${gface}<p>${T("ตอบควิซถูก ผีจะหนีไปไม่แกล้ง")}</p>`,buttons:[{label:T("รับคำท้า"),value:1,primary:true}]},1600);
+    const ok=await askQuiz(nearestStation(p.node),T("ผีถามควิซ"),T("ผีจะ: {x} · ตอบถูกรอดตัว",{x:T(row[3])}));
+    if(ok){ log("{p} ตอบถูก ผีหนีไปไม่แกล้ง",{p:p.name}); render(); return; }
   }
   if(!harmless&&p.cards.includes("amulet")){
-    const v=isBotTurn()?(giant||[1,3,6].includes(d)):await modal({eyebrow:`ทอยได้ ${d}`,title:row[2],html:`${gface}<p>มีพระเครื่อง ใช้ยกเลิกผลนี้ไหม</p>`,buttons:[{label:"ใช้พระเครื่อง",value:true,gold:true},{label:"รับผล",value:false}]});
-    if(v){discardCard(i,"amulet");log(`${p.name} ใช้พระเครื่องไล่ผี`);render();return;}
-  } else await say({eyebrow:`ทอยได้ ${d}`,title:row[2],html:gface},2000);
+    const v=isBotTurn()?(giant||[1,3,6].includes(d)):await modal({eyebrow:T("ทอยได้ {d}",{d}),title:T(row[2]),html:`${gface}<p>${T("มีพระเครื่อง ใช้ยกเลิกผลนี้ไหม")}</p>`,buttons:[{label:T("ใช้พระเครื่อง"),value:true,gold:true},{label:T("รับผล"),value:false}]});
+    if(v){discardCard(i,"amulet");log("{p} ใช้พระเครื่องไล่ผี",{p:p.name});render();return;}
+  } else await say({eyebrow:T("ทอยได้ {d}",{d}),title:T(row[2]),html:gface},2000);
   const mine=()=>PROPS.filter(q=>S.owners[q.id]===i);
   if(!giant){
-    if(d===1){p.money-=5;log(`ผีปอบช้อปด้วยเงิน${p.name} 5 ล้าน`);}
-    if(d===2&&p.cards.length){const k=p.cards[Math.floor(Math.random()*p.cards.length)];discardCard(i,k);log(`ผีทิ้งการ์ด${ITEMS[k].n}ของ${p.name}`);}
-    if(d===3){const m=mine().sort((a,b)=>a.price-b.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log(`ผีขาย${m.n}ของ${p.name}`);}}
-    if(d===4){S.tf.locked=true;log(`ผีเจ้าที่งอน ${p.name}เดินได้ 1 ช่อง`);}
-    if(d===5){log(`ผีของ${p.name}หลับอยู่`);}
-    if(d===6){S.players.forEach((q,k)=>{if(k!==i){q.money+=3;p.money-=3;}});log(`${p.name} โดนผีพาเลี้ยงหมูกระทะทุกคน`);}
+    if(d===1){p.money-=5;log("ผีปอบช้อปด้วยเงิน{p} {m}",{p:p.name,m:5});}
+    if(d===2&&p.cards.length){const k=p.cards[Math.floor(Math.random()*p.cards.length)];discardCard(i,k);log("ผีทิ้งการ์ด{it}ของ{p}",{it:k,p:p.name});}
+    if(d===3){const m=mine().sort((a,b)=>a.price-b.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log("ผีขาย{pr}ของ{p}",{pr:m.id,p:p.name});}}
+    if(d===4){S.tf.locked=true;log("ผีเจ้าที่งอน {p}เดินได้ 1 ช่อง",{p:p.name});}
+    if(d===5){log("ผีของ{p}หลับอยู่",{p:p.name});}
+    if(d===6){S.players.forEach((q,k)=>{if(k!==i){q.money+=3;p.money-=3;}});log("{p} โดนผีพาเลี้ยงหมูกระทะทุกคน",{p:p.name});}
   } else {
-    if(d<=2){const cnt={};mine().forEach(q=>cnt[q.s]=(cnt[q.s]||0)+1);const s=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];if(s){mine().filter(q=>q.s===s).forEach(q=>delete S.owners[q.id]);log(`ผีปอบยักษ์อาละวาดที่${NAME[s]} ${p.name}เสียกิจการทั้งหมดที่นั่น`);}else log(`ผีปอบยักษ์อาละวาด แต่${p.name}ไม่มีกิจการ`);}
-    else if(d<=4){if(p.money>0){const l=Math.floor(p.money/2);p.money-=l;log(`ผีปอบยักษ์ช้อปหนัก ${p.name}เสีย ${l} ล้าน`);}}
-    else if(d===5){p.cards.forEach(k=>S.discard.push(k));p.cards=[];log(`ผีปอบยักษ์ฉีกการ์ดของ${p.name}ทั้งหมด`);}
-    else {const m=mine().sort((a,b)=>b.price-a.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log(`ผีปอบยักษ์ขาย${m.n}ของ${p.name}`);}}
+    if(d<=2){const cnt={};mine().forEach(q=>cnt[q.s]=(cnt[q.s]||0)+1);const s=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];if(s){mine().filter(q=>q.s===s).forEach(q=>delete S.owners[q.id]);log("ผีปอบยักษ์อาละวาดที่{st} {p}เสียกิจการทั้งหมดที่นั่น",{st:s,p:p.name});}else log("ผีปอบยักษ์อาละวาด แต่{p}ไม่มีกิจการ",{p:p.name});}
+    else if(d<=4){if(p.money>0){const l=Math.floor(p.money/2);p.money-=l;log("ผีปอบยักษ์ช้อปหนัก {p}เสีย {m}",{p:p.name,m:l});}}
+    else if(d===5){p.cards.forEach(k=>S.discard.push(k));p.cards=[];log("ผีปอบยักษ์ฉีกการ์ดของ{p}ทั้งหมด",{p:p.name});}
+    else {const m=mine().sort((a,b)=>b.price-a.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log("ผีปอบยักษ์ขาย{pr}ของ{p}",{pr:m.id,p:p.name});}}
   }
   render();
 }
 async function settleDebts(){
   for(let i=0;i<S.players.length;i++){
     const p=S.players[i]; const sold=[];
-    while(p.money<0){const m=PROPS.filter(q=>S.owners[q.id]===i).sort((a,b)=>a.price-b.price)[0];if(!m)break;delete S.owners[m.id];p.money+=Math.floor(m.price/2);sold.push(m.n);}
-    if(sold.length){log(`${p.name} ติดลบ ต้องขาย${sold.join(", ")}`);render();await info("เงินติดลบ!",`${esc(p.name)} ขายกิจการคืนธนาคารครึ่งราคา: ${sold.join(", ")}`);}
+    while(p.money<0){const m=PROPS.filter(q=>S.owners[q.id]===i).sort((a,b)=>a.price-b.price)[0];if(!m)break;delete S.owners[m.id];p.money+=Math.floor(m.price/2);sold.push(m.id);}
+    if(sold.length){log("{p} ติดลบ ต้องขาย{prs}",{p:p.name,prs:sold});render();await info(T("เงินติดลบ!"),T("{p} ขายกิจการคืนธนาคารครึ่งราคา: {prs}",{p:esc(p.name),prs:sold}));}
   }
 }
 
@@ -915,27 +2503,27 @@ function pickQuiz(st){
 }
 // คืนค่า true ถ้าตอบถูก
 async function askQuiz(st,eyebrow,stake){
-  const i=pickQuiz(st), [qs,q,ans,wrong,fact]=QUIZ[i], p=cur();
+  const i=pickQuiz(st), [qs,q,ans,wrong,fact]=quizIn(i), p=cur();
   const opts=shuffle([ans,...wrong]);
   const head=`<p style="font-size:13px;color:var(--muted);margin:0 0 4px">${stake}</p><p style="font-size:17px;font-weight:600;line-height:1.45">${esc(q)}</p>`;
   let pick, timedOut=false;
   if(isBotTurn()){
     pick=Math.random()<0.55?ans:wrong[Math.floor(Math.random()*3)];
-    await brief({eyebrow,title:`${esc(p.name)} ตอบควิซ`,html:head+`<p>ตอบว่า <b>${esc(pick)}</b></p>`},1800);
+    await brief({eyebrow,title:T("{p} ตอบควิซ",{p:esc(p.name)}),html:head+`<p>${T("ตอบว่า")} <b>${esc(pick)}</b></p>`},1800);
   } else {
-    const T=S.qTime??5;
-    const timer=T?`<div class="qtimer" id="qtimer"><div class="qtrack"><div class="qbar" style="animation-duration:${T}s"></div></div><b id="qsec">${T}</b></div>`:"";
-    const mp=modal({eyebrow,title:"ควิซ!",html:head+timer+`<div class="stack">${opts.map((o,j)=>`<button class="btn" data-val="q${j}" style="width:100%;flex:none;justify-content:flex-start;text-align:left;padding:10px 14px;line-height:1.35"><span class="gc-num" style="background:var(--surface);color:var(--ink)">${"กขคง"[j]}</span>${esc(o)}</button>`).join("")}</div>`,buttons:[]});
+    const QT=S.qTime??5;
+    const timer=QT?`<div class="qtimer" id="qtimer"><div class="qtrack"><div class="qbar" style="animation-duration:${QT}s"></div></div><b id="qsec">${QT}</b></div>`:"";
+    const mp=modal({eyebrow,title:T("ควิซ!"),html:head+timer+`<div class="stack">${opts.map((o,j)=>`<button class="btn" data-val="q${j}" style="width:100%;flex:none;justify-content:flex-start;text-align:left;padding:10px 14px;line-height:1.35"><span class="gc-num" style="background:var(--surface);color:var(--ink)">${T("กขคง")[j]}</span>${esc(o)}</button>`).join("")}</div>`,buttons:[]});
     let iv=null;
-    if(T){ const r=modalResolve; let left=T;
+    if(QT){ const r=modalResolve; let left=QT;
       iv=setInterval(()=>{ left--; if(left>0) sfx(left<=2?"hurry":"tick"); const el=$("qsec"); if(el) el.textContent=Math.max(0,left); if(left<=2){const tm=$("qtimer"); if(tm) tm.classList.add("hurry");}
         if(left<=0){ clearInterval(iv); if(modalResolve===r){ timedOut=true; closeModal(); } } },1000); }
     const k=await mp; clearInterval(iv);
     pick=k&&k[0]==="q"?opts[+k.slice(1)]:null;
   }
   const ok=pick===ans;
-  log(`${p.name} ${ok?"ตอบควิซถูก":(timedOut?"ตอบควิซไม่ทัน":"ตอบควิซผิด")}`);
-  await say({eyebrow,title:ok?"ถูกต้อง!":(timedOut?"หมดเวลา!":"ยังไม่ถูก"),html:`<p>คำตอบคือ <b>${esc(ans)}</b></p><p style="color:var(--muted)">${esc(fact)}</p>`},2000);
+  log(ok?"{p} ตอบควิซถูก":(timedOut?"{p} ตอบควิซไม่ทัน":"{p} ตอบควิซผิด"),{p:p.name});
+  await say({eyebrow,title:T(ok?"ถูกต้อง!":(timedOut?"หมดเวลา!":"ยังไม่ถูก")),html:`<p>${T("คำตอบคือ")} <b>${esc(ans)}</b></p><p style="color:var(--muted)">${esc(fact)}</p>`},2000);
   return ok;
 }
 
@@ -961,7 +2549,7 @@ async function diceFX(vals,label,sub){
   await sleep(250);
   wrap.remove();
 }
-function rollLabel(vals){ const s=vals.reduce((a,b)=>a+b,0); return {label:`${s} แต้ม`,sub:S.songkran&&vals.length?"สงกรานต์รถติด −1":""}; }
+function rollLabel(vals){ const s=vals.reduce((a,b)=>a+b,0); return {label:T("{n} แต้ม",{n:s}),sub:S.songkran&&vals.length?T("สงกรานต์รถติด −1"):""}; }
 async function rollAndShow(n){
   const vals=[...Array(n)].map(()=>rnd(6));
   S.lastRoll={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:S.turn,vals,kind:"move"};
@@ -993,9 +2581,9 @@ async function botBuy(s){
   for(const q of free){
     const completes=props.every(x=>x.id===q.id||S.owners[x.id]===i);
     if(p.money<q.price) continue;
-    if(completes||(!late&&p.money-q.price>=reserve)){ p.money-=q.price; S.owners[q.id]=i; bought.push(q); log(`${p.name} ซื้อ${q.n} ${q.price} ล้าน`); }
+    if(completes||(!late&&p.money-q.price>=reserve)){ p.money-=q.price; S.owners[q.id]=i; bought.push(q); log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:q.price}); }
   }
-  if(bought.length){ commit(); render(); await brief({eyebrow:"สถานี"+NAME[s],title:`${esc(p.name)} ซื้อกิจการ`,html:`<div class="gc-row" style="justify-content:${bought.length===1?"center":"flex-start"}">${bought.map(q=>`<div class="gc-col">${propCard(q)}</div>`).join("")}</div>`},1900); }
+  if(bought.length){ commit(); render(); await brief({eyebrow:T("สถานี{st}",{st:s}),title:T("{p} ซื้อกิจการ",{p:esc(p.name)}),html:`<div class="gc-row" style="justify-content:${bought.length===1?"center":"flex-start"}">${bought.map(q=>`<div class="gc-col">${propCard(q)}</div>`).join("")}</div>`},1900); }
 }
 async function botUseCard(){
   const i=S.turn,p=cur(); const has=k=>p.cards.includes(k)&&canUse(k);
@@ -1011,16 +2599,16 @@ async function botUseCard(){
   else if(has("lotto")&&p.money>20&&Math.random()<0.3) k="lotto";
   if(!k) return null;
   discardCard(i,k); S.tf.cardUsed=true;
-  await brief({eyebrow:`${esc(p.name)} ใช้การ์ด`,title:ITEMS[k].n,html:wrapCard(itemCard(k))},1500);
+  await brief({eyebrow:T("{p} ใช้การ์ด",{p:esc(p.name)}),title:itemN(k),html:wrapCard(itemCard(k))},1500);
   switch(k){
-    case "plane": log(`${p.name} เหมาเครื่องบินไป${NAME[S.dest]}`); await teleport(S.dest,true); return "moved";
-    case "drive": log(`${p.name} ขับเอง ${arg} ช่อง`); commit(); return arg;
-    case "pass": S.ghost={holder:arg,count:0}; log(`${p.name} ฝากผีให้${S.players[arg].name}`); break;
-    case "sexp": S.tf.nDice=3; log(`${p.name} ใช้รถด่วนพิเศษ`); break;
-    case "exp": S.tf.nDice=2; log(`${p.name} ใช้รถด่วน`); break;
-    case "mob": S.skip[arg]=true; log(`${p.name} ส่งม็อบไปปิดถนน${S.players[arg].name}`); break;
-    case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log(`${q.n}ของ${p.name} ดังในโซเชียล รับ ${q.profit} ล้าน`); break; }
-    case "lotto":{ const r=rnd(6); if(r===6){p.money+=30;log(`${p.name} ถูกลอตเตอรี่ รับ 30 ล้าน`);} else {p.money-=1;log(`${p.name} ซื้อลอตเตอรี่ไม่ถูก`);} break; }
+    case "plane": log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); return "moved";
+    case "drive": log("{p} ขับเอง {n} ช่อง",{p:p.name,n:arg}); commit(); return arg;
+    case "pass": S.ghost={holder:arg,count:0}; log("{p} ฝากผีให้{q}",{p:p.name,q:S.players[arg].name}); break;
+    case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); break;
+    case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); break;
+    case "mob": S.skip[arg]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[arg].name}); break;
+    case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); break; }
+    case "lotto":{ const r=rnd(6); if(r===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});} break; }
   }
   commit(); render(); return null;
 }
@@ -1031,7 +2619,7 @@ async function botTurn(){
   if(S.stage!=="choose"){
     S.tf={nDice:1,cardUsed:false,locked:false};
     render(); focusNode(p.node); await sleep(600);
-    if(S.skip[i]){ S.skip[i]=false; log(`${p.name} ติดม็อบ เดินไม่ได้`); render(); await info(`${esc(p.name)} ติดม็อบปิดถนน`,"เทิร์นนี้เดินไม่ได้"); UI.busy=false; return endTurn(); }
+    if(S.skip[i]){ S.skip[i]=false; log("{p} ติดม็อบ เดินไม่ได้",{p:p.name}); render(); await info(T("{p} ติดม็อบปิดถนน",{p:esc(p.name)}),T("เทิร์นนี้เดินไม่ได้")); UI.busy=false; return endTurn(); }
     if(S.ghost.holder===i) await ghostTurn();
     S.stage="choose"; commit();
   }
@@ -1061,10 +2649,10 @@ async function startTurn(){
   if(S.stage!=="choose"){
     S.tf={nDice:1,cardUsed:false,locked:false};
     render(); focusNode(p.node);
-    if(S.skip[i]){ S.skip[i]=false; log(`${p.name} ติดม็อบ เดินไม่ได้`); render(); await info(`${esc(p.name)} ติดม็อบปิดถนน`,"เทิร์นนี้เดินไม่ได้"); return endTurn(); }
-    if(MODE==="local"&&S.players.filter(q=>!q.bot).length<2) toast(`ตาของ${p.name}`);
-    else if(MODE==="local") await modal({eyebrow:`${MONTHS[S.month]} ปีที่ ${S.year}`,title:`ตาของ${esc(p.name)}`,html:`ส่งเครื่องให้${esc(p.name)} แล้วกดเริ่ม`,buttons:[{label:"เริ่มเทิร์น",value:1,primary:true}]});
-    else await modal({eyebrow:`${MONTHS[S.month]} ปีที่ ${S.year}`,title:"ถึงตาคุณแล้ว",html:`${esc(p.name)} อยู่ที่${labelOf(p.node)} · จุดหมาย${NAME[S.dest]}`,buttons:[{label:"เริ่มเทิร์น",value:1,primary:true}]});
+    if(S.skip[i]){ S.skip[i]=false; log("{p} ติดม็อบ เดินไม่ได้",{p:p.name}); render(); await info(T("{p} ติดม็อบปิดถนน",{p:esc(p.name)}),T("เทิร์นนี้เดินไม่ได้")); return endTurn(); }
+    if(MODE==="local"&&S.players.filter(q=>!q.bot).length<2) toast(T("ตาของ{p}",{p:p.name}));
+    else if(MODE==="local") await modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ตาของ{p}",{p:esc(p.name)}),html:T("ส่งเครื่องให้{p} แล้วกดเริ่ม",{p:esc(p.name)}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]});
+    else await modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ถึงตาคุณแล้ว"),html:T("{p} อยู่ที่{x} · จุดหมาย{st}",{p:esc(p.name),x:labelOf(p.node),st:S.dest}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]});
     if(S.ghost.holder===i) await ghostTurn();
     S.stage="choose"; commit();
   }
@@ -1103,31 +2691,34 @@ function ownersOf(filter,per){
 async function startMonth(){
   S.songkran=false; render();
   const m=S.month;
-  if(m===0&&S.year===2&&!S.newRail){ S.newRail=true; log("รางใหม่เด่นชัย–แพร่–พะเยาเปิดแล้ว"); render(); await evInfo("เปิดรางใหม่!","รถไฟสายเด่นชัย–แพร่–พะเยาเปิดใช้ เดินทางขึ้นเหนือได้อีกเส้นทาง","ข่าวการรถไฟ"); }
-  const list=(arr,sign)=>arr.length?arr.map(([k,a,n])=>`<p>${esc(S.players[k].name)} ${sign}${a} ล้าน (${n} แห่ง)</p>`).join(""):"<p>ไม่มีใครได้รับผล</p>";
-  const E="อีเวนต์ประจำเดือน";
-  if(m===0){ S.songkran=true; const r=ownersOf(q=>q.t===TOUR,2); r.forEach(([k,a])=>S.players[k].money+=a); log("สงกรานต์ รถติดทั้งเดือน กิจการท่องเที่ยวได้คนละ 2 ล้านต่อแห่ง"); render(); await evInfo("สงกรานต์","<p>เดือนนี้รถติด ทุกคนเดิน −1 ช่อง (ต่ำสุด 1)</p>"+list(r,"+"),E); }
-  if(m===1){ const r=ownersOf(q=>q.t===AGRI,3); r.forEach(([k,a])=>S.players[k].money+=a); log("ฤดูผลไม้ กิจการเกษตรรับ 3 ล้านต่อแห่ง"); render(); await evInfo("ฤดูผลไม้","<p>เจ้าของกิจการเกษตรรับ 3 ล้านต่อแห่ง</p>"+list(r,"+"),E); }
-  if(m===5){ const r=ownersOf(q=>q.t===AGRI,2); await evInfo("น้ำท่วม","<p>เจ้าของกิจการเกษตรจ่ายค่าซ่อม 2 ล้านต่อแห่ง</p>"+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,"ค่าซ่อมหลังน้ำท่วม",true); log("น้ำท่วม กิจการเกษตรจ่ายค่าซ่อม"); render(); }
-  if(m===7){ const r=ownersOf(q=>q.s==="CMI"||q.s==="SKT",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ลอยกระทง/ยี่เป็ง กิจการเชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง"); render(); await evInfo("ลอยกระทง / ยี่เป็ง","<p>เจ้าของกิจการที่เชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง</p>"+list(r,"+"),E); }
-  if(m===8){ const got=S.players.map((p,k)=>{const c=drawItem(k);return `<p>${esc(p.name)}: ${c?"ได้การ์ด 1 ใบ":"มือเต็ม"}</p>`;}).join(""); log("ปีใหม่ ทุกคนได้การ์ดไอเทม"); render(); await evInfo("ปีใหม่","<p>ทุกคนจั่วการ์ดไอเทม 1 ใบ</p>"+got,E); }
-  if(m===9){ const r=ownersOf(q=>q.t===TOUR&&NORTH.has(q.s),2); await evInfo("ฝุ่น PM2.5","<p>เจ้าของกิจการท่องเที่ยวในภาคเหนือจ่าย 2 ล้านต่อแห่ง</p>"+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,"นักท่องเที่ยวหายเพราะฝุ่น",true); log("ฝุ่น PM2.5 ท่องเที่ยวภาคเหนือจ่าย 2 ล้านต่อแห่ง"); render(); }
-  if(m===10){ const r=ownersOf(q=>q.s==="NSW",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ตรุษจีน กิจการนครสวรรค์รับ 5 ล้านต่อแห่ง"); render(); await evInfo("ตรุษจีน","<p>เจ้าของกิจการที่นครสวรรค์รับ 5 ล้านต่อแห่ง</p>"+list(r,"+"),E); }
-  if(m===11){ log("เดือนปิดงบ จบเดือนนี้ทุกกิจการจ่ายกำไร"); await evInfo("เดือนปิดงบ","จบเดือนนี้ทุกกิจการจ่ายกำไรให้เจ้าของ",E); }
+  if(m===0&&S.year===2&&!S.newRail){ S.newRail=true; log("รางใหม่เด่นชัย–แพร่–พะเยาเปิดแล้ว",{}); render(); await evInfo("เปิดรางใหม่!",T("รถไฟสายเด่นชัย–แพร่–พะเยาเปิดใช้ เดินทางขึ้นเหนือได้อีกเส้นทาง"),T("ข่าวการรถไฟ")); }
+  const list=(arr,sign)=>arr.length?arr.map(([k,a,n])=>`<p>${esc(S.players[k].name)} ${sign}${money(a)} ${T("({n} แห่ง)",{n})}</p>`).join(""):`<p>${T("ไม่มีใครได้รับผล")}</p>`;
+  const E=T("อีเวนต์ประจำเดือน");
+  if(m===0){ S.songkran=true; const r=ownersOf(q=>q.t===TOUR,2); r.forEach(([k,a])=>S.players[k].money+=a); log("สงกรานต์ รถติดทั้งเดือน กิจการท่องเที่ยวได้คนละ 2 ล้านต่อแห่ง",{}); render(); await evInfo("สงกรานต์",`<p>${T("เดือนนี้รถติด ทุกคนเดิน −1 ช่อง (ต่ำสุด 1)")}</p>`+list(r,"+"),E); }
+  if(m===1){ const r=ownersOf(q=>q.t===AGRI,3); r.forEach(([k,a])=>S.players[k].money+=a); log("ฤดูผลไม้ กิจการเกษตรรับ 3 ล้านต่อแห่ง",{}); render(); await evInfo("ฤดูผลไม้",`<p>${T("เจ้าของกิจการเกษตรรับ 3 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
+  if(m===5){ const r=ownersOf(q=>q.t===AGRI,2); await evInfo("น้ำท่วม",`<p>${T("เจ้าของกิจการเกษตรจ่ายค่าซ่อม 2 ล้านต่อแห่ง")}</p>`+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,T("ค่าซ่อมหลังน้ำท่วม"),true); log("น้ำท่วม กิจการเกษตรจ่ายค่าซ่อม",{}); render(); }
+  if(m===7){ const r=ownersOf(q=>q.s==="CMI"||q.s==="SKT",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ลอยกระทง/ยี่เป็ง กิจการเชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง",{}); render(); await evInfo("ลอยกระทง / ยี่เป็ง",`<p>${T("เจ้าของกิจการที่เชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
+  if(m===8){ const got=S.players.map((p,k)=>{const c=drawItem(k);return `<p>${esc(p.name)}: ${T(c?"ได้การ์ด 1 ใบ":"มือเต็ม")}</p>`;}).join(""); log("ปีใหม่ ทุกคนได้การ์ดไอเทม",{}); render(); await evInfo("ปีใหม่",`<p>${T("ทุกคนจั่วการ์ดไอเทม 1 ใบ")}</p>`+got,E); }
+  if(m===9){ const r=ownersOf(q=>q.t===TOUR&&NORTH.has(q.s),2); await evInfo("ฝุ่น PM2.5",`<p>${T("เจ้าของกิจการท่องเที่ยวในภาคเหนือจ่าย 2 ล้านต่อแห่ง")}</p>`+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,T("นักท่องเที่ยวหายเพราะฝุ่น"),true); log("ฝุ่น PM2.5 ท่องเที่ยวภาคเหนือจ่าย 2 ล้านต่อแห่ง",{}); render(); }
+  if(m===10){ const r=ownersOf(q=>q.s==="NSW",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ตรุษจีน กิจการนครสวรรค์รับ 5 ล้านต่อแห่ง",{}); render(); await evInfo("ตรุษจีน",`<p>${T("เจ้าของกิจการที่นครสวรรค์รับ 5 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
+  if(m===11){ log("เดือนปิดงบ จบเดือนนี้ทุกกิจการจ่ายกำไร",{}); await evInfo("เดือนปิดงบ",T("จบเดือนนี้ทุกกิจการจ่ายกำไรให้เจ้าของ"),E); }
 }
-function reportHTML(rows){return `<table class="rep"><tr><th>บริษัท</th><th>กำไรปีนี้</th><th>ทรัพย์สินรวม</th></tr>${rows.map(r=>`<tr><td>${esc(S.players[r.k].name)}${r.mono.length?`<br><span style="font-size:12px;color:var(--muted)">ผูกขาด ${r.mono.join(", ")}</span>`:""}</td><td>+${r.prof}</td><td>${assets(r.k)}</td></tr>`).join("")}</table>`;}
+function reportHTML(rows){return `<table class="rep"><tr><th>${T("บริษัท")}</th><th>${T("กำไรปีนี้")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rows.map(r=>`<tr><td>${esc(S.players[r.k].name)}${r.mono.length?`<br><span style="font-size:12px;color:var(--muted)">${T("ผูกขาด {sts}",{sts:r.mono})}</span>`:""}</td><td>+${r.prof}</td><td>${r.a??assets(r.k)}</td></tr>`).join("")}</table>`;}
+const reportTitle=rep=>T("ปิดงบปีที่ {y}",{y:rep.year});
+const reportBody=rep=>rep.rows?reportHTML(rep.rows):rep.html;
 async function yearClose(){
   const rows=S.players.map((p,k)=>{
     let prof=0; const mono=[];
     for(const s in NAME){const props=PROPS_AT(s); if(!props.length) continue; const own=props.filter(q=>S.owners[q.id]===k); if(!own.length) continue;
-      const sum=own.reduce((t,q)=>t+q.profit,0); if(own.length===props.length){prof+=sum*2;mono.push(NAME[s]);} else prof+=sum;}
+      const sum=own.reduce((t,q)=>t+q.profit,0); if(own.length===props.length){prof+=sum*2;mono.push(s);} else prof+=sum;}
     p.money+=prof; return {k,prof,mono};
   });
-  log(`ปิดงบปีที่ ${S.year} ทุกกิจการจ่ายกำไร`);
-  S.report={id:Date.now()+"-"+S.year,title:`ปิดงบปีที่ ${S.year}`,html:reportHTML(rows)};
+  log("ปิดงบปีที่ {y} ทุกกิจการจ่ายกำไร",{y:S.year});
+  rows.forEach(r=>r.a=assets(r.k));
+  S.report={id:Date.now()+"-"+S.year,year:S.year,rows};
   ON.seenReport=S.report.id;
   render();
-  await modal({eyebrow:"มีนาคม",title:S.report.title,html:S.report.html});
+  await modal({eyebrow:monthN(11),title:reportTitle(S.report),html:reportBody(S.report)});
 }
 async function gameOver(){
   S.phase="over"; commit();
@@ -1137,8 +2728,8 @@ async function gameOver(){
 async function showGameOver(){
   ON.shownOver=true; sfx("over");
   const rank=S.players.map((p,k)=>({k,a:assets(k)})).sort((a,b)=>b.a-a.a);
-  const html=`<table class="rep"><tr><th>อันดับ</th><th>ทรัพย์สินรวม (ล้าน)</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${r.a}</td></tr>`).join("")}</table>`;
-  await modal({eyebrow:"จบเกม",title:`${esc(S.players[rank[0].k].name)} คือเศรษฐีรถไฟ!`,html,buttons:[{label:"กลับหน้าแรก",value:1,primary:true}]});
+  const html=`<table class="rep"><tr><th>${T("อันดับ")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${money(r.a)}</td></tr>`).join("")}</table>`;
+  await modal({eyebrow:T("จบเกม"),title:T("{p} คือเศรษฐีรถไฟ!",{p:esc(S.players[rank[0].k].name)}),html,buttons:[{label:T("กลับหน้าแรก"),value:1,primary:true}]});
   leaveOnline(); home();
 }
 
@@ -1153,23 +2744,23 @@ const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D
 const GC_TYPE={[FOOD]:["#FF8A3D","#FFE3CC","#FFD3B0"],[AGRI]:["#45B864","#DDF5E3","#C6EDD0"],[TOUR]:["#3E9BE0","#DCEEFF","#C4E2FF"],[IND]:["#7E8AB0","#E3E8F2","#D0D8E8"]};
 const GC_KIND={dest:["#E8453C","#FFE0DA","#FFCBC2"],item:["#FFC21A","#FFF3C4","#FFE89A"],ghost:["#9B7BE0","#EDE5FF","#DCCEFF"],event:["#1FA59A","#D4F4EF","#B3EAE2"]};
 const gcVars=c=>`--c:${c[0]};--cl:${c[1]};--cl2:${c[2]}`;
-function gcArt(id){const a=ART.map[id];return a&&a.url?`<img src="${esc(a.url)}" alt="" loading="lazy">`:`<span class="gc-ph">ภาพ ${id}</span>`;}
+function gcArt(id){const a=ART.map[id];return a&&a.url?`<img src="${esc(a.url)}" alt="" loading="lazy">`:`<span class="gc-ph">${T("ภาพ")} ${id}</span>`;}
 function propCard(p){
   const all=PROPS_AT(p.s);
-  return `<div class="gc" style="${gcVars(GC_TYPE[p.t])}"><div class="gc-top"><span class="gc-pill">สถานี${NAME[p.s]}</span><span class="gc-dark">${p.t}</span></div><div class="gc-art">${gcArt(ARTID.prop(p))}</div><div class="gc-name">${p.n}</div><div class="gc-stats"><div class="gc-stat"><span class="gc-coin">${p.price}</span><span><small>ราคาซื้อ</small><b>ล้านบาท</b></span></div><div class="gc-stat"><span class="gc-coin" style="background:#7BE0A0">+${p.profit}</span><span><small>กำไรต่อปี</small><b>ล้านบาท</b></span></div></div><div class="gc-foot">${all.map(q=>{const o=S.owners[q.id];return `<span class="gc-dot" style="${o!==undefined?`background:${S.players[o].color}`:""}"></span>`;}).join("")}<span>ครบ ${all.length} แห่ง = ผูกขาด ×2</span></div></div>`;
+  return `<div class="gc" style="${gcVars(GC_TYPE[p.t])}"><div class="gc-top"><span class="gc-pill">${T("สถานี{st}",{st:p.s})}</span><span class="gc-dark">${typeN(p.t)}</span></div><div class="gc-art">${gcArt(ARTID.prop(p))}</div><div class="gc-name">${propN(p)}</div><div class="gc-stats"><div class="gc-stat"><span class="gc-coin">${p.price}</span><span><small>${T("ราคาซื้อ")}</small><b>${T("ล้านบาท")}</b></span></div><div class="gc-stat"><span class="gc-coin" style="background:#7BE0A0">+${p.profit}</span><span><small>${T("กำไรต่อปี")}</small><b>${T("ล้านบาท")}</b></span></div></div><div class="gc-foot">${all.map(q=>{const o=S.owners[q.id];return `<span class="gc-dot" style="${o!==undefined?`background:${S.players[o].color}`:""}"></span>`;}).join("")}<span>${T("ครบ {n} แห่ง = ผูกขาด ×2",{n:all.length})}</span></div></div>`;
 }
 function destCard(s){
-  return `<div class="gc" style="${gcVars(GC_KIND.dest)}"><div class="gc-top"><span class="gc-pill">จุดหมาย</span><span class="gc-dark">${regionOf(s)}</span></div><div class="gc-art">${gcArt(ARTID.dest(s))}</div><div class="gc-name big">${NAME[s]}</div><div class="gc-panel" style="flex-direction:row;align-items:center;gap:10px"><span class="gc-coin lg">${REWARD[s]}</span><span><span class="gc-sub">คนแรกที่ไปถึงได้รับ</span><span style="font-family:var(--font-d);font-size:18px">${REWARD[s]} ล้านบาท</span></span></div></div>`;
+  return `<div class="gc" style="${gcVars(GC_KIND.dest)}"><div class="gc-top"><span class="gc-pill">${T("จุดหมาย")}</span><span class="gc-dark">${T(regionOf(s))}</span></div><div class="gc-art">${gcArt(ARTID.dest(s))}</div><div class="gc-name big">${stN(s)}</div><div class="gc-panel" style="flex-direction:row;align-items:center;gap:10px"><span class="gc-coin lg">${REWARD[s]}</span><span><span class="gc-sub">${T("คนแรกที่ไปถึงได้รับ")}</span><span style="font-family:var(--font-d);font-size:18px">${money(REWARD[s])}</span></span></div></div>`;
 }
 function itemCard(k){
   const it=ITEMS[k];
-  return `<div class="gc" style="${gcVars(GC_KIND.item)}"><div class="gc-top"><span class="gc-pill">การ์ดไอเทม</span><span class="gc-dark">${it.when}</span></div><div class="gc-art short">${gcArt(ARTID.item(k))}</div><div class="gc-name">${it.n}</div><div class="gc-panel center">${it.eff}</div><div class="gc-foot">ใช้แล้วทิ้ง · ถือได้สูงสุด 5 ใบ</div></div>`;
+  return `<div class="gc" style="${gcVars(GC_KIND.item)}"><div class="gc-top"><span class="gc-pill">${T("การ์ดไอเทม")}</span><span class="gc-dark">${itemF(k,"when")}</span></div><div class="gc-art short">${gcArt(ARTID.item(k))}</div><div class="gc-name">${itemN(k)}</div><div class="gc-panel center">${itemF(k,"eff")}</div><div class="gc-foot">${T("ใช้แล้วทิ้ง · ถือได้สูงสุด 5 ใบ")}</div></div>`;
 }
 function ghostCard(id,name,cond,lines){
-  return `<div class="gc ghost" style="${gcVars(GC_KIND.ghost)}"><div class="gc-top"><span class="gc-pill">ผีป่วน!</span><span class="gc-dark">${cond}</span></div><div class="gc-art">${gcArt(id)}</div><div class="gc-name dark">${name}</div><div class="gc-panel">${lines}</div></div>`;
+  return `<div class="gc ghost" style="${gcVars(GC_KIND.ghost)}"><div class="gc-top"><span class="gc-pill">${T("ผีป่วน!")}</span><span class="gc-dark">${cond}</span></div><div class="gc-art">${gcArt(id)}</div><div class="gc-name dark">${name}</div><div class="gc-panel">${lines}</div></div>`;
 }
 function eventCard(id,month,name,lines){
-  return `<div class="gc" style="${gcVars(GC_KIND.event)}"><div class="gc-top"><span class="gc-pill">อีเวนต์ประจำเดือน</span><span class="gc-dark">${month}</span></div><div class="gc-art short">${gcArt(id)}</div><div class="gc-name">${name}</div><div class="gc-panel">${lines}</div></div>`;
+  return `<div class="gc" style="${gcVars(GC_KIND.event)}"><div class="gc-top"><span class="gc-pill">${T("อีเวนต์ประจำเดือน")}</span><span class="gc-dark">${month}</span></div><div class="gc-art short">${gcArt(id)}</div><div class="gc-name">${name}</div><div class="gc-panel">${lines}</div></div>`;
 }
 const wrapCard=c=>`<div class="gc-wrap">${c}</div>`;
 const wrapGhost=c=>`<div class="gc-wrap ghost">${c}</div>`;
@@ -1177,9 +2768,9 @@ const EVID={"สงกรานต์":"E01","ฤดูผลไม้":"E02","�
 const EVTXT={E01:"รถติด ทุกคนเดิน −1 ช่อง · กิจการท่องเที่ยวรับ 2 ล้าน/แห่ง",E02:"กิจการเกษตรรับ 3 ล้าน/แห่ง",E03:"กิจการเกษตรจ่ายค่าซ่อม 2 ล้าน/แห่ง",E04:"กิจการเชียงใหม่และสุโขทัยรับ 5 ล้าน/แห่ง",E05:"ทุกคนจั่วการ์ดไอเทม 1 ใบ",E06:"ท่องเที่ยวภาคเหนือจ่าย 2 ล้าน/แห่ง",E07:"กิจการนครสวรรค์รับ 5 ล้าน/แห่ง",E08:"จบเดือนนี้ทุกกิจการจ่ายกำไร ผูกขาด ×2",E09:"รางเด่นชัย–แพร่–พะเยาเปิดใช้"};
 function evInfo(title,html,eyebrow){
   const id=EVID[title];
-  if(!id) return info(title,html,eyebrow);
-  const month=id==="E09"?"เม.ย. ปี 2":MONTHS[S.month];
-  return modal({eyebrow,title,html:wrapCard(eventCard(id,month,title.replace("!",""),EVTXT[id]))+html.replace(/^<p>[^<]*<\/p>/,"")});
+  if(!id) return info(T(title),html,eyebrow);
+  const month=id==="E09"?T("{mo} ปีที่ {y}",{mo:0,y:2}):monthN(S.month);
+  return modal({eyebrow,title:T(title),html:wrapCard(eventCard(id,month,T(title.replace("!","")),T(EVTXT[id])))+html.replace(/^<p>[^<]*<\/p>/,"")});
 }
 async function initArt(){
   try{
@@ -1197,12 +2788,12 @@ async function shrinkImage(file){
 async function manageArt(){
   const [assets,db]=await Promise.all([window.claude?.use?.("assets")??null, window.claude?.use?.("db")??null]);
   const missing=ALL_ART_IDS.filter(id=>!(ART.map[id]&&ART.map[id].url));
-  const html=`<p>มีภาพแล้ว <b>${ALL_ART_IDS.length-missing.length}/${ALL_ART_IDS.length}</b> ใบ</p>
+  const html=`<p>${T("มีภาพแล้ว")} <b>${ALL_ART_IDS.length-missing.length}/${ALL_ART_IDS.length}</b></p>
     ${assets&&db?`<p>เลือกไฟล์ภาพที่เจนไว้ทีเดียวหลายไฟล์ได้ (เลือกทั้งโฟลเดอร์ rotfai_cards ได้เลย) เกมดูรหัสจากชื่อไฟล์ เช่น card_P01_00001_.png ถ้ามีหลายไฟล์รหัสเดียวกัน ไฟล์ที่เลือกทีหลังจะใช้แทน</p>
     <input class="art-file" type="file" id="artFiles" multiple accept="image/png,image/jpeg,image/webp"><p class="note" id="artProg"></p>`
-    :`<p>อัปโหลดได้เฉพาะเจ้าของเกมหรือคนที่ได้สิทธิ์ Can edit ที่ล็อกอินอยู่</p>`}
-    ${missing.length?`<p class="note">ยังขาด: ${missing.join(", ")}</p>`:""}`;
-  const p=modal({title:"ภาพการ์ด",html,buttons:[{label:"ปิด",value:null,primary:true}]});
+    :`<p>${T("อัปโหลดได้เฉพาะเจ้าของเกมหรือคนที่ได้สิทธิ์ Can edit ที่ล็อกอินอยู่")}</p>`}
+    ${missing.length?`<p class="note">${T("ยังขาด:")} ${missing.join(", ")}</p>`:""}`;
+  const p=modal({title:T("ภาพการ์ด"),html,buttons:[{label:T("ปิด"),value:null,primary:true}]});
   const input=$("artFiles");
   if(input) input.onchange=async()=>{
     const files=[...input.files]; const prog=$("artProg"); const add={}; let ok=0,skip=0,fail=0;
@@ -1230,30 +2821,31 @@ async function showPlayer(k){
   if(modalResolve) return;
   const p=S.players[k], mine=PROPS.filter(q=>S.owners[q.id]===k);
   const showCards=MODE==="local"||k===mySeat();
-  const html=`<p>เงินสด <b>${fmt(p.money)}</b> · ทรัพย์สินรวม <b>${assets(k)} ล้าน</b></p><p>การ์ด: ${showCards?(p.cards.length?p.cards.map(c=>ITEMS[c].n).join(", "):"ไม่มี"):`${p.cards.length} ใบ (ซ่อนไว้)`}</p>${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${NAME[q.s]}</span>`)).join("")}</div>`:"<p>ยังไม่มีกิจการ</p>"}`;
+  const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b> · ${T("ทรัพย์สินรวม")} <b>${money(assets(k))}</b></p><p>${T("การ์ด:")} ${showCards?(p.cards.length?p.cards.map(c=>itemN(c)).join(", "):T("ไม่มี")):T("{n} ใบ (ซ่อนไว้)",{n:p.cards.length})}</p>${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${stN(q.s)}</span>`)).join("")}</div>`:`<p>${T("ยังไม่มีกิจการ")}</p>`}`;
   await modal({title:esc(p.name),html});
 }
 async function showStation(s){
   if(modalResolve||UI.mode==="pick"||UI.busy) return;
   const props=PROPS_AT(s);
-  const html=s==="DNC"?"ชุมทาง ไม่มีกิจการ หยุดแล้วจั่วการ์ดไอเทม":`<p>รางวัลถ้าเป็นจุดหมาย ${REWARD[s]} ล้าน</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}<div style="min-height:28px;display:grid;place-items:center">${ownerTag(S.owners[q.id])||`<span class="pm">ยังว่าง</span>`}</div></div>`).join("")}</div>`;
-  await modal({eyebrow:"สถานี",title:NAME[s],html});
+  const html=s==="DNC"?T("ชุมทาง ไม่มีกิจการ หยุดแล้วจั่วการ์ดไอเทม"):`<p>${T("รางวัลถ้าเป็นจุดหมาย {m}",{m:REWARD[s]})}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}<div style="min-height:28px;display:grid;place-items:center">${ownerTag(S.owners[q.id])||`<span class="pm">${T("ยังว่าง")}</span>`}</div></div>`).join("")}</div>`;
+  await modal({eyebrow:T("สถานี"),title:stN(s),html});
 }
 
 // ================= HOME / LOCAL SETUP =================
-function previewBoard(){ newGame(["รถไฟแดง","รถไฟน้ำเงิน","รถไฟเขียว"],1); S.phase="setup"; UI={mode:"idle",opts:null,dice:[],busy:false,msg:""}; render(); }
+function previewBoard(){ newGame([0,1,2].map(defaultCo),1); S.phase="setup"; UI={mode:"idle",opts:null,dice:[],busy:false,msg:""}; render(); }
 async function home(){
   MODE="local"; closeModal(); previewBoard();
   let saved=null; try{saved=JSON.parse(localStorage.getItem("rotfai-save")||"null");}catch(e){}
   let lastRoom=null; try{lastRoom=localStorage.getItem("rotfai-room");}catch(e){}
-  const html=`<div class="stack">
-    ${saved&&saved.phase==="play"?`<button class="mode-btn primary" data-val="resume"><b>เล่นเกมที่ค้างไว้ต่อ</b><span>เครื่องเดียว · ${MONTHS[saved.month]} ปีที่ ${saved.year}</span></button>`:""}
-    <button class="mode-btn" data-val="online"><b>เล่นออนไลน์กับเพื่อน</b><span>แต่ละคนใช้มือถือตัวเอง ผลัดกันเล่นทีละเทิร์น</span></button>
-    ${lastRoom?`<button class="mode-btn" data-val="rejoin"><b>กลับเข้าห้อง ${esc(lastRoom)}</b><span>ห้องออนไลน์ล่าสุดของคุณ</span></button>`:""}
-    <button class="mode-btn" data-val="local"><b>เล่นเครื่องเดียว</b><span>2–4 คน ส่งมือถือหรือ iPad ต่อกัน</span></button>
-    <button class="mode-btn" data-val="art"><b>ภาพการ์ด</b><span>อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ</span></button>
+  const html=`${langSeg()}<div class="stack" style="margin-top:12px">
+    ${saved&&saved.phase==="play"?`<button class="mode-btn primary" data-val="resume"><b>${T("เล่นเกมที่ค้างไว้ต่อ")}</b><span>${T("เครื่องเดียว")} · ${T("{mo} ปีที่ {y}",{mo:saved.month,y:saved.year})}</span></button>`:""}
+    <button class="mode-btn" data-val="online"><b>${T("เล่นออนไลน์กับเพื่อน")}</b><span>${T("แต่ละคนใช้มือถือตัวเอง ผลัดกันเล่นทีละเทิร์น")}</span></button>
+    ${lastRoom?`<button class="mode-btn" data-val="rejoin"><b>${T("กลับเข้าห้อง {c}",{c:esc(lastRoom)})}</b><span>${T("ห้องออนไลน์ล่าสุดของคุณ")}</span></button>`:""}
+    <button class="mode-btn" data-val="local"><b>${T("เล่นเครื่องเดียว")}</b><span>${T("2–4 คน ส่งมือถือหรือ iPad ต่อกัน")}</span></button>
+    <button class="mode-btn" data-val="art"><b>${T("ภาพการ์ด")}</b><span>${T("อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ")}</span></button>
   </div>`;
-  const v=await modal({eyebrow:"เหนือ · กลาง · ตะวันออก · ตะวันตก · v0.3",title:"รถไฟเศรษฐีไทย",html,buttons:[{label:BGM.on?"♪ ปิดเพลง":"♪ เปิดเพลง",value:"bgm"},{label:SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์",value:"sfx"}]});
+  const v=await modal({eyebrow:T("เหนือ · กลาง · ตะวันออก · ตะวันตก")+" · v0.4",title:T("รถไฟเศรษฐีไทย"),html,buttons:[{label:"♪ "+T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"}]});
+  if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return home(); }
   if(v==="bgm"){ bgmToggle(); return home(); }
   if(v==="sfx"){ sfxToggle(); return home(); }
   if(v==="resume"){ MODE="local"; S=saved; render(); return beginTurn(); }
@@ -1265,17 +2857,17 @@ async function home(){
 }
 async function setupLocal(){
   let n=3, years=1;
-  const names=PCOL.map(c=>"รถไฟ"+c[0]);
+  const names=PCOL.map((c,k)=>defaultCo(k));
   const bots=[false,true,true,true];
   let quizOn=true, qTime=5, map="all";
   while(true){
-    const html=`<div class="field"><div class="label">จำนวนผู้เล่น</div><div class="seg">${[2,3,4].map(v=>`<button data-val="n${v}" aria-pressed="${v===n}">${v} คน</button>`).join("")}</div></div>
-      <div class="field"><div class="label">ชื่อบริษัท</div><div class="names">${names.slice(0,n).map((v,k)=>`<label><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><input id="nm${k}" value="${esc(v)}" maxlength="18" aria-label="ชื่อผู้เล่น ${k+1}">${k===0?`<span class="pm" style="min-width:64px;text-align:center">คุณ</span>`:`<button class="btn" style="flex:none;min-height:42px;padding:0 10px;font-size:14px;min-width:64px" data-val="b${k}" aria-pressed="${bots[k]}">${bots[k]?"บอท":"คน"}</button>`}</label>`).join("")}</div><p class="note" style="margin-top:6px">แตะปุ่มด้านขวาเพื่อสลับ คน / บอท</p></div>
-      <div class="field"><div class="label">ความยาวเกม</div><div class="seg"><button data-val="y1" aria-pressed="${years===1}">1 ปี · ราว 45 นาที</button><button data-val="y2" aria-pressed="${years===2}">2 ปี · มีรางใหม่</button></div></div>
-      <div class="field"><div class="label">แผนที่</div><div class="seg"><button data-val="mp_all" aria-pressed="${map==="all"}">ทุกภาค · 27 สถานี</button><button data-val="mp_north" aria-pressed="${map==="north"}">สายเหนือ · 15 สถานี</button></div><p class="note" style="margin-top:6px">สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า</p></div>
-      <div class="field"><div class="label">ควิซ</div><div class="seg"><button data-val="qz1" aria-pressed="${quizOn}">เปิด</button><button data-val="qz0" aria-pressed="${!quizOn}">ปิด</button></div><p class="note" style="margin-top:6px">ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส</p></div>
-      ${quizOn?`<div class="field"><div class="label">เวลาตอบควิซ</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?t+" วิ":"ไม่จับเวลา"}</button>`).join("")}</div></div>`:""}`;
-    const v=await modal({eyebrow:"เล่นเครื่องเดียว",title:"ตั้งค่าเกม",html,buttons:[{label:"กลับ",value:"back"},{label:"เริ่มเกม",value:"start",primary:true}]});
+    const html=`<div class="field"><div class="label">${T("จำนวนผู้เล่น")}</div><div class="seg">${[2,3,4].map(v=>`<button data-val="n${v}" aria-pressed="${v===n}">${T("{n} คน",{n:v})}</button>`).join("")}</div></div>
+      <div class="field"><div class="label">${T("ชื่อบริษัท")}</div><div class="names">${names.slice(0,n).map((v,k)=>`<label><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><input id="nm${k}" value="${esc(v)}" maxlength="18" aria-label="${T("ชื่อผู้เล่น")} ${k+1}">${k===0?`<span class="pm" style="min-width:64px;text-align:center">${T("คุณ")}</span>`:`<button class="btn" style="flex:none;min-height:42px;padding:0 10px;font-size:14px;min-width:64px" data-val="b${k}" aria-pressed="${bots[k]}">${T(bots[k]?"บอท":"คน")}</button>`}</label>`).join("")}</div><p class="note" style="margin-top:6px">${T("แตะปุ่มด้านขวาเพื่อสลับ คน / บอท")}</p></div>
+      <div class="field"><div class="label">${T("ความยาวเกม")}</div><div class="seg"><button data-val="y1" aria-pressed="${years===1}">${T("1 ปี · ราว 45 นาที")}</button><button data-val="y2" aria-pressed="${years===2}">${T("2 ปี · มีรางใหม่")}</button></div></div>
+      <div class="field"><div class="label">${T("แผนที่")}</div><div class="seg"><button data-val="mp_all" aria-pressed="${map==="all"}">${T("ทุกภาค · 27 สถานี")}</button><button data-val="mp_north" aria-pressed="${map==="north"}">${T("สายเหนือ · 15 สถานี")}</button></div><p class="note" style="margin-top:6px">${T("สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า")}</p></div>
+      <div class="field"><div class="label">${T("ควิซ")}</div><div class="seg"><button data-val="qz1" aria-pressed="${quizOn}">${T("เปิด")}</button><button data-val="qz0" aria-pressed="${!quizOn}">${T("@off")}</button></div><p class="note" style="margin-top:6px">${T("ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส")}</p></div>
+      ${quizOn?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}`;
+    const v=await modal({eyebrow:T("เล่นเครื่องเดียว"),title:T("ตั้งค่าเกม"),html,buttons:[{label:T("กลับ"),value:"back"},{label:T("เริ่มเกม"),value:"start",primary:true}]});
     for(let k=0;k<n;k++){const el=$("nm"+k); if(el&&el.value.trim()) names[k]=el.value.trim();}
     if(v==="back") return home();
     if(v&&v[0]==="n"){n=+v.slice(1);continue;}
@@ -1289,7 +2881,7 @@ async function setupLocal(){
   MODE="local"; newGame(names.slice(0,n),years,map);
   S.players.forEach((p,k)=>{p.bot=k>0&&bots[k];}); S.quiz=quizOn; S.qTime=qTime;
   render(); focusNode("BKK",false);
-  await info("จุดหมายแรก",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> คนแรกที่ไปถึงได้ ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
+  await info(T("จุดหมายแรก"),T("ทุกคนมุ่งหน้าไป <b>{st}</b> คนแรกที่ไปถึงได้ {m}",{st:S.dest,m:REWARD[S.dest]}),T("จับฉลาก"));
   await startMonth(); commit();
   beginTurn();
 }
@@ -1313,15 +2905,15 @@ function leaveOnline(){
 }
 async function onlineLobby(rejoin){
   closeModal();
-  modal({title:"กำลังเชื่อมต่อ…",html:"",buttons:[]});
+  modal({title:T("กำลังเชื่อมต่อ…"),html:"",buttons:[]});
   const ok=await initOnline();
   if(!ok){
-    await modal({title:"เล่นออนไลน์ไม่ได้ในตอนนี้",html:"<p>หน้านี้เชื่อมต่อที่เก็บห้องเกมไม่ได้ ลองเปิดลิงก์ใหม่ในเว็บ claude.ai โดยล็อกอินด้วยอีเมลที่ได้รับเชิญ</p><p>ยังเล่นแบบเครื่องเดียวได้ตามปกติ</p>",buttons:[{label:"กลับ",value:1,primary:true}]});
+    await modal({title:T("เล่นออนไลน์ไม่ได้ในตอนนี้"),html:`<p>${T("หน้านี้เชื่อมต่อที่เก็บห้องเกมไม่ได้ ลองเปิดลิงก์ใหม่ในเว็บ claude.ai โดยล็อกอินด้วยอีเมลที่ได้รับเชิญ")}</p><p>${T("ยังเล่นแบบเครื่องเดียวได้ตามปกติ")}</p>`,buttons:[{label:T("กลับ"),value:1,primary:true}]});
     return home();
   }
   const canW=await ON.user.can("data.write");
   if(canW===false){
-    await modal({title:"บัญชีนี้ดูได้อย่างเดียว",html:"<p>บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของเกมกด Share แล้วตั้งสิทธิ์ของคุณเป็น Can edit และตั้ง Who has access เป็น Only you (ไม่เปิดลิงก์สาธารณะ)</p><p>เปลี่ยนแล้วให้โหลดหน้านี้ใหม่</p>",buttons:[{label:"กลับ",value:1,primary:true}]});
+    await modal({title:T("บัญชีนี้ดูได้อย่างเดียว"),html:`<p>${T("บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของเกมกด Share แล้วตั้งสิทธิ์ของคุณเป็น Can edit และตั้ง Who has access เป็น Only you (ไม่เปิดลิงก์สาธารณะ)")}</p><p>${T("เปลี่ยนแล้วให้โหลดหน้านี้ใหม่")}</p>`,buttons:[{label:T("กลับ"),value:1,primary:true}]});
     return home();
   }
   if(rejoin) return joinRoom(rejoin);
@@ -1335,9 +2927,9 @@ async function roomList(){
     profs=ids.length?await ON.user.profiles(ids):{};
     if(!ON.listUnsub) return;
     const open=rooms.filter(r=>r.status==="lobby"||(r.status==="play"&&(r.seats||[]).some(s=>s.uid===ON.me)));
-    const html=`<div class="stack"><button class="mode-btn primary" data-val="create"><b>สร้างห้องใหม่</b><span>ได้รหัสห้อง 4 ตัวให้เพื่อนกดเข้า</span></button></div>
-      <div class="field"><div class="label">ห้องที่เปิดอยู่</div><div class="stack">${open.length?open.map(r=>{const host=(r.seats||[])[0];const mine=(r.seats||[]).some(s=>s.uid===ON.me);return `<button class="room" data-val="join:${esc(r.code)}"><span class="rn">${esc(r.code)}</span><span><span class="rm">${r.status==="play"?"กำลังเล่น · ":""}${(r.seats||[]).length}/4 คน · ห้องของ${esc((host&&profs[host.uid]?.name)||"เพื่อน")}</span></span><span class="pick" style="display:inline-flex;align-items:center;min-height:36px">${mine?"กลับเข้า":"เข้าร่วม"}</span></button>`;}).join(""):`<p class="note" style="margin:0">ยังไม่มีห้อง สร้างห้องแล้วบอกรหัสให้เพื่อน</p>`}</div></div>`;
-    modal({eyebrow:"เล่นออนไลน์",title:"เลือกห้อง",html,buttons:[{label:"กลับ",value:"back"}]}).then(v=>{if(v!==undefined)resolve(v);});
+    const html=`<div class="stack"><button class="mode-btn primary" data-val="create"><b>${T("สร้างห้องใหม่")}</b><span>${T("ได้รหัสห้อง 4 ตัวให้เพื่อนกดเข้า")}</span></button></div>
+      <div class="field"><div class="label">${T("ห้องที่เปิดอยู่")}</div><div class="stack">${open.length?open.map(r=>{const host=(r.seats||[])[0];const mine=(r.seats||[]).some(s=>s.uid===ON.me);return `<button class="room" data-val="join:${esc(r.code)}"><span class="rn">${esc(r.code)}</span><span><span class="rm">${r.status==="play"?T("กำลังเล่น")+" · ":""}${(r.seats||[]).length}/4 · ${T("ห้องของ{p}",{p:esc((host&&profs[host.uid]?.name)||T("เพื่อน"))})}</span></span><span class="pick" style="display:inline-flex;align-items:center;min-height:36px">${T(mine?"กลับเข้า":"เข้าร่วม")}</span></button>`;}).join(""):`<p class="note" style="margin:0">${T("ยังไม่มีห้อง สร้างห้องแล้วบอกรหัสให้เพื่อน")}</p>`}</div></div>`;
+    modal({eyebrow:T("เล่นออนไลน์"),title:T("เลือกห้อง"),html,buttons:[{label:T("กลับ"),value:"back"}]}).then(v=>{if(v!==undefined)resolve(v);});
   };
   ON.listUnsub=ON.db.collection("games").where("status","in",["lobby","play"]).limit(50).onSnapshot(snap=>{
     rooms=snap.docs.map(d=>d.data()).filter(Boolean).sort((a,b)=>(b.created||0)-(a.created||0)); draw();
@@ -1351,36 +2943,36 @@ async function roomList(){
 }
 async function createRoom(){
   const code=genCode(); const ref=ON.db.doc("games/"+code);
-  try{ await ref.set({code,status:"lobby",host:ON.me,created:Date.now(),years:1,seats:[{uid:ON.me,co:"รถไฟแดง"}],rev:0}); }
-  catch(e){ await info("สร้างห้องไม่ได้",e&&e.code==="invalid_argument"?"บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของแชร์แบบ Editor":"ลองใหม่อีกครั้ง"); return roomList(); }
+  try{ await ref.set({code,status:"lobby",host:ON.me,created:Date.now(),years:1,seats:[{uid:ON.me,co:defaultCo(0)}],rev:0}); }
+  catch(e){ await info(T("สร้างห้องไม่ได้"),T(e&&e.code==="invalid_argument"?"บัญชีนี้ยังไม่มีสิทธิ์แก้ไข ให้เจ้าของแชร์แบบ Editor":"ลองใหม่อีกครั้ง")); return roomList(); }
   enterRoom(code);
 }
 async function joinRoom(code){
   const ref=ON.db.doc("games/"+code);
   try{
     const l=await ref.acquire({holder:ON.me,ttlMs:4000});
-    if(!l.acquired){ toast("มีคนกำลังเข้าห้องนี้ ลองอีกครั้ง"); return roomList(); }
+    if(!l.acquired){ toast(T("มีคนกำลังเข้าห้องนี้ ลองอีกครั้ง")); return roomList(); }
     const s=await ref.get();
-    if(!s.exists){ toast("ไม่พบห้อง "+code); try{localStorage.removeItem("rotfai-room");}catch(e){} return roomList(); }
+    if(!s.exists){ toast(T("ไม่พบห้อง {c}",{c:code})); try{localStorage.removeItem("rotfai-room");}catch(e){} return roomList(); }
     const d=s.data(); const seats=[...(d.seats||[])];
     if(!seats.some(x=>x.uid===ON.me)){
-      if(d.status!=="lobby"){ toast("ห้องนี้เริ่มเล่นไปแล้ว"); return roomList(); }
-      if(seats.length>=4){ toast("ห้องเต็มแล้ว"); return roomList(); }
-      seats.push({uid:ON.me,co:"รถไฟ"+PCOL[seats.length][0]});
+      if(d.status!=="lobby"){ toast(T("ห้องนี้เริ่มเล่นไปแล้ว")); return roomList(); }
+      if(seats.length>=4){ toast(T("ห้องเต็มแล้ว")); return roomList(); }
+      seats.push({uid:ON.me,co:defaultCo(seats.length)});
       await ref.update({seats});
     }
-  }catch(e){ toast("เข้าห้องไม่ได้ ลองใหม่"); return roomList(); }
+  }catch(e){ toast(T("เข้าห้องไม่ได้ ลองใหม่")); return roomList(); }
   enterRoom(code);
 }
 function enterRoom(code){
   ON.ref=ON.db.doc("games/"+code);
   try{localStorage.setItem("rotfai-room",code);}catch(e){}
   if(ON.unsub) ON.unsub();
-  ON.unsub=ON.ref.onSnapshot(onRoomSnap,()=>{toast("หลุดการเชื่อมต่อกับห้อง"); leaveOnline(); home();});
+  ON.unsub=ON.ref.onSnapshot(onRoomSnap,()=>{toast(T("หลุดการเชื่อมต่อกับห้อง")); leaveOnline(); home();});
 }
 let lobbyDrawn=null;
 async function onRoomSnap(snap){
-  if(!snap.exists){ toast("ห้องนี้ถูกปิดแล้ว"); try{localStorage.removeItem("rotfai-room");}catch(e){} leaveOnline(); return home(); }
+  if(!snap.exists){ toast(T("ห้องนี้ถูกปิดแล้ว")); try{localStorage.removeItem("rotfai-room");}catch(e){} leaveOnline(); return home(); }
   const d=snap.data(); const {S:gs,...meta}=d; ON.meta=meta;
   if(d.status==="lobby"){ MODE="online"; return drawRoom(d); }
   if(!gs) return;
@@ -1397,15 +2989,15 @@ async function applyRemote(next){
   const prevLog=ON.seenLog;
   S=next;
   if(!isMyTurn()) UI={mode:"idle",opts:null,dice:[],busy:false,msg:""};
-  if(!fresh&&S.lastRoll&&S.lastRoll.id!==ON.seenRoll){ ON.seenRoll=S.lastRoll.id; const lr=S.lastRoll; if(lr.kind==="ghost") await diceFX(lr.vals,`ผีทอยได้ ${lr.vals[0]}`,`${esc(S.players[lr.p].name)}`); else { const {label}=rollLabel(lr.vals); await diceFX(lr.vals,label,esc(S.players[lr.p].name)); } }
+  if(!fresh&&S.lastRoll&&S.lastRoll.id!==ON.seenRoll){ ON.seenRoll=S.lastRoll.id; const lr=S.lastRoll; if(lr.kind==="ghost") await diceFX(lr.vals,T("ผีทอยได้ {d}",{d:lr.vals[0]}),`${esc(S.players[lr.p].name)}`); else { const {label}=rollLabel(lr.vals); await diceFX(lr.vals,label,esc(S.players[lr.p].name)); } }
   if(!fresh&&S.lastMove&&S.lastMove.id!==ON.seenMove){ ON.seenMove=S.lastMove.id; render(); await animateMove(S.lastMove); }
   render();
   if(!fresh){
-    const n=(S.logN||0)-prevLog; for(let k=Math.min(n,S.log.length)-1;k>=0;k--){ toast(S.log[k]); sfxLog(S.log[k]); }
+    const n=(S.logN||0)-prevLog; for(let k=Math.min(n,S.log.length)-1;k>=0;k--){ const e=S.log[k]; toast(logText(e)); sfxLog(typeof e==="string"?e:e[0]); }
   }
   ON.seenLog=S.logN||0;
   if(S.phase==="over"){ if(!ON.shownOver) await showGameOver(); return; }
-  if(!fresh&&S.report&&S.report.id!==ON.seenReport){ ON.seenReport=S.report.id; if(!modalResolve) await modal({eyebrow:"มีนาคม",title:S.report.title,html:S.report.html}); }
+  if(!fresh&&S.report&&S.report.id!==ON.seenReport){ ON.seenReport=S.report.id; if(!modalResolve) await modal({eyebrow:monthN(11),title:S.report.rows?reportTitle(S.report):S.report.title,html:reportBody(S.report)}); }
   if(S.turn===mySeat()&&ON.handledTurn!==S.turnId) startTurn();
   else if(isBotTurn()&&ON.handledTurn!==S.turnId) botTurn();
   else if(fresh) focusNode(cur().node,false);
@@ -1415,26 +3007,27 @@ async function drawRoom(d){
   const profs=seats.length?await ON.user.profiles(seats.map(s=>s.uid)):{};
   if(!ON.meta||ON.meta.status!=="lobby") return;
   const focusedId=document.activeElement&&document.activeElement.id;
-  const html=`<p>บอกรหัสนี้ให้เพื่อน แล้วให้เพื่อนเปิดลิงก์เดียวกัน กด "เล่นออนไลน์" และเลือกห้องนี้</p><div class="code" style="margin-top:6px">${esc(d.code)}</div>
-    <div class="field"><div class="label">ผู้เล่น ${seats.length}/4</div>${seats.map((s,k)=>`<div class="seat"><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><div>${k===me?`<input id="coName" value="${esc(s.co)}" maxlength="18" aria-label="ชื่อบริษัทของคุณ">`:`<b>${esc(s.co)}</b>`}<div class="who-n">${s.bot?"บอท":esc(profs[s.uid]?.name||"เพื่อน")}${k===me?" · คุณ":""}${s.uid===d.host?" · เจ้าของห้อง":""}</div></div></div>`).join("")}</div>
-    <div class="field"><div class="label">ความยาวเกม${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="y1"':"disabled"} aria-pressed="${d.years===1}">1 ปี</button><button ${host?'data-val="y2"':"disabled"} aria-pressed="${d.years===2}">2 ปี · มีรางใหม่</button></div></div>
-    <div class="field"><div class="label">แผนที่${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="mp_all"':"disabled"} aria-pressed="${d.map!=="north"}">ทุกภาค</button><button ${host?'data-val="mp_north"':"disabled"} aria-pressed="${d.map==="north"}">สายเหนือ</button></div></div>
-    <div class="field"><div class="label">ควิซ${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="qz1"':"disabled"} aria-pressed="${d.quiz!==false}">เปิด</button><button ${host?'data-val="qz0"':"disabled"} aria-pressed="${d.quiz===false}">ปิด</button></div></div>
-    ${d.quiz!==false?`<div class="field"><div class="label">เวลาตอบควิซ${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg">${[5,10,15,0].map(t=>`<button ${host?`data-val="qt${t}"`:"disabled"} aria-pressed="${(d.qTime??5)===t}">${t?t+" วิ":"ไม่จับเวลา"}</button>`).join("")}</div></div>`:""}
-    <p class="note">${host?(seats.length<2?"รอเพื่อนหรือเพิ่มบอทอย่างน้อย 1 คน":"พร้อมแล้วกดเริ่มเกม · บอทเล่นบนเครื่องของคุณ ถ้าคุณปิดเกม ตาของบอทจะหยุดรอ"):"รอเจ้าของห้องกดเริ่มเกม"}</p>`;
-  const btns=[{label:host?"ปิดห้อง":"ออกจากห้อง",value:"leave"}];
-  if(host&&seats.length<4) btns.push({label:"เพิ่มบอท",value:"addbot"});
-  if(host&&seats.some(s=>s.bot)) btns.push({label:"ลบบอท",value:"delbot"});
-  if(host) btns.push({label:"เริ่มเกม",value:"start",primary:true,disabled:seats.length<2});
+  const html=`${langSeg()}<p style="margin-top:10px">${T("@lobbyhint")}</p><div class="code" style="margin-top:6px">${esc(d.code)}</div>
+    <div class="field"><div class="label">${T("ผู้เล่น")} ${seats.length}/4</div>${seats.map((s,k)=>`<div class="seat"><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><div>${k===me?`<input id="coName" value="${esc(s.co)}" maxlength="18" aria-label="${T("ชื่อบริษัท")}">`:`<b>${esc(s.co)}</b>`}<div class="who-n">${s.bot?T("บอท"):esc(profs[s.uid]?.name||T("เพื่อน"))}${k===me?" · "+T("คุณ"):""}${s.uid===d.host?" · "+T("เจ้าของห้อง"):""}</div></div></div>`).join("")}</div>
+    <div class="field"><div class="label">${T("ความยาวเกม")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg"><button ${host?'data-val="y1"':"disabled"} aria-pressed="${d.years===1}">${T("1 ปี")}</button><button ${host?'data-val="y2"':"disabled"} aria-pressed="${d.years===2}">${T("2 ปี · มีรางใหม่")}</button></div></div>
+    <div class="field"><div class="label">${T("แผนที่")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg"><button ${host?'data-val="mp_all"':"disabled"} aria-pressed="${d.map!=="north"}">${T("ทุกภาค")}</button><button ${host?'data-val="mp_north"':"disabled"} aria-pressed="${d.map==="north"}">${T("สายเหนือ")}</button></div></div>
+    <div class="field"><div class="label">${T("ควิซ")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg"><button ${host?'data-val="qz1"':"disabled"} aria-pressed="${d.quiz!==false}">${T("เปิด")}</button><button ${host?'data-val="qz0"':"disabled"} aria-pressed="${d.quiz===false}">${T("@off")}</button></div></div>
+    ${d.quiz!==false?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg">${[5,10,15,0].map(t=>`<button ${host?`data-val="qt${t}"`:"disabled"} aria-pressed="${(d.qTime??5)===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}
+    <p class="note">${T(host?(seats.length<2?"รอเพื่อนหรือเพิ่มบอทอย่างน้อย 1 คน":"พร้อมแล้วกดเริ่มเกม · บอทเล่นบนเครื่องของคุณ ถ้าคุณปิดเกม ตาของบอทจะหยุดรอ"):"รอเจ้าของห้องกดเริ่มเกม")}</p>`;
+  const btns=[{label:T(host?"ปิดห้อง":"ออกจากห้อง"),value:"leave"}];
+  if(host&&seats.length<4) btns.push({label:T("เพิ่มบอท"),value:"addbot"});
+  if(host&&seats.some(s=>s.bot)) btns.push({label:T("ลบบอท"),value:"delbot"});
+  if(host) btns.push({label:T("เริ่มเกม"),value:"start",primary:true,disabled:seats.length<2});
   lobbyDrawn=d;
-  const p=modal({eyebrow:"ห้องออนไลน์",title:"รอเพื่อนเข้าห้อง",html,buttons:btns});
+  const p=modal({eyebrow:T("ห้องออนไลน์"),title:T("รอเพื่อนเข้าห้อง"),html,buttons:btns});
   const inp=$("coName");
   if(inp){ if(focusedId==="coName"){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
     inp.onchange=async()=>{ const v=inp.value.trim().slice(0,18); if(!v||v===seats[me].co) return; const ns=seats.map((s,k)=>k===me?{...s,co:v}:s); try{await ON.ref.update({seats:ns});}catch(e){} }; }
   const v=await p;
   if(v===undefined||lobbyDrawn!==d) return;
-  if(v==="addbot"&&host&&seats.length<4){ const ns=[...seats,{uid:"bot_"+Math.random().toString(36).slice(2,8),co:"รถไฟ"+PCOL[seats.length][0],bot:true}]; try{await ON.ref.update({seats:ns});}catch(e){} return; }
+  if(v==="addbot"&&host&&seats.length<4){ const ns=[...seats,{uid:"bot_"+Math.random().toString(36).slice(2,8),co:defaultCo(seats.length),bot:true}]; try{await ON.ref.update({seats:ns});}catch(e){} return; }
   if(v==="delbot"&&host){ const k=seats.map(s=>!!s.bot).lastIndexOf(true); if(k>=0){ const ns=seats.filter((_,j)=>j!==k); try{await ON.ref.update({seats:ns});}catch(e){} } return; }
+  if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return drawRoom(d); }
   if(v==="qz1"||v==="qz0"){ try{await ON.ref.update({quiz:v==="qz1"});}catch(e){} return; }
   if(v&&v.startsWith("qt")&&host){ try{await ON.ref.update({qTime:+v.slice(2)});}catch(e){} return; }
   if((v==="mp_all"||v==="mp_north")&&host){ try{await ON.ref.update({map:v.slice(3)});}catch(e){} return; }
@@ -1456,7 +3049,7 @@ async function hostStart(d){
   ON.seenLog=S.logN; ON.handledTurn=null;
   closeModal(); render(); focusNode("BKK",false);
   commit();
-  await info("จุดหมายแรก",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> คนแรกที่ไปถึงได้ ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
+  await info(T("จุดหมายแรก"),T("ทุกคนมุ่งหน้าไป <b>{st}</b> คนแรกที่ไปถึงได้ {m}",{st:S.dest,m:REWARD[S.dest]}),T("จับฉลาก"));
   await startMonth(); commit();
   advance();
 }
@@ -1466,21 +3059,15 @@ $("menuBtn").onclick=async()=>{
   if(!S||S.phase==="setup") return;
   if(modalResolve) return;
   const online=MODE==="online";
-  const v=await modal({title:"เมนู",html:online&&ON.meta?`<p>ห้อง <b>${esc(ON.meta.code)}</b> · คุณคือ ${esc(S.players[mySeat()]?.name||"ผู้ชม")}</p>`:"",buttons:[{label:"กติกาย่อ",value:"rules"},{label:"ภาพการ์ด",value:"art"},{label:BGM.on?"ปิดเพลง":"เปิดเพลง",value:"bgm"},{label:SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์",value:"sfx"},{label:online?"ออกไปหน้าแรก":"เริ่มเกมใหม่",value:"new"},{label:"ปิด",value:null,primary:true}]});
+  const v=await modal({title:T("เมนู"),html:langSeg()+(online&&ON.meta?`<p style="margin-top:10px">${T("ห้อง <b>{c}</b> · คุณคือ {p}",{c:esc(ON.meta.code),p:esc(S.players[mySeat()]?.name||T("ผู้ชม"))})}</p>`:""),buttons:[{label:T("กติกาย่อ"),value:"rules"},{label:T("ภาพการ์ด"),value:"art"},{label:T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"},{label:T(online?"ออกไปหน้าแรก":"เริ่มเกมใหม่"),value:"new"},{label:T("ปิด"),value:null,primary:true}]});
+  if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return; }
   if(v==="art") return manageArt();
   if(v==="bgm"){ bgmToggle(); return; }
   if(v==="sfx"){ sfxToggle(); return; }
-  if(v==="rules") await modal({title:"กติกาย่อ",html:`<ul class="rules">
-    <li>หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล</li>
-    <li>ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง</li>
-    <li>ถึงจุดหมายคนแรกได้เงินรางวัล แล้วผีไปติดคนที่อยู่ไกลที่สุด</li>
-    <li>ผีทำเรื่องวุ่นทุกต้นเทิร์น อยู่ครบ 3 เทิร์นกลายร่างยักษ์ เดินผ่านคนอื่นเพื่อส่งผีต่อ</li>
-    <li>หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2</li>
-    <li>เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา</li>
-    <li>จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ</li></ul>`});
+  if(v==="rules") await modal({title:T("กติกาย่อ"),html:`<ul class="rules">${RULES.map(x=>`<li>${T(x)}</li>`).join("")}</ul>`});
   if(v==="new"){
     if(online){ leaveOnline(); return home(); }
-    const ok=await modal({title:"เริ่มเกมใหม่?",html:"เกมที่เล่นอยู่บนเครื่องนี้จะหายไป",buttons:[{label:"ยกเลิก",value:false},{label:"เริ่มใหม่",value:true,primary:true}]});
+    const ok=await modal({title:T("เริ่มเกมใหม่?"),html:T("เกมที่เล่นอยู่บนเครื่องนี้จะหายไป"),buttons:[{label:T("ยกเลิก"),value:false},{label:T("เริ่มใหม่"),value:true,primary:true}]});
     if(ok){ try{localStorage.removeItem("rotfai-save");}catch(e){} home(); }
   }
 };
@@ -1503,7 +3090,7 @@ const BGM={ctx:null,gain:null,buf:null,src:null,loading:null,on:true,vol:0.32};
 try{ BGM.on=localStorage.getItem("rotfai-bgm")!=="off"; }catch(e){}
 const ICON_ON=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13"/><circle cx="5.8" cy="15" r="2.2"/><circle cx="13.8" cy="13" r="2.2"/></svg>`;
 const ICON_OFF=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13" opacity=".45"/><circle cx="5.8" cy="15" r="2.2" opacity=".45"/><circle cx="13.8" cy="13" r="2.2" opacity=".45"/><path d="M3 3l14 14"/></svg>`;
-function bgmIcon(){ const b=$("bgmBtn"); if(!b) return; b.innerHTML=BGM.on?ICON_ON:ICON_OFF; b.setAttribute("aria-pressed",String(BGM.on)); b.setAttribute("aria-label",BGM.on?"ปิดเพลง":"เปิดเพลง"); }
+function bgmIcon(){ const b=$("bgmBtn"); if(!b) return; b.innerHTML=BGM.on?ICON_ON:ICON_OFF; b.setAttribute("aria-pressed",String(BGM.on)); b.setAttribute("aria-label",T(BGM.on?"ปิดเพลง":"เปิดเพลง")); }
 function bgmLoad(){
   if(BGM.loading) return BGM.loading;
   BGM.loading=fetch("bgm.mp3").then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
@@ -1605,6 +3192,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 // ================= BOOT =================
 window.claude?.hot?.snapshot?.(()=>({save:MODE==="local"?SAFE:null,room:MODE==="online"&&ON.meta?ON.meta.code:null}));
 function start(data){
+  applyStaticLang();
   buildBoard(); sizeBoard(); initArt();
   if(data&&data.room) return onlineLobby(data.room);
   if(data&&data.save&&data.save.phase==="play"){ MODE="local"; S=data.save; render(); return beginTurn(); }
