@@ -14,7 +14,7 @@
 :root{
   --bg:#E7ECE4; --surface:#FFFFFF; --surface-2:#F3F6F1; --ink:#17232B; --muted:#5A6A6E; --line:#CBD4CC;
   --rail:#1F4E9C; --accent:#F2B705; --accent-ink:#2B2100; --bus:#9AA29A; --new:#E2711D;
-  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB;
+  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
   --shadow:0 10px 30px rgba(20,35,40,.18);
   --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai',sans-serif;
   --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai',sans-serif;
@@ -22,12 +22,12 @@
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
 
 html,body{height:100%}
@@ -267,7 +267,7 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
   </header>
   <main class="stage">
     <div class="mapwrap">
-      <div class="map" id="map"><svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 22 210 500"></svg></div>
+      <div class="map" id="map"><svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 22 210 760"></svg></div>
       <div class="zoom"><button id="zin" aria-label="ซูมเข้า">+</button><button id="zout" aria-label="ซูมออก">−</button></div>
     </div>
     <aside class="panel" id="panel"></aside>
@@ -293,16 +293,52 @@ Object.assign(NODES,{
   f1:{x:86,y:170,t:"b"},f2:{x:137,y:145,t:"y"}
 });
 for(const k of Object.keys(NODES)){ if(!MAIN.find(m=>m[0]===k)) NODES[k].x+=DX; }
+// ภาคกลาง ตะวันออก ตะวันตก (พิกัดจริงบนกระดาน ไม่บวก DX)
+Object.assign(NODES,{
+  sr1:{x:88,y:459,t:"b"},sr2:{x:113,y:459,t:"r"},SRB:{x:138,y:459,t:"st"},
+  e1:{x:88,y:510,t:"b"},e2:{x:113,y:510,t:"y"},CCO:{x:138,y:510,t:"st"},
+  c1:{x:138,y:527,t:"r"},c2:{x:138,y:544,t:"b"},CBI:{x:138,y:561,t:"st"},
+  p1:{x:138,y:578,t:"y"},p2:{x:138,y:595,t:"b"},PTY:{x:138,y:612,t:"st"},
+  ry1:{x:138,y:629,t:"g"},ry2:{x:138,y:646,t:"g"},RYG:{x:138,y:663,t:"st"},
+  ct1:{x:150,y:677,t:"g"},ct2:{x:161,y:692,t:"g"},CTI:{x:172,y:707,t:"st"},
+  tr1:{x:172,y:724,t:"g"},tr2:{x:172,y:741,t:"g"},TRT:{x:172,y:758,t:"st"},
+  s1:{x:63,y:527,t:"b"},s2:{x:63,y:544,t:"r"},NPT:{x:63,y:561,t:"st"},
+  s4:{x:63,y:578,t:"y"},s5:{x:63,y:595,t:"b"},RBR:{x:63,y:612,t:"st"},
+  s7:{x:63,y:629,t:"r"},s8:{x:63,y:646,t:"y"},PBI:{x:63,y:663,t:"st"},
+  s10:{x:63,y:680,t:"b"},s11:{x:63,y:697,t:"r"},HHN:{x:63,y:714,t:"st"},
+  k1:{x:51,y:572,t:"y"},k2:{x:46,y:589,t:"b"},KRI:{x:40,y:606,t:"st"}
+});
 const EDGES=[];
 for(let i=0;i<MAIN.length-1;i++) EDGES.push([MAIN[i][0],MAIN[i+1][0],"rail"]);
 [["PSL","sk1"],["sk1","sk2"],["sk2","SKT"],["CMI","pa1"],["pa1","pa2"],["pa2","PAI"],["LPG","py1"],["py1","py2"],["py2","py3"],["py3","PYO"],["PYO","cr1"],["cr1","cr2"],["cr2","CRI"],["DNC","ph1"],["ph1","ph2"],["ph2","PHR"],["PHR","nn1"],["nn1","nn2"],["nn2","NAN"]].forEach(e=>EDGES.push([e[0],e[1],"bus"]));
+const chain=(k,ids)=>{for(let i=0;i<ids.length-1;i++) EDGES.push([ids[i],ids[i+1],k]);};
+chain("rail",["AYT","sr1","sr2","SRB"]);
+chain("rail",["BKK","e1","e2","CCO","c1","c2","CBI","p1","p2","PTY"]);
+chain("bus",["PTY","ry1","ry2","RYG","ct1","ct2","CTI","tr1","tr2","TRT"]);
+chain("rail",["BKK","s1","s2","NPT","s4","s5","RBR","s7","s8","PBI","s10","s11","HHN"]);
+chain("rail",["NPT","k1","k2","KRI"]);
 [["DNC","f1"],["f1","PHR"],["PHR","f2"],["f2","PYO"]].forEach(e=>EDGES.push([e[0],e[1],"future"]));
-const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย"};
-const LABEL_R=new Set(["SKT","PAI","PYO","CRI","PHR","NAN"]);
+const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย",SRB:"สระบุรี",CCO:"ฉะเชิงเทรา",CBI:"ชลบุรี",PTY:"พัทยา",RYG:"ระยอง",CTI:"จันทบุรี",TRT:"ตราด",NPT:"นครปฐม",KRI:"กาญจนบุรี",RBR:"ราชบุรี",PBI:"เพชรบุรี",HHN:"หัวหิน"};
+const LABEL_R=new Set(["SKT","PAI","PYO","CRI","PHR","NAN","SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","RBR","PBI","HHN"]);
+const EAST=new Set(["CCO","CBI","PTY","RYG","CTI","TRT"]), WEST=new Set(["KRI","RBR","PBI","HHN"]);
+const CLASSIC=["BKK","AYT","LOP","NSW","PSL","SKT","UTD","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"];
+const regionOf=s=>NORTH.has(s)?"ภาคเหนือ":EAST.has(s)?"ภาคตะวันออก":WEST.has(s)?"ภาคตะวันตก":"ภาคกลาง";
 const NORTH=new Set(["UTD","DNC","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"]);
 const FOOD="อาหาร",AGRI="เกษตร",TOUR="ท่องเที่ยว",IND="อุตสาหกรรม";
 const TYPE_COL={[FOOD]:"#E8742A",[AGRI]:"#3E9B4F",[TOUR]:"#2F7FC1",[IND]:"#6B5FA8"};
-const PROPS=[["BKK","ร้านข้าวมันไก่",FOOD,10,3],["BKK","แผงตลาดนัดสุดสัปดาห์",TOUR,30,6],["BKK","ท่าเรือขนส่งสินค้า",IND,80,9],["AYT","ร้านโรตีสายไหม",FOOD,5,2],["AYT","ร้านกุ้งแม่น้ำเผา",FOOD,15,5],["AYT","เรือทัวร์รอบเกาะเมือง",TOUR,20,4],["AYT","นิคมอุตสาหกรรม",IND,60,7],["LOP","ทุ่งทานตะวัน",AGRI,10,4],["LOP","ร้านของฝากเมืองลิง",FOOD,8,3],["NSW","โรงสีข้าว",AGRI,20,6],["NSW","ร้านโมจิปากน้ำโพ",FOOD,8,3],["NSW","ท่าเรือแม่น้ำเจ้าพระยา",IND,40,5],["PSL","ร้านก๋วยเตี๋ยวห้อยขา",FOOD,8,3],["PSL","โรงงานกล้วยตาก",FOOD,15,5],["SKT","ร้านก๋วยเตี๋ยวสุโขทัย",FOOD,6,2],["SKT","ทัวร์ปั่นจักรยานเมืองเก่า",TOUR,20,5],["UTD","สวนทุเรียนหลงลับแล",AGRI,30,10],["UTD","สวนลางสาด",AGRI,15,5],["PHR","โรงงานผ้าหม้อห้อม",IND,25,4],["PHR","ร้านขนมจีนน้ำเงี้ยว",FOOD,6,2],["NAN","โฮมสเตย์เมืองเก่า",TOUR,15,4],["NAN","ร้านกาแฟดอย",FOOD,10,3],["NAN","สวนส้มสีทอง",AGRI,20,6],["LPG","โรงงานชามตราไก่",IND,40,5],["LPG","รถม้าชมเมือง",TOUR,10,3],["LPN","สวนลำไย",AGRI,20,7],["LPN","โรงทอผ้าไหมยกดอก",IND,30,4],["CMI","ร้านข้าวซอย",FOOD,10,3],["CMI","ร้านไส้อั่ว",FOOD,8,3],["CMI","โรงงานร่มบ่อสร้าง",IND,30,4],["CMI","รีสอร์ตแม่ริม",TOUR,60,10],["PAI","ร้านกาแฟวิวดอย",FOOD,10,4],["PAI","โฮมสเตย์ริมน้ำปาย",TOUR,25,6],["PYO","ร้านปลากว๊านพะเยา",FOOD,8,3],["PYO","เรือชมกว๊าน",TOUR,15,4],["CRI","ไร่ชาบนดอย",AGRI,30,9],["CRI","ไร่สับปะรดนางแล",AGRI,15,5],["CRI","รีสอร์ตสามเหลี่ยมทองคำ",TOUR,50,8]]
+const PROPS=[["BKK","ร้านข้าวมันไก่",FOOD,10,3],["BKK","แผงตลาดนัดสุดสัปดาห์",TOUR,30,6],["BKK","ท่าเรือขนส่งสินค้า",IND,80,9],["AYT","ร้านโรตีสายไหม",FOOD,5,2],["AYT","ร้านกุ้งแม่น้ำเผา",FOOD,15,5],["AYT","เรือทัวร์รอบเกาะเมือง",TOUR,20,4],["AYT","นิคมอุตสาหกรรม",IND,60,7],["LOP","ทุ่งทานตะวัน",AGRI,10,4],["LOP","ร้านของฝากเมืองลิง",FOOD,8,3],["NSW","โรงสีข้าว",AGRI,20,6],["NSW","ร้านโมจิปากน้ำโพ",FOOD,8,3],["NSW","ท่าเรือแม่น้ำเจ้าพระยา",IND,40,5],["PSL","ร้านก๋วยเตี๋ยวห้อยขา",FOOD,8,3],["PSL","โรงงานกล้วยตาก",FOOD,15,5],["SKT","ร้านก๋วยเตี๋ยวสุโขทัย",FOOD,6,2],["SKT","ทัวร์ปั่นจักรยานเมืองเก่า",TOUR,20,5],["UTD","สวนทุเรียนหลงลับแล",AGRI,30,10],["UTD","สวนลางสาด",AGRI,15,5],["PHR","โรงงานผ้าหม้อห้อม",IND,25,4],["PHR","ร้านขนมจีนน้ำเงี้ยว",FOOD,6,2],["NAN","โฮมสเตย์เมืองเก่า",TOUR,15,4],["NAN","ร้านกาแฟดอย",FOOD,10,3],["NAN","สวนส้มสีทอง",AGRI,20,6],["LPG","โรงงานชามตราไก่",IND,40,5],["LPG","รถม้าชมเมือง",TOUR,10,3],["LPN","สวนลำไย",AGRI,20,7],["LPN","โรงทอผ้าไหมยกดอก",IND,30,4],["CMI","ร้านข้าวซอย",FOOD,10,3],["CMI","ร้านไส้อั่ว",FOOD,8,3],["CMI","โรงงานร่มบ่อสร้าง",IND,30,4],["CMI","รีสอร์ตแม่ริม",TOUR,60,10],["PAI","ร้านกาแฟวิวดอย",FOOD,10,4],["PAI","โฮมสเตย์ริมน้ำปาย",TOUR,25,6],["PYO","ร้านปลากว๊านพะเยา",FOOD,8,3],["PYO","เรือชมกว๊าน",TOUR,15,4],["CRI","ไร่ชาบนดอย",AGRI,30,9],["CRI","ไร่สับปะรดนางแล",AGRI,15,5],["CRI","รีสอร์ตสามเหลี่ยมทองคำ",TOUR,50,8],
+ ["SRB","ฟาร์มโคนมมวกเหล็ก",AGRI,20,6],["SRB","ร้านสเต๊กนมสด",FOOD,8,3],["SRB","โรงงานปูนซีเมนต์",IND,50,6],
+ ["CCO","ฟาร์มไก่แปดริ้ว",AGRI,10,4],["CCO","ตลาดน้ำบางคล้า",TOUR,15,4],["CCO","โรงงานประกอบรถยนต์",IND,60,7],
+ ["CBI","ร้านข้าวหลามหนองมน",FOOD,6,2],["CBI","ฟาร์มหอยนางรมอ่างศิลา",AGRI,15,5],["CBI","ท่าเรือน้ำลึกแหลมฉบัง",IND,90,10],
+ ["PTY","ร้านซีฟู้ดริมหาด",FOOD,15,5],["PTY","เรือข้ามเกาะล้าน",TOUR,20,5],["PTY","โรงแรมริมหาดพัทยา",TOUR,70,11],
+ ["RYG","ร้านน้ำปลาระยอง",FOOD,10,3],["RYG","สวนทุเรียนระยอง",AGRI,30,9],["RYG","เรือไปเกาะเสม็ด",TOUR,25,6],["RYG","นิคมปิโตรเคมีมาบตาพุด",IND,90,10],
+ ["CTI","ร้านก๋วยเตี๋ยวผัดปู",FOOD,8,3],["CTI","สวนมังคุด",AGRI,20,6],["CTI","ร้านเจียระไนพลอย",IND,40,6],
+ ["TRT","สวนสับปะรดตราดสีทอง",AGRI,15,5],["TRT","รีสอร์ตเกาะช้าง",TOUR,60,10],
+ ["NPT","ร้านข้าวหมูแดง",FOOD,8,3],["NPT","สวนส้มโอนครชัยศรี",AGRI,15,5],["NPT","ตลาดน้ำดอนหวาย",TOUR,10,3],
+ ["KRI","ร้านอาหารริมแม่น้ำแคว",FOOD,10,3],["KRI","แพพักริมแม่น้ำแคว",TOUR,30,7],["KRI","เหมืองพลอยบ่อพลอย",IND,40,5],
+ ["RBR","โรงงานโอ่งมังกร",IND,25,4],["RBR","ตลาดน้ำดำเนินสะดวก",TOUR,30,6],
+ ["PBI","ร้านขนมหม้อแกง",FOOD,8,3],["PBI","สวนชมพู่เพชรสายรุ้ง",AGRI,15,5],["PBI","นาเกลือบ้านแหลม",AGRI,10,4],
+ ["HHN","ร้านซีฟู้ดหัวหิน",FOOD,15,5],["HHN","สวนสับปะรดปราณบุรี",AGRI,15,5],["HHN","รีสอร์ตริมทะเลหัวหิน",TOUR,70,11]]
   .map(([s,n,t,price,profit],id)=>({id,s,n,t,price,profit}));
 const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
 const ITEMS={
@@ -360,18 +396,18 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function log(t){S.log.unshift(t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1;}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
-function newGame(names,years){
+function newGame(names,years,map){
   const deck=[]; for(const k in ITEMS) for(let i=0;i<ITEMS[k].count;i++) deck.push(k);
   S={phase:"play",years,year:1,month:0,turn:0,newRail:false,
      players:names.map((n,i)=>({name:n,color:PCOL[i][1],node:"BKK",money:100,cards:[]})),
      owners:{},deck:shuffle(deck),discard:[],ghost:{holder:-1,count:0},skip:names.map(()=>false),
-     dest:null,log:[],logN:0,songkran:false,stage:"begin",turnId:1,rev:0,tf:{nDice:1,cardUsed:false,locked:false},lastMove:null,report:null};
+     dest:null,map:map||"all",log:[],logN:0,songkran:false,stage:"begin",turnId:1,rev:0,tf:{nDice:1,cardUsed:false,locked:false},lastMove:null,report:null};
   S.dest=drawDest(true);
   log("เริ่มเกม ทุกคนออกจากกรุงเทพฯ พร้อมเงิน 100 ล้าน");
 }
 function drawDest(first){
   const taken=new Set(S.players.map(p=>p.node));
-  const pool=Object.keys(NAME).filter(s=>s!=="DNC"&&s!==S.dest&&!(first&&s==="BKK")&&!taken.has(s));
+  const pool=(S.map==="north"?CLASSIC:Object.keys(NAME)).filter(s=>s!=="DNC"&&s!==S.dest&&!(first&&s==="BKK")&&!taken.has(s));
   return pool[Math.floor(Math.random()*pool.length)];
 }
 function drawItem(i){
@@ -403,7 +439,8 @@ function commit(){
 // ================= BOARD =================
 const svg=$("board");
 function buildBoard(){
-  let h=`<rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><rect x="0" y="236" width="210" height="300" fill="var(--field-c)"/>`;
+  let h=`<rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><rect x="0" y="236" width="210" height="560" fill="var(--field-c)"/><path d="M104 487H210V796H104z" fill="var(--field-e)"/><path d="M0 588H104V796H0z" fill="var(--field-w)"/>`;
+  h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">ภาคตะวันออก ▶</text><text x="6" y="630" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ภาคตะวันตก</text>`;
   h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ภาคเหนือ</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ภาคกลาง</text>`;
   for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
   h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
@@ -464,7 +501,7 @@ function renderTokens(){
 }
 function sizeBoard(){
   const m=$("map"); const base=Math.min(Math.max((m.clientWidth-2)/210,1.7),3.8)*zoom;
-  svg.style.width=(210*base)+"px"; svg.style.height=(500*base)+"px"; svg.dataset.scale=base;
+  svg.style.width=(210*base)+"px"; svg.style.height=(760*base)+"px"; svg.dataset.scale=base;
 }
 function focusNode(id,smooth=true){
   const m=$("map"),n=NODES[id],sc=+svg.dataset.scale||2;
@@ -821,6 +858,44 @@ const QUIZ=[
  ["CRI","วัดสีขาวที่ออกแบบโดยอาจารย์เฉลิมชัย โฆษิตพิพัฒน์ ชื่ออะไร","วัดร่องขุ่น",["วัดร่องเสือเต้น","วัดพระแก้ว","วัดเจดีย์หลวง"],"เป็นสถานที่ท่องเที่ยวที่ดังที่สุดของเชียงราย"],
  ["*","รถไฟสายเหนือวิ่งจากกรุงเทพฯ ไปสิ้นสุดที่สถานีใด","เชียงใหม่",["เชียงราย","ลำปาง","แม่ฮ่องสอน"],"ระยะทางรวมประมาณ 750 กิโลเมตร"],
  ["*","รางรถไฟส่วนใหญ่ในไทยมีความกว้างเท่าไร","1 เมตร (มีเตอร์เกจ)",["1.435 เมตร","1.6 เมตร","2 เมตร"],"รถไฟความเร็วสูงที่กำลังสร้างใช้ราง 1.435 เมตร"],
+ ["SRB","สระบุรีมีชื่อเสียงเรื่องอุตสาหกรรมอะไรเป็นพิเศษ","ปูนซีเมนต์",["เหล็กกล้า","น้ำตาล","กระดาษ"],"สระบุรีมีภูเขาหินปูนมาก จึงเป็นแหล่งผลิตปูนซีเมนต์ใหญ่ของประเทศ"],
+ ["SRB","อำเภอในสระบุรีที่ขึ้นชื่อเรื่องฟาร์มโคนมและนมสดคืออำเภออะไร","มวกเหล็ก",["แก่งคอย","เสาไห้","หนองแค"],"มวกเหล็กอากาศเย็นและมีทุ่งหญ้า เป็นแหล่งเลี้ยงโคนมสำคัญ"],
+ ["SRB","วัดสำคัญของสระบุรีที่ประดิษฐานรอยพระพุทธบาทคือวัดอะไร","วัดพระพุทธบาท",["วัดโสธรวราราม","วัดพระธาตุพนม","วัดไร่ขิง"],"วัดพระพุทธบาทราชวรมหาวิหาร มีงานเทศกาลตักบาตรดอกไม้ทุกปี"],
+ ["CCO","ฉะเชิงเทรามีอีกชื่อที่คนนิยมเรียกว่าอะไร","แปดริ้ว",["ปากน้ำ","แม่กลอง","เมืองลิง"],"ชื่อแปดริ้วมาจากปลาช่อนตัวใหญ่ที่แล่ได้ถึงแปดริ้ว"],
+ ["CCO","หลวงพ่อพุทธโสธรประดิษฐานอยู่ที่วัดใด","วัดโสธรวราราม",["วัดไร่ขิง","วัดพระปฐมเจดีย์","วัดพระพุทธบาท"],"วัดโสธรวรารามวรวิหารอยู่ริมแม่น้ำบางปะกง"],
+ ["CCO","แม่น้ำสายหลักที่ไหลผ่านตัวเมืองฉะเชิงเทราคือแม่น้ำอะไร","บางปะกง",["แม่กลอง","ท่าจีน","ป่าสัก"],"แม่น้ำบางปะกงไหลลงอ่าวไทย มีโลมาอิรวดีให้ชมที่ปากแม่น้ำ"],
+ ["CBI","ข้าวหลามขึ้นชื่อของชลบุรีมาจากตลาดย่านไหน","หนองมน",["บางแสน","อ่างศิลา","สัตหีบ"],"ตลาดหนองมนขึ้นชื่อเรื่องข้าวหลามและของฝากทะเลตะวันออก"],
+ ["CBI","ซอสพริกชื่อดังที่ตั้งชื่อตามอำเภอหนึ่งของชลบุรีคือซอสอะไร","ซอสศรีราชา",["ซอสบางแสน","ซอสพนัสนิคม","ซอสบางละมุง"],"ซอสพริกศรีราชากลายเป็นชื่อเรียกซอสพริกไปทั่วโลก"],
+ ["CBI","ท่าเรือน้ำลึกที่ใหญ่ที่สุดของไทยซึ่งอยู่ในชลบุรีชื่ออะไร","ท่าเรือแหลมฉบัง",["ท่าเรือคลองเตย","ท่าเรือมาบตาพุด","ท่าเรือสงขลา"],"แหลมฉบังรับตู้สินค้ามากที่สุดในประเทศ"],
+ ["CBI","ประเพณีขึ้นชื่อของชลบุรีคือการแข่งวิ่งของสัตว์ชนิดใด","ควาย",["ช้าง","ม้า","วัว"],"ประเพณีวิ่งควายจัดในช่วงออกพรรษามานานกว่าร้อยปี"],
+ ["PTY","เกาะใกล้พัทยาที่คนนิยมนั่งเรือไปเที่ยวมากที่สุดคือเกาะอะไร","เกาะล้าน",["เกาะเสม็ด","เกาะช้าง","เกาะกูด"],"นั่งเรือจากท่าแหลมบาลีฮายไปเกาะล้านใช้เวลาไม่ถึงชั่วโมง"],
+ ["PTY","พัทยาตั้งอยู่ในจังหวัดอะไร","ชลบุรี",["ระยอง","ฉะเชิงเทรา","จันทบุรี"],"พัทยาอยู่ในอำเภอบางละมุง จังหวัดชลบุรี"],
+ ["PTY","นอกจากกรุงเทพมหานคร ที่ใดเป็นท้องถิ่นที่มีการปกครองรูปแบบพิเศษ","เมืองพัทยา",["เชียงใหม่","ภูเก็ต","หาดใหญ่"],"กรุงเทพฯ และเมืองพัทยาเลือกผู้บริหารของตัวเองแบบพิเศษ"],
+ ["RYG","เกาะของระยองที่เชื่อกันว่าสุนทรภู่ใช้เป็นฉากในเรื่องพระอภัยมณีคือเกาะอะไร","เกาะเสม็ด",["เกาะล้าน","เกาะช้าง","เกาะสีชัง"],"บนเกาะเสม็ดมีรูปปั้นพระอภัยมณีกับนางเงือก"],
+ ["RYG","อนุสาวรีย์สุนทรภู่ที่อำเภอแกลงอยู่ในจังหวัดอะไร","ระยอง",["ชลบุรี","จันทบุรี","ตราด"],"อำเภอแกลงเป็นบ้านเกิดของบิดาสุนทรภู่"],
+ ["RYG","นิคมอุตสาหกรรมปิโตรเคมีขนาดใหญ่ของระยองชื่ออะไร","มาบตาพุด",["แหลมฉบัง","บางปู","ลาดกระบัง"],"มาบตาพุดเป็นศูนย์กลางปิโตรเคมีของภาคตะวันออก"],
+ ["CTI","จันทบุรีขึ้นชื่อเรื่องการค้าอัญมณีชนิดใด","พลอย",["ทองคำ","หยก","ไข่มุก"],"ตลาดพลอยเมืองจันท์คึกคักทุกสุดสัปดาห์"],
+ ["CTI","ผลไม้ที่ได้ฉายาว่า \"ราชินีผลไม้\" ซึ่งปลูกมากในจันทบุรีคืออะไร","มังคุด",["ทุเรียน","เงาะ","ลองกอง"],"ทุเรียนเป็นราชาผลไม้ ส่วนมังคุดเป็นราชินี"],
+ ["CTI","ก๋วยเตี๋ยวผัดปูของจันทบุรีนิยมใช้เส้นอะไร","เส้นจันท์",["เส้นหมี่","วุ้นเส้น","เส้นบะหมี่"],"เส้นจันท์เหนียวนุ่ม เป็นของฝากขึ้นชื่อของจันทบุรี"],
+ ["TRT","เกาะที่ใหญ่ที่สุดของตราด และใหญ่เป็นอันดับ 2 ของไทยคือเกาะอะไร","เกาะช้าง",["เกาะกูด","เกาะหมาก","เกาะสมุย"],"เกาะที่ใหญ่ที่สุดของไทยคือภูเก็ต รองลงมาคือเกาะช้าง"],
+ ["TRT","จังหวัดตราดมีพรมแดนติดกับประเทศใด","กัมพูชา",["ลาว","เมียนมา","มาเลเซีย"],"ตราดเป็นจังหวัดตะวันออกสุดของไทย ติดกัมพูชา"],
+ ["TRT","\"ตราดสีทอง\" คือพันธุ์ของผลไม้อะไร","สับปะรด",["มะม่วง","ส้มโอ","ทุเรียน"],"สับปะรดตราดสีทองลูกเล็ก หวานกรอบ"],
+ ["NPT","เจดีย์ที่สูงที่สุดในประเทศไทยซึ่งอยู่ที่นครปฐมชื่ออะไร","พระปฐมเจดีย์",["พระธาตุพนม","พระธาตุดอยสุเทพ","ภูเขาทอง"],"พระปฐมเจดีย์สูงราว 120 เมตร"],
+ ["NPT","ผลไม้ขึ้นชื่อของอำเภอนครชัยศรีคืออะไร","ส้มโอ",["ลำไย","ทุเรียน","มังคุด"],"ส้มโอนครชัยศรีปลูกริมแม่น้ำท่าจีน"],
+ ["NPT","ตลาดน้ำชื่อดังในอำเภอสามพราน นครปฐม ชื่ออะไร","ตลาดน้ำดอนหวาย",["ตลาดน้ำอัมพวา","ตลาดน้ำดำเนินสะดวก","ตลาดน้ำบางคล้า"],"ตลาดน้ำดอนหวายขึ้นชื่อเรื่องเป็ดพะโล้"],
+ ["KRI","สะพานรถไฟชื่อดังระดับโลกในกาญจนบุรี สร้างในสงครามโลกครั้งที่ 2 คือสะพานอะไร","สะพานข้ามแม่น้ำแคว",["สะพานพระราม 8","สะพานมอญ","สะพานเดชาติวงศ์"],"สะพานนี้เป็นส่วนหนึ่งของทางรถไฟไทย–พม่า"],
+ ["KRI","ทางรถไฟไทย–พม่าที่สร้างในสงครามโลกครั้งที่ 2 มักถูกเรียกว่าอะไร","ทางรถไฟสายมรณะ",["ทางรถไฟสายแม่กลอง","ทางรถไฟสายตะวันออก","ทางรถไฟสายสีแดง"],"มีผู้สร้างเสียชีวิตจำนวนมาก ปัจจุบันรถไฟยังวิ่งถึงสถานีน้ำตก"],
+ ["KRI","น้ำตกชื่อดังของกาญจนบุรีที่มี 7 ชั้นคือน้ำตกอะไร","น้ำตกเอราวัณ",["น้ำตกแม่ยะ","น้ำตกทีลอซู","น้ำตกพลิ้ว"],"น้ำตกเอราวัณมีน้ำสีฟ้าครามและปลาพลวงตัวโต"],
+ ["RBR","ราชบุรีขึ้นชื่อเรื่องเครื่องปั้นดินเผาชนิดใด","โอ่งมังกร",["เครื่องเบญจรงค์","เครื่องปั้นดินเผาเกาะเกร็ด","ชามตราไก่"],"โอ่งมังกรเคลือบสีน้ำตาลลายมังกรเป็นสัญลักษณ์ของราชบุรี"],
+ ["RBR","ตลาดน้ำชื่อดังของราชบุรีคือตลาดน้ำอะไร","ตลาดน้ำดำเนินสะดวก",["ตลาดน้ำอัมพวา","ตลาดน้ำดอนหวาย","ตลาดน้ำตลิ่งชัน"],"แม่ค้าพายเรือขายผลไม้และก๋วยเตี๋ยวเรือในคลองดำเนินสะดวก"],
+ ["PBI","ขนมหวานขึ้นชื่อของเพชรบุรีคืออะไร","ขนมหม้อแกง",["ขนมเปี๊ยะ","ทองม้วน","ขนมชั้น"],"เพชรบุรีมีตาลโตนดมาก ขนมจึงหอมหวานด้วยน้ำตาลโตนด"],
+ ["PBI","พระราชวังบนยอดเขาในเพชรบุรีที่ชาวบ้านเรียกว่า \"เขาวัง\" มีชื่อทางการว่าอะไร","พระนครคีรี",["พระราชวังบางปะอิน","วังไกลกังวล","พระราชวังสนามจันทร์"],"รัชกาลที่ 4 โปรดให้สร้างพระนครคีรีบนเขาสามยอด"],
+ ["PBI","ชมพู่พันธุ์ขึ้นชื่อของเพชรบุรีคือพันธุ์อะไร","เพชรสายรุ้ง",["ทับทิมจันท์","มะเหมี่ยว","ทูลเกล้า"],"ชมพู่เพชรสายรุ้งผิวเขียวอมชมพู หวานกรอบ"],
+ ["HHN","หัวหินตั้งอยู่ในจังหวัดอะไร","ประจวบคีรีขันธ์",["เพชรบุรี","ราชบุรี","ชุมพร"],"หัวหินเป็นอำเภอหนึ่งของประจวบคีรีขันธ์"],
+ ["HHN","พระราชวังที่หัวหินซึ่งมีความหมายว่า \"ไกลจากความกังวล\" ชื่ออะไร","วังไกลกังวล",["พระนครคีรี","พระราชวังบางปะอิน","พระตำหนักภูพิงค์"],"รัชกาลที่ 7 โปรดให้สร้างวังไกลกังวลริมทะเลหัวหิน"],
+ ["HHN","ทะเลหัวหินอยู่ติดกับทะเลส่วนใด","อ่าวไทย",["ทะเลอันดามัน","อ่าวเบงกอล","ทะเลแดง"],"ชายหาดฝั่งตะวันออกของไทยตั้งแต่ชลบุรีถึงหัวหินอยู่ริมอ่าวไทย"],
+ ["*","รถไฟสายตะวันออกจากกรุงเทพฯ ผ่านจังหวัดใดก่อนแยกไปชลบุรี","ฉะเชิงเทรา",["สมุทรปราการ","ปราจีนบุรี","นครนายก"],"ชุมทางฉะเชิงเทราแยกไปทางชลบุรี–สัตหีบ และไปทางอรัญประเทศ"],
+ ["*","รถไฟสายใต้ออกจากกรุงเทพฯ ผ่านจังหวัดใดเป็นจังหวัดแรกในภาคตะวันตก","ราชบุรี",["กาญจนบุรี","เพชรบุรี","ประจวบคีรีขันธ์"],"สายใต้ผ่านนครปฐม (ภาคกลาง) แล้วเข้าราชบุรี เพชรบุรี และหัวหิน"],
 ];
 const QUIZ_PROV={DNC:"PHR"};
 function nearestStation(node){
@@ -1067,7 +1142,7 @@ async function showGameOver(){
 
 // ================= CARD ART & FACES =================
 const ART={map:{}};
-const DEST_ORDER=["BKK","AYT","LOP","NSW","PSL","SKT","UTD","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"];
+const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN"];
 const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane"];
 const pad2=n=>String(n).padStart(2,"0");
 const ARTID={prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
@@ -1081,7 +1156,7 @@ function propCard(p){
   return `<div class="gc" style="${gcVars(GC_TYPE[p.t])}"><div class="gc-top"><span class="gc-pill">สถานี${NAME[p.s]}</span><span class="gc-dark">${p.t}</span></div><div class="gc-art">${gcArt(ARTID.prop(p))}</div><div class="gc-name">${p.n}</div><div class="gc-stats"><div class="gc-stat"><span class="gc-coin">${p.price}</span><span><small>ราคาซื้อ</small><b>ล้านบาท</b></span></div><div class="gc-stat"><span class="gc-coin" style="background:#7BE0A0">+${p.profit}</span><span><small>กำไรต่อปี</small><b>ล้านบาท</b></span></div></div><div class="gc-foot">${all.map(q=>{const o=S.owners[q.id];return `<span class="gc-dot" style="${o!==undefined?`background:${S.players[o].color}`:""}"></span>`;}).join("")}<span>ครบ ${all.length} แห่ง = ผูกขาด ×2</span></div></div>`;
 }
 function destCard(s){
-  return `<div class="gc" style="${gcVars(GC_KIND.dest)}"><div class="gc-top"><span class="gc-pill">จุดหมาย</span><span class="gc-dark">${NORTH.has(s)?"ภาคเหนือ":"ภาคกลาง"}</span></div><div class="gc-art">${gcArt(ARTID.dest(s))}</div><div class="gc-name big">${NAME[s]}</div><div class="gc-panel" style="flex-direction:row;align-items:center;gap:10px"><span class="gc-coin lg">${REWARD[s]}</span><span><span class="gc-sub">คนแรกที่ไปถึงได้รับ</span><span style="font-family:var(--font-d);font-size:18px">${REWARD[s]} ล้านบาท</span></span></div></div>`;
+  return `<div class="gc" style="${gcVars(GC_KIND.dest)}"><div class="gc-top"><span class="gc-pill">จุดหมาย</span><span class="gc-dark">${regionOf(s)}</span></div><div class="gc-art">${gcArt(ARTID.dest(s))}</div><div class="gc-name big">${NAME[s]}</div><div class="gc-panel" style="flex-direction:row;align-items:center;gap:10px"><span class="gc-coin lg">${REWARD[s]}</span><span><span class="gc-sub">คนแรกที่ไปถึงได้รับ</span><span style="font-family:var(--font-d);font-size:18px">${REWARD[s]} ล้านบาท</span></span></div></div>`;
 }
 function itemCard(k){
   const it=ITEMS[k];
@@ -1175,7 +1250,7 @@ async function home(){
     <button class="mode-btn" data-val="local"><b>เล่นเครื่องเดียว</b><span>2–4 คน ส่งมือถือหรือ iPad ต่อกัน</span></button>
     <button class="mode-btn" data-val="art"><b>ภาพการ์ด</b><span>อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ</span></button>
   </div>`;
-  const v=await modal({eyebrow:"สายเหนือ · ทดลองเล่น v0.2",title:"รถไฟเศรษฐีไทย",html,buttons:[]});
+  const v=await modal({eyebrow:"เหนือ · กลาง · ตะวันออก · ตะวันตก · v0.3",title:"รถไฟเศรษฐีไทย",html,buttons:[]});
   if(v==="resume"){ MODE="local"; S=saved; render(); return beginTurn(); }
   if(v==="local") return setupLocal();
   if(v==="online") return onlineLobby();
@@ -1187,11 +1262,12 @@ async function setupLocal(){
   let n=3, years=1;
   const names=PCOL.map(c=>"รถไฟ"+c[0]);
   const bots=[false,true,true,true];
-  let quizOn=true, qTime=5;
+  let quizOn=true, qTime=5, map="all";
   while(true){
     const html=`<div class="field"><div class="label">จำนวนผู้เล่น</div><div class="seg">${[2,3,4].map(v=>`<button data-val="n${v}" aria-pressed="${v===n}">${v} คน</button>`).join("")}</div></div>
       <div class="field"><div class="label">ชื่อบริษัท</div><div class="names">${names.slice(0,n).map((v,k)=>`<label><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><input id="nm${k}" value="${esc(v)}" maxlength="18" aria-label="ชื่อผู้เล่น ${k+1}">${k===0?`<span class="pm" style="min-width:64px;text-align:center">คุณ</span>`:`<button class="btn" style="flex:none;min-height:42px;padding:0 10px;font-size:14px;min-width:64px" data-val="b${k}" aria-pressed="${bots[k]}">${bots[k]?"บอท":"คน"}</button>`}</label>`).join("")}</div><p class="note" style="margin-top:6px">แตะปุ่มด้านขวาเพื่อสลับ คน / บอท</p></div>
       <div class="field"><div class="label">ความยาวเกม</div><div class="seg"><button data-val="y1" aria-pressed="${years===1}">1 ปี · ราว 45 นาที</button><button data-val="y2" aria-pressed="${years===2}">2 ปี · มีรางใหม่</button></div></div>
+      <div class="field"><div class="label">แผนที่</div><div class="seg"><button data-val="mp_all" aria-pressed="${map==="all"}">ทุกภาค · 27 สถานี</button><button data-val="mp_north" aria-pressed="${map==="north"}">สายเหนือ · 15 สถานี</button></div><p class="note" style="margin-top:6px">สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า</p></div>
       <div class="field"><div class="label">ควิซ</div><div class="seg"><button data-val="qz1" aria-pressed="${quizOn}">เปิด</button><button data-val="qz0" aria-pressed="${!quizOn}">ปิด</button></div><p class="note" style="margin-top:6px">ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส</p></div>
       ${quizOn?`<div class="field"><div class="label">เวลาตอบควิซ</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?t+" วิ":"ไม่จับเวลา"}</button>`).join("")}</div></div>`:""}`;
     const v=await modal({eyebrow:"เล่นเครื่องเดียว",title:"ตั้งค่าเกม",html,buttons:[{label:"กลับ",value:"back"},{label:"เริ่มเกม",value:"start",primary:true}]});
@@ -1199,13 +1275,13 @@ async function setupLocal(){
     if(v==="back") return home();
     if(v&&v[0]==="n"){n=+v.slice(1);continue;}
     if(v&&v[0]==="b"){const k=+v.slice(1);bots[k]=!bots[k];continue;}
-    if(v&&v.startsWith("qt")&&host){ try{await ON.ref.update({qTime:+v.slice(2)});}catch(e){} return; }
-  if(v==="qz1"||v==="qz0"){quizOn=v==="qz1";continue;}
+    if(v==="qz1"||v==="qz0"){quizOn=v==="qz1";continue;}
+    if(v==="mp_all"||v==="mp_north"){map=v.slice(3);continue;}
     if(v&&v.startsWith("qt")){qTime=+v.slice(2);continue;}
     if(v&&v[0]==="y"){years=+v.slice(1);continue;}
     if(v==="start") break;
   }
-  MODE="local"; newGame(names.slice(0,n),years);
+  MODE="local"; newGame(names.slice(0,n),years,map);
   S.players.forEach((p,k)=>{p.bot=k>0&&bots[k];}); S.quiz=quizOn; S.qTime=qTime;
   render(); focusNode("BKK",false);
   await info("จุดหมายแรก",`ทุกคนมุ่งหน้าไป <b>${NAME[S.dest]}</b> คนแรกที่ไปถึงได้ ${REWARD[S.dest]} ล้าน`,"จับฉลาก");
@@ -1337,6 +1413,7 @@ async function drawRoom(d){
   const html=`<p>บอกรหัสนี้ให้เพื่อน แล้วให้เพื่อนเปิดลิงก์เดียวกัน กด "เล่นออนไลน์" และเลือกห้องนี้</p><div class="code" style="margin-top:6px">${esc(d.code)}</div>
     <div class="field"><div class="label">ผู้เล่น ${seats.length}/4</div>${seats.map((s,k)=>`<div class="seat"><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><div>${k===me?`<input id="coName" value="${esc(s.co)}" maxlength="18" aria-label="ชื่อบริษัทของคุณ">`:`<b>${esc(s.co)}</b>`}<div class="who-n">${s.bot?"บอท":esc(profs[s.uid]?.name||"เพื่อน")}${k===me?" · คุณ":""}${s.uid===d.host?" · เจ้าของห้อง":""}</div></div></div>`).join("")}</div>
     <div class="field"><div class="label">ความยาวเกม${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="y1"':"disabled"} aria-pressed="${d.years===1}">1 ปี</button><button ${host?'data-val="y2"':"disabled"} aria-pressed="${d.years===2}">2 ปี · มีรางใหม่</button></div></div>
+    <div class="field"><div class="label">แผนที่${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="mp_all"':"disabled"} aria-pressed="${d.map!=="north"}">ทุกภาค</button><button ${host?'data-val="mp_north"':"disabled"} aria-pressed="${d.map==="north"}">สายเหนือ</button></div></div>
     <div class="field"><div class="label">ควิซ${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg"><button ${host?'data-val="qz1"':"disabled"} aria-pressed="${d.quiz!==false}">เปิด</button><button ${host?'data-val="qz0"':"disabled"} aria-pressed="${d.quiz===false}">ปิด</button></div></div>
     ${d.quiz!==false?`<div class="field"><div class="label">เวลาตอบควิซ${host?"":" (เจ้าของห้องเลือก)"}</div><div class="seg">${[5,10,15,0].map(t=>`<button ${host?`data-val="qt${t}"`:"disabled"} aria-pressed="${(d.qTime??5)===t}">${t?t+" วิ":"ไม่จับเวลา"}</button>`).join("")}</div></div>`:""}
     <p class="note">${host?(seats.length<2?"รอเพื่อนหรือเพิ่มบอทอย่างน้อย 1 คน":"พร้อมแล้วกดเริ่มเกม · บอทเล่นบนเครื่องของคุณ ถ้าคุณปิดเกม ตาของบอทจะหยุดรอ"):"รอเจ้าของห้องกดเริ่มเกม"}</p>`;
@@ -1354,6 +1431,8 @@ async function drawRoom(d){
   if(v==="addbot"&&host&&seats.length<4){ const ns=[...seats,{uid:"bot_"+Math.random().toString(36).slice(2,8),co:"รถไฟ"+PCOL[seats.length][0],bot:true}]; try{await ON.ref.update({seats:ns});}catch(e){} return; }
   if(v==="delbot"&&host){ const k=seats.map(s=>!!s.bot).lastIndexOf(true); if(k>=0){ const ns=seats.filter((_,j)=>j!==k); try{await ON.ref.update({seats:ns});}catch(e){} } return; }
   if(v==="qz1"||v==="qz0"){ try{await ON.ref.update({quiz:v==="qz1"});}catch(e){} return; }
+  if(v&&v.startsWith("qt")&&host){ try{await ON.ref.update({qTime:+v.slice(2)});}catch(e){} return; }
+  if((v==="mp_all"||v==="mp_north")&&host){ try{await ON.ref.update({map:v.slice(3)});}catch(e){} return; }
   if(v==="y1"||v==="y2"){ try{await ON.ref.update({years:+v.slice(1)});}catch(e){} return; }
   if(v==="leave"){
     const ref=ON.ref;
@@ -1367,7 +1446,7 @@ async function drawRoom(d){
 async function hostStart(d){
   const seats=d.seats;
   MODE="online"; ON.meta={...d,status:"play"};
-  newGame(seats.map(s=>s.co),d.years); S.quiz=d.quiz!==false; S.qTime=d.qTime??5;
+  newGame(seats.map(s=>s.co),d.years,d.map); S.quiz=d.quiz!==false; S.qTime=d.qTime??5;
   S.players.forEach((p,k)=>{p.uid=seats[k].uid; p.bot=!!seats[k].bot;}); S.code=d.code; S.hostUid=ON.me;
   ON.seenLog=S.logN; ON.handledTurn=null;
   closeModal(); render(); focusNode("BKK",false);
