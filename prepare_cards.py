@@ -20,7 +20,7 @@ if len(sys.argv) < 2:
 src = Path(sys.argv[1])
 out = Path(__file__).resolve().parent / "cards"
 out.mkdir(exist_ok=True)
-pat = re.compile(r"card_([PDIGE]\d{2})", re.I)
+pat = re.compile(r"card_([PDIGEA]\d{2})", re.I)
 latest = {}
 for f in src.iterdir():
     m = pat.search(f.name)

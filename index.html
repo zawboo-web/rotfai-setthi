@@ -2144,7 +2144,7 @@ function renderPanel(){
   document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
 }
 function labelOf(id){ if(NAME[id]) return stN(id); const t=NODES[id].t; return T({b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ทางรถทัวร์"}[t]); }
-function render(){ if(!S) return; renderTop(); renderBoard(); renderPanel(); }
+function render(){ if(!S) return; renderTop(); renderBoard(); renderPanel(); try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
 function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;$("toasts").appendChild(el);setTimeout(()=>el.remove(),3600);while($("toasts").children.length>3)$("toasts").firstChild.remove();}
 
 // ================= MODAL =================
@@ -2726,7 +2726,7 @@ async function gameOver(){
   render(); await showGameOver();
 }
 async function showGameOver(){
-  ON.shownOver=true; sfx("over");
+  ON.shownOver=true; sfx("over"); try{ musUpdate(); }catch(e){}
   const rank=S.players.map((p,k)=>({k,a:assets(k)})).sort((a,b)=>b.a-a.a);
   const html=`<table class="rep"><tr><th>${T("อันดับ")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${money(r.a)}</td></tr>`).join("")}</table>`;
   await modal({eyebrow:T("จบเกม"),title:T("{p} คือเศรษฐีรถไฟ!",{p:esc(S.players[rank[0].k].name)}),html,buttons:[{label:T("กลับหน้าแรก"),value:1,primary:true}]});
@@ -3086,41 +3086,85 @@ keepAwake(); document.addEventListener("visibilitychange",keepAwake); addEventLi
 
 // ================= BGM =================
 // เพลงวนแบบไม่มีช่องว่างด้วย Web Audio เริ่มเล่นหลังแตะจอครั้งแรก (เบราว์เซอร์มือถือห้ามเล่นเสียงเอง)
-const BGM={ctx:null,gain:null,buf:null,src:null,loading:null,on:true,vol:0.32};
+const BGM={ctx:null,gain:null,on:true,vol:0.32};
 try{ BGM.on=localStorage.getItem("rotfai-bgm")!=="off"; }catch(e){}
 const ICON_ON=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13"/><circle cx="5.8" cy="15" r="2.2"/><circle cx="13.8" cy="13" r="2.2"/></svg>`;
 const ICON_OFF=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13" opacity=".45"/><circle cx="5.8" cy="15" r="2.2" opacity=".45"/><circle cx="13.8" cy="13" r="2.2" opacity=".45"/><path d="M3 3l14 14"/></svg>`;
 function bgmIcon(){ const b=$("bgmBtn"); if(!b) return; b.innerHTML=BGM.on?ICON_ON:ICON_OFF; b.setAttribute("aria-pressed",String(BGM.on)); b.setAttribute("aria-label",T(BGM.on?"ปิดเพลง":"เปิดเพลง")); }
-function bgmLoad(){
-  if(BGM.loading) return BGM.loading;
-  BGM.loading=fetch("bgm.mp3").then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
-    .then(a=>new Promise((ok,no)=>BGM.ctx.decodeAudioData(a,ok,no))).then(b=>{BGM.buf=b;return b;})
-    .catch(()=>{ BGM.loading=null; return null; });
-  return BGM.loading;
+// เพลงตามสถานการณ์: วน (main/title/ghost/last/ending) + จิงเกิลเล่นทับ (goal/giant/yearend)
+const TRACKS={main:"bgm.mp3",title:"music/title.mp3",ghost:"music/ghost.mp3",last:"music/lastmonths.mp3",ending:"music/ending.mp3",goal:"music/goal.mp3",giant:"music/giant.mp3",yearend:"music/yearend.mp3"};
+const STINGS=new Set(["goal","giant","yearend"]);
+const MUS={bufs:{},loading:{},cur:null,want:null,src:null,g:null,sting:null,stingG:null,duckUntil:0};
+function musLoad(k){
+  if(MUS.bufs[k]) return Promise.resolve(MUS.bufs[k]);
+  if(MUS.loading[k]) return MUS.loading[k];
+  return MUS.loading[k]=fetch(TRACKS[k]).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
+    .then(a=>new Promise((ok,no)=>BGM.ctx.decodeAudioData(a,ok,no))).then(b=>{ MUS.bufs[k]=b; delete MUS.loading[k]; return b; })
+    .catch(()=>{ delete MUS.loading[k]; return null; });
 }
-async function bgmStart(){
-  if(!BGM.on||document.hidden) return;
+// เก็บในหน่วยความจำแค่เพลงที่กำลังเล่นกับจิงเกิล (เพลงยาวถอดรหัสแล้วกินแรมมาก)
+function musEvict(keep){ for(const k in MUS.bufs) if(k!==keep&&!STINGS.has(k)) delete MUS.bufs[k]; }
+function musWant(){
+  if(!S||S.phase==="setup") return "title";
+  if(S.phase==="over") return "ending";
+  if(S.ghost&&S.ghost.holder>=0&&S.ghost.holder===S.turn) return "ghost";
+  if(S.year>=S.years&&S.month>=9) return "last";
+  return "main";
+}
+function musUpdate(){ const k=musWant(); if(k!==MUS.want||!MUS.src) musPlay(k); }
+function ramp(g,v,sec){ const t=BGM.ctx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value,t); g.gain.linearRampToValueAtTime(v,t+sec); }
+async function musPlay(k){
+  MUS.want=k;
+  if(!BGM.on||document.hidden||!actx()) return;
   try{
-    if(!actx()) return;
     if(BGM.ctx.state!=="running") await BGM.ctx.resume();
-    if(!BGM.src){
-      const buf=await bgmLoad(); if(!buf||BGM.src||!BGM.on) return;
-      const s=BGM.ctx.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(BGM.gain); s.start(); BGM.src=s;
-    }
-    const t=BGM.ctx.currentTime; BGM.gain.gain.cancelScheduledValues(t); BGM.gain.gain.setValueAtTime(BGM.gain.gain.value,t); BGM.gain.gain.linearRampToValueAtTime(BGM.vol,t+1.2);
+    if(MUS.cur===k&&MUS.src) return;
+    const buf=await musLoad(k); if(!buf||MUS.want!==k||!BGM.on) return;
+    if(MUS.cur===k&&MUS.src) return;
+    const old=MUS.src, og=MUS.g;
+    const s=BGM.ctx.createBufferSource(), g=BGM.ctx.createGain(); s.buffer=buf; s.loop=true; g.gain.value=0; s.connect(g); g.connect(BGM.gain); s.start();
+    MUS.src=s; MUS.g=g; MUS.cur=k;
+    ramp(g,performance.now()<MUS.duckUntil?0.12:1,old?1.2:0.8);
+    if(old){ ramp(og,0,1.2); setTimeout(()=>{ try{old.stop();}catch(e){} try{og.disconnect();}catch(e){} },1300); }
+    musEvict(k);
   }catch(e){}
 }
+// จิงเกิล: ลดเสียงเพลงวนลง เล่นจิงเกิล แล้วค่อยๆ กลับ (max = ตัดความยาวสูงสุดเป็นวินาที)
+async function musSting(k,max){
+  if(!BGM.on||document.hidden||!actx()||BGM.ctx.state!=="running") return false;
+  const buf=await musLoad(k); if(!buf) return false;
+  try{
+    if(MUS.sting){ try{MUS.sting.stop();}catch(e){} }
+    const dur=Math.min(buf.duration,max||buf.duration);
+    const s=BGM.ctx.createBufferSource(), g=BGM.ctx.createGain(); s.buffer=buf; s.connect(g); g.connect(BGM.gain); g.gain.value=1.15;
+    const t=BGM.ctx.currentTime; if(dur<buf.duration){ g.gain.setValueAtTime(1.15,t+dur-1.5); g.gain.linearRampToValueAtTime(0,t+dur); }
+    s.start(t,0,dur); MUS.sting=s;
+    MUS.duckUntil=performance.now()+dur*1000;
+    if(MUS.g) ramp(MUS.g,0.12,0.3);
+    setTimeout(()=>{ if(performance.now()>=MUS.duckUntil-50&&MUS.g) ramp(MUS.g,1,1.5); },dur*1000);
+    return true;
+  }catch(e){ return false; }
+}
+function musLog(t){
+  if(/คนแรก/.test(t)){ musSting("goal"); return BGM.on; }
+  if(/^ผีปอบยักษ์/.test(t)) musSting("giant");
+  if(/^ปิดงบปีที่/.test(t)) musSting("yearend",22);
+  return false;
+}
+function bgmStart(){ if(BGM.on){ MUS.cur=MUS.src?MUS.cur:null; musPlay(musWant()); ["goal","giant"].forEach(k=>setTimeout(()=>{ if(BGM.ctx) musLoad(k); },3000)); } }
 function bgmStop(){
-  if(!BGM.ctx||!BGM.src) return;
-  const t=BGM.ctx.currentTime; BGM.gain.gain.cancelScheduledValues(t); BGM.gain.gain.setValueAtTime(BGM.gain.gain.value,t); BGM.gain.gain.linearRampToValueAtTime(0,t+0.4);
-  const s=BGM.src; BGM.src=null; setTimeout(()=>{ try{s.stop();}catch(e){} },450);
+  if(!BGM.ctx) return;
+  const s=MUS.src, g=MUS.g; MUS.src=null; MUS.g=null; MUS.cur=null;
+  if(g) ramp(g,0,0.4); setTimeout(()=>{ try{s&&s.stop();}catch(e){} },450);
+  if(MUS.sting){ try{MUS.sting.stop();}catch(e){} MUS.sting=null; }
+  musEvict(null);
 }
 function bgmToggle(){
   BGM.on=!BGM.on; try{localStorage.setItem("rotfai-bgm",BGM.on?"on":"off");}catch(e){}
   bgmIcon(); if(BGM.on) bgmStart(); else bgmStop();
 }
 $("bgmBtn").onclick=e=>{ e.stopPropagation(); bgmToggle(); };
-addEventListener("pointerdown",e=>{ if(BGM.on&&!BGM.src&&!(e.target.closest&&e.target.closest("#bgmBtn"))) bgmStart(); else if(SFX.on){ const c=actx(); if(c&&c.state!=="running") c.resume().catch(()=>{}); } },{capture:true,passive:true});
+addEventListener("pointerdown",e=>{ if(BGM.on&&!MUS.src&&!(e.target.closest&&e.target.closest("#bgmBtn"))) bgmStart(); else if(SFX.on){ const c=actx(); if(c&&c.state!=="running") c.resume().catch(()=>{}); } },{capture:true,passive:true});
 document.addEventListener("visibilitychange",()=>{ if(!BGM.ctx) return; if(document.hidden) BGM.ctx.suspend().catch(()=>{}); else if(BGM.on||SFX.on) BGM.ctx.resume().catch(()=>{}); });
 bgmIcon();
 
@@ -3129,7 +3173,7 @@ bgmIcon();
 const SFX={on:true,vol:0.5,out:null,last:{}};
 try{ SFX.on=localStorage.getItem("rotfai-sfx")!=="off"; }catch(e){}
 function actx(){
-  if(!BGM.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; BGM.ctx=new AC(); BGM.gain=BGM.ctx.createGain(); BGM.gain.gain.value=0; BGM.gain.connect(BGM.ctx.destination); }
+  if(!BGM.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; BGM.ctx=new AC(); BGM.gain=BGM.ctx.createGain(); BGM.gain.gain.value=BGM.vol; BGM.gain.connect(BGM.ctx.destination); }
   if(!SFX.out){ SFX.out=BGM.ctx.createGain(); SFX.out.gain.value=SFX.vol; const comp=BGM.ctx.createDynamicsCompressor(); SFX.out.connect(comp); comp.connect(BGM.ctx.destination); }
   return BGM.ctx;
 }
@@ -3185,7 +3229,7 @@ const LOG_SFX=[[/คนแรก/,"arrive"],[/ตอบควิซถูก|ต
   [/ปิดงบปีที่/,"coins"],[/ถูกลอตเตอรี่|โบนัส|ได้ .*ล้าน|ดังในโซเชียล|รับ .*ล้าน/,"coin"],[/ซื้อ/,"buy"],[/ใช้|ขับเอง|เหมาเครื่องบิน|ส่งม็อบ/,"use"],
   [/ผี/,"ghost"],[/ได้การ์ด/,"card"],[/จุดหมายใหม่/,"dest"],[/สงกรานต์|ปีใหม่|ตรุษจีน|ฤดู|ลอยกระทง|น้ำท่วม|ฝุ่น|รางใหม่|เดือนปิดงบ/,"event"]];
 let sfxQ=Promise.resolve();
-function sfxLog(t){ const m=LOG_SFX.find(([re])=>re.test(t)); if(m) sfxQ=sfxQ.then(()=>{ sfx(m[1]); return new Promise(r=>setTimeout(r,140)); }); }
+function sfxLog(t){ if(musLog(t)) return; const m=LOG_SFX.find(([re])=>re.test(t)); if(m) sfxQ=sfxQ.then(()=>{ sfx(m[1]); return new Promise(r=>setTimeout(r,140)); }); }
 function sfxToggle(){ SFX.on=!SFX.on; try{localStorage.setItem("rotfai-sfx",SFX.on?"on":"off");}catch(e){} if(SFX.on){ actx(); sfx("coin"); } }
 document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("button"); if(b&&!b.disabled&&!b.closest(".dfx")) sfx("tap"); },true);
 
