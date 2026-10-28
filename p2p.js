@@ -135,3 +135,6 @@ async function initArt(){}
 async function manageArt(){
   await info("ภาพการ์ด",`<p>เวอร์ชันนี้อ่านภาพจากโฟลเดอร์ <b>cards</b> ใน GitHub repo ของเกม</p><p>ใช้สคริปต์ <b>prepare_cards.py</b> แปลงภาพจาก ComfyUI ให้เป็นชื่อ P01.webp, D01.webp … แล้วลากไฟล์ทั้งหมดไปวางในโฟลเดอร์ cards บนหน้าเว็บ GitHub</p>`);
 }
+
+// ข้อความในห้องรอให้ตรงกับเวอร์ชันนี้ (ใส่รหัสแทนการเลือกห้อง)
+(function(){ const _draw=drawRoom; drawRoom=async function(d){ const r=_draw(d); setTimeout(()=>{ const p=document.querySelector("#modal .body p"); if(p&&p.textContent.includes("เลือกห้องนี้")) p.textContent="บอกรหัสนี้ให้เพื่อน แล้วให้เพื่อนเปิดลิงก์เดียวกัน กด \"เล่นออนไลน์กับเพื่อน\" แล้วพิมพ์รหัสห้อง"; },0); return r; }; })();
