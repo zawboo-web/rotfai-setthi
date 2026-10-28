@@ -395,7 +395,7 @@ const botNow=()=>!!(S&&S.phase==="play"&&S.players[S.turn]&&S.players[S.turn].bo
 const isBotTurn=()=>botNow()&&amHost();
 const assets=i=>S.players[i].money+PROPS.filter(p=>S.owners[p.id]===i).reduce((t,p)=>t+p.price,0);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function log(t){S.log.unshift(t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1;}
+function log(t){S.log.unshift(t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1; sfxLog(t);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
 function newGame(names,years,map){
@@ -511,7 +511,7 @@ function focusNode(id,smooth=true){
 }
 async function animateMove(lm){
   const p=S.players[lm.p], final=p.node;
-  for(const n of lm.path.slice(1)){ p.node=n; renderTokens(); focusNode(n,true); await sleep(190); }
+  for(const n of lm.path.slice(1)){ p.node=n; renderTokens(); focusNode(n,true); sfx("step"); await sleep(190); }
   p.node=final; renderTokens();
 }
 
@@ -568,7 +568,7 @@ function modal({eyebrow="",title,html="",buttons=[{label:"ตกลง",value:tr
     modalResolve=res;
     $("modal").innerHTML=`${eyebrow?`<div class="eyebrow">${eyebrow}</div>`:""}<h3>${title}</h3><div class="body">${html}</div>
       ${buttons.length?`<div class="actions">${buttons.map((b,k)=>`<button class="btn ${b.primary?"primary":b.gold?"gold":""}" data-mb="${k}" ${b.disabled?"disabled":""}>${b.label}</button>`).join("")}</div>`:""}`;
-    $("modalWrap").hidden=false;
+    $("modalWrap").hidden=false; if(html.includes('class="gc')) setTimeout(()=>sfx("pop"),60);
     $("modal").querySelectorAll("[data-mb]").forEach(el=>el.onclick=()=>close(buttons[+el.dataset.mb].value));
     $("modal").querySelectorAll("[data-val]").forEach(el=>el.onclick=()=>close(el.dataset.val));
     const f=$("modal").querySelector(".btn.primary,[data-mb]"); if(f) setTimeout(()=>f.focus({preventScroll:true}),30);
@@ -928,7 +928,7 @@ async function askQuiz(st,eyebrow,stake){
     const mp=modal({eyebrow,title:"ควิซ!",html:head+timer+`<div class="stack">${opts.map((o,j)=>`<button class="btn" data-val="q${j}" style="width:100%;flex:none;justify-content:flex-start;text-align:left;padding:10px 14px;line-height:1.35"><span class="gc-num" style="background:var(--surface);color:var(--ink)">${"กขคง"[j]}</span>${esc(o)}</button>`).join("")}</div>`,buttons:[]});
     let iv=null;
     if(T){ const r=modalResolve; let left=T;
-      iv=setInterval(()=>{ left--; const el=$("qsec"); if(el) el.textContent=Math.max(0,left); if(left<=2){const tm=$("qtimer"); if(tm) tm.classList.add("hurry");}
+      iv=setInterval(()=>{ left--; if(left>0) sfx(left<=2?"hurry":"tick"); const el=$("qsec"); if(el) el.textContent=Math.max(0,left); if(left<=2){const tm=$("qtimer"); if(tm) tm.classList.add("hurry");}
         if(left<=0){ clearInterval(iv); if(modalResolve===r){ timedOut=true; closeModal(); } } },1000); }
     const k=await mp; clearInterval(iv);
     pick=k&&k[0]==="q"?opts[+k.slice(1)]:null;
@@ -951,10 +951,11 @@ async function diceFX(vals,label,sub){
   const cubes=[...wrap.querySelectorAll(".dfx-cube")];
   cubes.forEach(c=>{c.style.transition="none";c.style.transform=`rotateX(${Math.random()*360}deg) rotateY(${Math.random()*360}deg)`;});
   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  sfx("roll");
   cubes.forEach((c,i)=>{ const [x,y]=FACE_ROT[vals[i]]; const kx=2+Math.floor(Math.random()*2), ky=2+Math.floor(Math.random()*2);
     c.style.transition=""; c.style.transitionDelay=`${i*80}ms`; c.style.transform=`rotateX(${x+360*kx}deg) rotateY(${y+360*ky}deg) rotateZ(${Math.random()<.5?360:-360}deg)`; });
   await sleep(1100+vals.length*80);
-  wrap.classList.add("landed");
+  wrap.classList.add("landed"); sfx("land");
   await sleep(850);
   wrap.classList.add("out");
   await sleep(250);
@@ -1134,7 +1135,7 @@ async function gameOver(){
   render(); await showGameOver();
 }
 async function showGameOver(){
-  ON.shownOver=true;
+  ON.shownOver=true; sfx("over");
   const rank=S.players.map((p,k)=>({k,a:assets(k)})).sort((a,b)=>b.a-a.a);
   const html=`<table class="rep"><tr><th>อันดับ</th><th>ทรัพย์สินรวม (ล้าน)</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${r.a}</td></tr>`).join("")}</table>`;
   await modal({eyebrow:"จบเกม",title:`${esc(S.players[rank[0].k].name)} คือเศรษฐีรถไฟ!`,html,buttons:[{label:"กลับหน้าแรก",value:1,primary:true}]});
@@ -1252,8 +1253,9 @@ async function home(){
     <button class="mode-btn" data-val="local"><b>เล่นเครื่องเดียว</b><span>2–4 คน ส่งมือถือหรือ iPad ต่อกัน</span></button>
     <button class="mode-btn" data-val="art"><b>ภาพการ์ด</b><span>อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ</span></button>
   </div>`;
-  const v=await modal({eyebrow:"เหนือ · กลาง · ตะวันออก · ตะวันตก · v0.3",title:"รถไฟเศรษฐีไทย",html,buttons:[{label:BGM.on?"♪ ปิดเพลง":"♪ เปิดเพลง",value:"bgm"}]});
+  const v=await modal({eyebrow:"เหนือ · กลาง · ตะวันออก · ตะวันตก · v0.3",title:"รถไฟเศรษฐีไทย",html,buttons:[{label:BGM.on?"♪ ปิดเพลง":"♪ เปิดเพลง",value:"bgm"},{label:SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์",value:"sfx"}]});
   if(v==="bgm"){ bgmToggle(); return home(); }
+  if(v==="sfx"){ sfxToggle(); return home(); }
   if(v==="resume"){ MODE="local"; S=saved; render(); return beginTurn(); }
   if(v==="local") return setupLocal();
   if(v==="online") return onlineLobby();
@@ -1399,7 +1401,7 @@ async function applyRemote(next){
   if(!fresh&&S.lastMove&&S.lastMove.id!==ON.seenMove){ ON.seenMove=S.lastMove.id; render(); await animateMove(S.lastMove); }
   render();
   if(!fresh){
-    const n=(S.logN||0)-prevLog; for(let k=Math.min(n,S.log.length)-1;k>=0;k--) toast(S.log[k]);
+    const n=(S.logN||0)-prevLog; for(let k=Math.min(n,S.log.length)-1;k>=0;k--){ toast(S.log[k]); sfxLog(S.log[k]); }
   }
   ON.seenLog=S.logN||0;
   if(S.phase==="over"){ if(!ON.shownOver) await showGameOver(); return; }
@@ -1464,8 +1466,10 @@ $("menuBtn").onclick=async()=>{
   if(!S||S.phase==="setup") return;
   if(modalResolve) return;
   const online=MODE==="online";
-  const v=await modal({title:"เมนู",html:online&&ON.meta?`<p>ห้อง <b>${esc(ON.meta.code)}</b> · คุณคือ ${esc(S.players[mySeat()]?.name||"ผู้ชม")}</p>`:"",buttons:[{label:"กติกาย่อ",value:"rules"},{label:"ภาพการ์ด",value:"art"},{label:online?"ออกไปหน้าแรก":"เริ่มเกมใหม่",value:"new"},{label:"ปิด",value:null,primary:true}]});
+  const v=await modal({title:"เมนู",html:online&&ON.meta?`<p>ห้อง <b>${esc(ON.meta.code)}</b> · คุณคือ ${esc(S.players[mySeat()]?.name||"ผู้ชม")}</p>`:"",buttons:[{label:"กติกาย่อ",value:"rules"},{label:"ภาพการ์ด",value:"art"},{label:BGM.on?"ปิดเพลง":"เปิดเพลง",value:"bgm"},{label:SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์",value:"sfx"},{label:online?"ออกไปหน้าแรก":"เริ่มเกมใหม่",value:"new"},{label:"ปิด",value:null,primary:true}]});
   if(v==="art") return manageArt();
+  if(v==="bgm"){ bgmToggle(); return; }
+  if(v==="sfx"){ sfxToggle(); return; }
   if(v==="rules") await modal({title:"กติกาย่อ",html:`<ul class="rules">
     <li>หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล</li>
     <li>ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง</li>
@@ -1510,7 +1514,7 @@ function bgmLoad(){
 async function bgmStart(){
   if(!BGM.on||document.hidden) return;
   try{
-    if(!BGM.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; BGM.ctx=new AC(); BGM.gain=BGM.ctx.createGain(); BGM.gain.gain.value=0; BGM.gain.connect(BGM.ctx.destination); }
+    if(!actx()) return;
     if(BGM.ctx.state!=="running") await BGM.ctx.resume();
     if(!BGM.src){
       const buf=await bgmLoad(); if(!buf||BGM.src||!BGM.on) return;
@@ -1529,9 +1533,74 @@ function bgmToggle(){
   bgmIcon(); if(BGM.on) bgmStart(); else bgmStop();
 }
 $("bgmBtn").onclick=e=>{ e.stopPropagation(); bgmToggle(); };
-addEventListener("pointerdown",e=>{ if(BGM.on&&!BGM.src&&!(e.target.closest&&e.target.closest("#bgmBtn"))) bgmStart(); },{capture:true,passive:true});
-document.addEventListener("visibilitychange",()=>{ if(!BGM.ctx) return; if(document.hidden) BGM.ctx.suspend().catch(()=>{}); else if(BGM.on) BGM.ctx.resume().catch(()=>{}); });
+addEventListener("pointerdown",e=>{ if(BGM.on&&!BGM.src&&!(e.target.closest&&e.target.closest("#bgmBtn"))) bgmStart(); else if(SFX.on){ const c=actx(); if(c&&c.state!=="running") c.resume().catch(()=>{}); } },{capture:true,passive:true});
+document.addEventListener("visibilitychange",()=>{ if(!BGM.ctx) return; if(document.hidden) BGM.ctx.suspend().catch(()=>{}); else if(BGM.on||SFX.on) BGM.ctx.resume().catch(()=>{}); });
 bgmIcon();
+
+// ================= SFX =================
+// เสียงเอฟเฟกต์สังเคราะห์ด้วย Web Audio ทั้งหมด ไม่ต้องโหลดไฟล์
+const SFX={on:true,vol:0.5,out:null,last:{}};
+try{ SFX.on=localStorage.getItem("rotfai-sfx")!=="off"; }catch(e){}
+function actx(){
+  if(!BGM.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; BGM.ctx=new AC(); BGM.gain=BGM.ctx.createGain(); BGM.gain.gain.value=0; BGM.gain.connect(BGM.ctx.destination); }
+  if(!SFX.out){ SFX.out=BGM.ctx.createGain(); SFX.out.gain.value=SFX.vol; const comp=BGM.ctx.createDynamicsCompressor(); SFX.out.connect(comp); comp.connect(BGM.ctx.destination); }
+  return BGM.ctx;
+}
+function tn(t0,f,d,{type="sine",v=.3,a=.005,f2=null,dest=null,vib=0}={}){
+  const c=BGM.ctx,o=c.createOscillator(),g=c.createGain();
+  o.type=type; o.frequency.setValueAtTime(f,t0); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t0+d);
+  if(vib){ const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=vib; lg.gain.value=f*.03; l.connect(lg); lg.connect(o.frequency); l.start(t0); l.stop(t0+d+.05); }
+  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(v,t0+a); g.gain.exponentialRampToValueAtTime(.0008,t0+d);
+  o.connect(g); g.connect(dest||SFX.out); o.start(t0); o.stop(t0+d+.05);
+}
+let NOISE=null;
+function nz(t0,d,{f=2000,q=1,v=.3,f2=null,type="bandpass"}={}){
+  const c=BGM.ctx;
+  if(!NOISE){ NOISE=c.createBuffer(1,c.sampleRate,c.sampleRate); const ch=NOISE.getChannelData(0); for(let i=0;i<ch.length;i++) ch[i]=Math.random()*2-1; }
+  const s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=NOISE; fl.type=type; fl.frequency.setValueAtTime(f,t0); if(f2) fl.frequency.exponentialRampToValueAtTime(f2,t0+d); fl.Q.value=q;
+  g.gain.setValueAtTime(v,t0); g.gain.exponentialRampToValueAtTime(.0008,t0+d);
+  s.connect(fl); fl.connect(g); g.connect(SFX.out); s.start(t0,Math.random()*.5); s.stop(t0+d+.02);
+}
+const N=m=>440*Math.pow(2,(m-69)/12); // MIDI → Hz
+const notes=(t,seq,o={})=>seq.forEach(([m,at,d])=>tn(t+at,N(m),d,o));
+const SOUNDS={
+  tap:t=>tn(t,700,.05,{type:"triangle",v:.08}),
+  pop:t=>{ tn(t,420,.16,{f2:900,v:.22}); tn(t+.06,1300,.12,{v:.06}); },
+  roll:t=>{ for(let i=0;i<9;i++){ const at=i*.085+Math.random()*.03; nz(t+at,.05,{f:2200+Math.random()*1800,q:3,v:.7-i*.05}); tn(t+at,180+Math.random()*120,.03,{type:"square",v:.04}); } },
+  land:t=>{ tn(t,170,.18,{f2:55,v:.3}); nz(t,.06,{f:900,q:.8,v:.3}); },
+  step:t=>{ nz(t,.035,{f:1600,q:2,v:.3}); tn(t,95,.07,{type:"triangle",v:.18}); },
+  coin:t=>{ tn(t,N(83),.09,{type:"square",v:.12}); tn(t+.08,N(88),.35,{type:"square",v:.12}); },
+  coins:t=>{ for(let i=0;i<6;i++) tn(t+i*.07,N(84+(i%3)*4),.18,{type:"square",v:.08}); tn(t+.45,N(96),.5,{type:"triangle",v:.12}); },
+  lose:t=>{ tn(t,N(67),.18,{type:"triangle",v:.25,f2:N(62)}); tn(t+.18,N(60),.4,{type:"triangle",v:.25,f2:N(55)}); },
+  buy:t=>{ nz(t,.05,{f:3000,q:2,v:.25}); tn(t+.04,2093,.5,{v:.18}); tn(t+.04,4186,.3,{v:.05}); SOUNDS.coin(t+.18); },
+  card:t=>{ nz(t,.28,{f:500,f2:4000,q:1.2,v:.55}); tn(t+.2,N(88),.2,{type:"triangle",v:.08}); },
+  use:t=>{ nz(t,.22,{f:3500,f2:600,q:1.2,v:.22}); notes(t+.1,[[79,0,.12],[84,.07,.12],[91,.14,.3]],{type:"triangle",v:.12}); },
+  arrive:t=>{ notes(t,[[72,0,.14],[76,.12,.14],[79,.24,.14],[84,.36,.55]],{type:"square",v:.1}); notes(t,[[48,0,.3],[55,.36,.6]],{type:"triangle",v:.18}); SOUNDS.whistle(t+.95); },
+  whistle:t=>{ tn(t,N(74),.7,{type:"sine",v:.16,a:.04,vib:6}); tn(t,N(78),.7,{type:"sine",v:.12,a:.04,vib:6}); tn(t,N(81),.7,{type:"triangle",v:.05,a:.04}); },
+  dest:t=>{ tn(t,N(76),.35,{type:"sine",v:.14,a:.03,vib:5}); tn(t,N(80),.35,{type:"sine",v:.1,a:.03,vib:5}); tn(t+.4,N(76),.5,{type:"sine",v:.14,a:.03,vib:5}); tn(t+.4,N(80),.5,{type:"sine",v:.1,a:.03,vib:5}); },
+  ghost:t=>{ tn(t,420,1.1,{type:"sine",v:.14,f2:190,a:.15,vib:7}); tn(t+.05,630,1,{type:"triangle",v:.06,f2:300,a:.2,vib:5}); nz(t,.9,{f:700,f2:300,q:4,v:.06}); },
+  correct:t=>{ tn(t,N(88),.12,{type:"square",v:.11}); tn(t+.1,N(93),.4,{type:"square",v:.11}); tn(t+.1,N(100),.3,{v:.06}); },
+  wrong:t=>{ tn(t,150,.16,{type:"sawtooth",v:.2}); tn(t+.2,140,.3,{type:"sawtooth",v:.2}); },
+  tick:t=>{ tn(t,1500,.06,{v:.35}); nz(t,.02,{f:4000,q:2,v:.2}); },
+  hurry:t=>{ tn(t,2000,.07,{type:"square",v:.2}); tn(t,1000,.07,{v:.25}); },
+  event:t=>{ [[79,0],[76,.18],[72,.36]].forEach(([m,at])=>{ tn(t+at,N(m),.9,{v:.11}); tn(t+at,N(m)*2.76,.4,{v:.03}); }); },
+  over:t=>{ notes(t,[[67,0,.15],[72,.15,.15],[76,.3,.15],[79,.45,.3],[76,.75,.15],[79,.9,.9]],{type:"square",v:.1}); notes(t,[[48,0,.7],[53,.45,.4],[55,.9,1]],{type:"triangle",v:.16}); SOUNDS.coins(t+1.1); }
+};
+function sfx(name){
+  if(!SFX.on||document.hidden||!SOUNDS[name]) return;
+  const c=actx(); if(!c||c.state!=="running") return;
+  const now=performance.now(); if(now-(SFX.last[name]||0)<90) return; SFX.last[name]=now;
+  try{ SOUNDS[name](c.currentTime+.01); }catch(e){}
+}
+// เสียงตามบันทึกเหตุการณ์ ใช้ทั้งเครื่องที่เล่นและเครื่องเพื่อน (ออนไลน์) ให้ได้ยินเหมือนกัน
+const LOG_SFX=[[/คนแรก/,"arrive"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
+  [/ปิดงบปีที่/,"coins"],[/ถูกลอตเตอรี่|โบนัส|ได้ .*ล้าน|ดังในโซเชียล|รับ .*ล้าน/,"coin"],[/ซื้อ/,"buy"],[/ใช้|ขับเอง|เหมาเครื่องบิน|ส่งม็อบ/,"use"],
+  [/ผี/,"ghost"],[/ได้การ์ด/,"card"],[/จุดหมายใหม่/,"dest"],[/สงกรานต์|ปีใหม่|ตรุษจีน|ฤดู|ลอยกระทง|น้ำท่วม|ฝุ่น|รางใหม่|เดือนปิดงบ/,"event"]];
+let sfxQ=Promise.resolve();
+function sfxLog(t){ const m=LOG_SFX.find(([re])=>re.test(t)); if(m) sfxQ=sfxQ.then(()=>{ sfx(m[1]); return new Promise(r=>setTimeout(r,140)); }); }
+function sfxToggle(){ SFX.on=!SFX.on; try{localStorage.setItem("rotfai-sfx",SFX.on?"on":"off");}catch(e){} if(SFX.on){ actx(); sfx("coin"); } }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("button"); if(b&&!b.disabled&&!b.closest(".dfx")) sfx("tap"); },true);
 
 // ================= BOOT =================
 window.claude?.hot?.snapshot?.(()=>({save:MODE==="local"?SAFE:null,room:MODE==="online"&&ON.meta?ON.meta.code:null}));
