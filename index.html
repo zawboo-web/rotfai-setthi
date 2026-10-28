@@ -197,6 +197,34 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
 @keyframes gcWobble{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
 @keyframes gcCoin{0%{transform:rotateY(0)}100%{transform:rotateY(720deg)}}
 @keyframes gcFade{from{opacity:0;transform:translateY(8px)}}
+/* dice roll effect */
+.dfx{position:fixed;inset:0;z-index:70;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(circle at 50% 50%,rgba(20,14,40,.6),rgba(20,14,40,.35) 60%,rgba(20,14,40,.15));animation:dfxIn .2s ease-out both}
+.dfx.out{animation:dfxOut .25s ease-in forwards}
+.dfx-row{display:flex;gap:22px;perspective:700px}
+.dfx-throw{position:relative;display:flex;flex-direction:column;align-items:center;animation:dfxThrow 1.05s cubic-bezier(.3,.7,.4,1) both}
+.dfx-cube{width:70px;height:70px;position:relative;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.15,.75,.25,1)}
+.dfx-face{position:absolute;inset:0;background:#FFFDF6;border:3px solid #2A2238;border-radius:14px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px;box-sizing:border-box;backface-visibility:hidden;box-shadow:inset 0 -6px 0 rgba(42,34,56,.08)}
+.dfx-face i{width:12px;height:12px;border-radius:50%;background:#2A2238;place-self:center;visibility:hidden}
+.dfx-face i.on{visibility:visible}
+.dfx-face.f1 i.on{width:20px;height:20px}
+.dfx-face.f1 i.on,.dfx-face.f4 i.on{background:#E8453C}
+.f1{transform:translateZ(35px)}.f6{transform:rotateY(180deg) translateZ(35px)}
+.f3{transform:rotateY(90deg) translateZ(35px)}.f4{transform:rotateY(-90deg) translateZ(35px)}
+.f5{transform:rotateX(90deg) translateZ(35px)}.f2{transform:rotateX(-90deg) translateZ(35px)}
+.dfx-shadow{width:64px;height:12px;margin-top:14px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(3px);animation:dfxShadow 1.05s cubic-bezier(.3,.7,.4,1) both}
+.dfx-total{font-family:var(--font-d);font-weight:600;font-size:48px;line-height:1.1;color:#FFD84D;-webkit-text-stroke:7px #2A2238;paint-order:stroke fill;text-shadow:0 5px 0 #2A2238;opacity:0;transform:scale(.4)}
+.dfx-total small{display:block;font-size:18px;color:#fff;-webkit-text-stroke:5px #2A2238;text-shadow:0 2px 0 #2A2238;margin-top:6px;text-align:center}
+.dfx.landed .dfx-total{animation:dfxPop .45s cubic-bezier(.2,1.6,.4,1) forwards}
+.dfx.landed .dfx-throw{animation:dfxLand .3s ease-out}
+.dfx-burst{position:absolute;left:50%;top:50%;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:repeating-conic-gradient(rgba(255,216,77,.55) 0 8deg,transparent 8deg 20deg);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%);mask:radial-gradient(circle,#000 20%,transparent 65%);opacity:0;z-index:-1}
+.dfx.landed .dfx-burst{animation:gcBurst 1s ease-out both}
+@keyframes dfxIn{from{opacity:0}}
+@keyframes dfxOut{to{opacity:0}}
+@keyframes dfxThrow{0%{transform:translateY(300px) scale(.5)}45%{transform:translateY(-90px) scale(1.15)}70%{transform:translateY(0) scale(1)}82%{transform:translateY(-22px)}100%{transform:translateY(0)}}
+@keyframes dfxShadow{0%{transform:scale(.3);opacity:0}45%{transform:scale(.5);opacity:.4}70%{transform:scale(1);opacity:1}82%{transform:scale(.8)}100%{transform:scale(1)}}
+@keyframes dfxLand{50%{transform:scale(1.12,.9)}}
+@keyframes dfxPop{to{opacity:1;transform:scale(1)}}
+
 .qtimer{display:flex;align-items:center;gap:10px;margin:8px 0 10px}
 .qtrack{flex:1;height:10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
 .qbar{height:100%;background:var(--accent);transform-origin:left;animation:qbar linear forwards}
@@ -575,9 +603,8 @@ async function onRoll(){
   let steps;
   if(S.tf.locked){ steps=1; UI.dice=[]; }
   else{
-    const n=S.tf.nDice||1;
-    for(let t=0;t<8;t++){UI.dice=[...Array(n)].map(()=>rnd(6));renderPanel();await sleep(55);}
-    steps=UI.dice.reduce((a,b)=>a+b,0);
+    const vals=await rollAndShow(S.tf.nDice||1);
+    steps=vals.reduce((a,b)=>a+b,0);
     if(S.songkran){steps=Math.max(1,steps-1);}
   }
   UI.busy=false;
@@ -683,7 +710,10 @@ async function assignGhost(dest){
 async function ghostTurn(){
   const i=S.turn,p=cur(); const giant=S.ghost.count>=3;
   await say({eyebrow:"ผีติดตัว",title:giant?"ผีปอบกลายร่างเป็นร่างยักษ์!":"ผีปอบจะทำอะไรนะ",html:giant?"อยู่ด้วยกันครบ 3 เทิร์น ผีโตขึ้นแล้ว":"ทอยเต๋าดูตารางผี",buttons:[{label:"ทอยตารางผี",value:1,primary:true}]});
-  const d=rnd(6); UI.dice=[d]; render();
+  const d=rnd(6);
+  S.lastRoll={id:Date.now()+"-g"+Math.random().toString(36).slice(2,5),p:i,vals:[d],kind:"ghost"}; ON.seenRoll=S.lastRoll.id; commit();
+  await diceFX([d],`ผีทอยได้ ${d}`,giant?"ตารางร่างยักษ์":"ตารางผี");
+  UI.dice=[d]; render();
   const T=giant?[[1,2,"อาละวาด","กิจการทั้งหมดในสถานีที่คุณมีมากที่สุดคืนธนาคารฟรี"],[3,4,"ช้อปหนัก","เสียเงินสดครึ่งหนึ่ง"],[5,5,"ฉีกการ์ด","ทิ้งการ์ดทั้งหมด"],[6,6,"ขายของ","ขายกิจการแพงที่สุดคืนธนาคารครึ่งราคา"]]
               :[[1,1,"ผีปอบสายช้อป","เสียเงิน 5 ล้าน"],[2,2,"ผีปอบสายช้อป","ทิ้งการ์ด 1 ใบแบบสุ่ม"],[3,3,"ผีกระสือเล่นหุ้น","ขายกิจการถูกที่สุดคืนธนาคารครึ่งราคา"],[4,4,"ผีเจ้าที่ขี้งอน","เทิร์นนี้เดินได้ 1 ช่อง ห้ามใช้การ์ดเคลื่อนที่"],[5,5,"ผีหลับ","ไม่มีอะไรเกิดขึ้น"],[6,6,"ผีเลี้ยงหมูกระทะ","จ่ายผู้เล่นคนอื่นคนละ 3 ล้าน"]];
   const row=T.find(r=>d>=r[0]&&d<=r[1]);
@@ -832,6 +862,36 @@ async function askQuiz(st,eyebrow,stake){
   return ok;
 }
 
+
+// ================= DICE FX =================
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const FACE_ROT={1:[0,0],2:[90,0],3:[0,-90],4:[0,90],5:[-90,0],6:[0,180]};
+async function diceFX(vals,label,sub){
+  if(reduced()||document.hidden) return;
+  const wrap=document.createElement("div"); wrap.className="dfx"; wrap.setAttribute("aria-hidden","true");
+  wrap.innerHTML=`<div class="dfx-row">${vals.map((v,i)=>`<div class="dfx-throw" style="animation-delay:${i*80}ms"><div class="dfx-cube">${[1,2,3,4,5,6].map(f=>`<div class="dfx-face f${f}">${[...Array(9)].map((_,k)=>`<i class="${PIPS[f].includes(k)?"on":""}"></i>`).join("")}</div>`).join("")}</div><div class="dfx-shadow" style="animation-delay:${i*80}ms"></div></div>`).join("")}</div><div style="position:relative"><div class="dfx-burst"></div><div class="dfx-total">${label}${sub?`<small>${sub}</small>`:""}</div></div>`;
+  document.body.appendChild(wrap);
+  const cubes=[...wrap.querySelectorAll(".dfx-cube")];
+  cubes.forEach(c=>{c.style.transition="none";c.style.transform=`rotateX(${Math.random()*360}deg) rotateY(${Math.random()*360}deg)`;});
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  cubes.forEach((c,i)=>{ const [x,y]=FACE_ROT[vals[i]]; const kx=2+Math.floor(Math.random()*2), ky=2+Math.floor(Math.random()*2);
+    c.style.transition=""; c.style.transitionDelay=`${i*80}ms`; c.style.transform=`rotateX(${x+360*kx}deg) rotateY(${y+360*ky}deg) rotateZ(${Math.random()<.5?360:-360}deg)`; });
+  await sleep(1100+vals.length*80);
+  wrap.classList.add("landed");
+  await sleep(850);
+  wrap.classList.add("out");
+  await sleep(250);
+  wrap.remove();
+}
+function rollLabel(vals){ const s=vals.reduce((a,b)=>a+b,0); return {label:`${s} แต้ม`,sub:S.songkran&&vals.length?"สงกรานต์รถติด −1":""}; }
+async function rollAndShow(n){
+  const vals=[...Array(n)].map(()=>rnd(6));
+  S.lastRoll={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:S.turn,vals,kind:"move"};
+  ON.seenRoll=S.lastRoll.id; commit();
+  const {label,sub}=rollLabel(vals); await diceFX(vals,label,sub);
+  UI.dice=vals; renderPanel(); return vals;
+}
+
 // ================= BOT =================
 function botPickDest(opts){
   if(opts.has(S.dest)) return S.dest;
@@ -905,8 +965,8 @@ async function botTurn(){
   else if(S.tf.locked){ steps=1; UI.dice=[]; }
   else{
     const n=S.tf.nDice||1;
-    for(let t=0;t<7;t++){UI.dice=[...Array(n)].map(()=>rnd(6));renderPanel();await sleep(60);}
-    steps=UI.dice.reduce((a,b)=>a+b,0);
+    const vals=await rollAndShow(n);
+    steps=vals.reduce((a,b)=>a+b,0);
     if(S.songkran) steps=Math.max(1,steps-1);
   }
   UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(p.node,steps);
@@ -1252,10 +1312,11 @@ async function applyRemote(next){
   const fresh=!(S&&MODE==="online"&&S.code===next.code);
   if(!fresh&&(next.rev||0)<=(S.rev||0)) return;
   MODE="online";
-  if(fresh){ closeModal(); ON.seenLog=next.logN||0; ON.seenMove=next.lastMove?.id; ON.seenReport=next.report?.id; }
+  if(fresh){ closeModal(); ON.seenLog=next.logN||0; ON.seenRoll=next.lastRoll?.id; ON.seenMove=next.lastMove?.id; ON.seenReport=next.report?.id; }
   const prevLog=ON.seenLog;
   S=next;
   if(!isMyTurn()) UI={mode:"idle",opts:null,dice:[],busy:false,msg:""};
+  if(!fresh&&S.lastRoll&&S.lastRoll.id!==ON.seenRoll){ ON.seenRoll=S.lastRoll.id; const lr=S.lastRoll; if(lr.kind==="ghost") await diceFX(lr.vals,`ผีทอยได้ ${lr.vals[0]}`,`${esc(S.players[lr.p].name)}`); else { const {label}=rollLabel(lr.vals); await diceFX(lr.vals,label,esc(S.players[lr.p].name)); } }
   if(!fresh&&S.lastMove&&S.lastMove.id!==ON.seenMove){ ON.seenMove=S.lastMove.id; render(); await animateMove(S.lastMove); }
   render();
   if(!fresh){
