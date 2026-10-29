@@ -123,6 +123,22 @@ svg.newrail .barrier{display:none}
 
 /* modal */
 [hidden]{display:none!important}
+.mg-how{font-size:16px;line-height:1.5;background:var(--surface-2);border-radius:12px;padding:12px 14px;margin-top:6px}
+.mg-wrap{position:fixed;inset:0;z-index:70;background:rgba(10,18,22,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px;animation:mgIn .25s ease-out both;touch-action:none;user-select:none;-webkit-user-select:none}
+.mg-wrap.done{animation:mgOut .45s ease-in both}@keyframes mgIn{from{opacity:0;transform:scale(.96)}}@keyframes mgOut{to{opacity:0}}
+.mg-top{width:min(420px,100%);display:flex;align-items:center;gap:10px;color:#fff;font-size:15px}.mg-top b{flex:1;font-family:var(--font-d);font-size:18px}
+.mg-score{font-family:var(--font-d);font-size:22px;background:#FFC21A;color:#2A2238;border-radius:10px;padding:2px 12px;min-width:64px;text-align:center}.mg-time{font-family:var(--font-d);font-size:20px;min-width:52px;text-align:right}
+.mg-arena{position:relative;width:min(420px,100%);height:min(420px,62vh);background:var(--surface);border-radius:20px;border:3px solid #2A2238;overflow:hidden;display:grid;place-items:center}
+.mg-mortar{background:none;border:0;padding:0;touch-action:manipulation}.mg-mortar .mg-pestle{transform-origin:60px 60px;transition:transform .06s}.mg-mortar.hit .mg-pestle{animation:mgPound .12s}
+@keyframes mgPound{50%{transform:translateY(14px)}}
+.mg-tea{display:flex;flex-direction:column;align-items:center;gap:16px}.mg-glass{position:relative;width:110px;height:220px;border:4px solid #2A2238;border-top:0;border-radius:0 0 22px 22px;background:#EAF6FF;overflow:hidden}
+.mg-tea-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(#F7A35C,#E0782A)}.mg-line{position:absolute;left:-4px;right:-4px;height:3px;background:#E8453C;box-shadow:0 0 0 1px #fff}
+.mg-hold{min-width:180px;min-height:56px;font-size:17px;touch-action:none}.mg-hold.on{transform:scale(.96);filter:brightness(1.1)}
+.mg-room{background:linear-gradient(#FFF6E3,#F3E3C2)}.mg-mosq{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;font-size:34px;background:none;border:0;animation:mgBuzz .25s ease-in-out infinite alternate;touch-action:none}
+@keyframes mgBuzz{to{transform:translate(4px,-3px) rotate(8deg)}}
+.mg-house{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:88%;height:88%}.mg-win{background:#7EC8E3;border:4px solid #8B5A2B;border-radius:10px;display:grid;place-items:center;overflow:hidden}
+.mg-face{width:100%;height:100%;font-size:40px;background:none;border:0;animation:mgPop .15s ease-out both;touch-action:none}.mg-face.gran{background:#FFE3EC}@keyframes mgPop{from{transform:translateY(60%)}}
+.mg-result{font-size:18px;font-weight:600;text-align:center;padding:10px;border-radius:12px}.mg-result.win{background:#E5F4E4;color:#1F6B33}.mg-result.lose{background:#FBEBEB;color:#9B2C22}
 .money b,.money small{white-space:nowrap}
 .modal-wrap{position:fixed;inset:0;background:rgba(10,18,22,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:12px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 @media (min-width:600px){.modal-wrap{align-items:center}}
@@ -1872,7 +1888,8 @@ Object.assign(TR,{
 ]
 });
 Object.assign(TR,{"เต๋าเน่า": ["Rotten Dice", "くさったサイコロ"], "ทอยได้แค่ 1–3 แต้ม": ["You can only roll 1–3", "サイコロは1〜3しか出ない"], "ของแพง": ["Price Hike", "値上がり"], "ซื้อกิจการแพงขึ้น 50%": ["Businesses cost 50% more", "物件が50%高くなる"], "กระเป๋ารั่ว": ["Leaky Wallet", "財布に穴"], "เสียเงิน 1 ล้านทุกต้นเทิร์น": ["Lose ฿1M at the start of each turn", "毎ターン開始時に1百万失う"], "ดวงตก": ["Bad Luck", "運気ダウン"], "ช่องน้ำเงินได้ครึ่งเดียว ช่องแดงเสียสองเท่า": ["Blue spaces pay half, red spaces cost double", "青マスは半分、赤マスは2倍"], "ขี้ลืม": ["Forgetful", "うっかり"], "ใช้การ์ดไม่ได้": ["You can't use cards", "カードが使えない"], "หลงป่า": ["Lost in the Woods", "森で迷子"], "เดินได้แค่ 1 ช่อง": ["Move only 1 space", "1マスしか進めない"], "ผีปอบ": ["Phi Pop", "ピーポープ"], "ขโมยเงิน 5 ล้าน": ["Steals ฿5M", "5百万を盗む"], "ผีกระสือ": ["Krasue", "ガスー"], "ขโมยการ์ดไป 1 ใบ": ["Steals 1 card", "カードを1枚盗む"], "ผีเจ้าที่": ["Land Spirit", "土地神"], "สาปสุ่ม 1 อย่าง 3 เทิร์น": ["A random curse for 3 turns", "ランダムな呪いを3ターン"], "ผีกองกอย": ["Kong Koi", "コンコーイ"], "พาหลงป่า เทิร์นหน้าเดินได้แค่ 1 ช่อง": ["Leads you astray: move only 1 space next turn", "森で迷わせる:次のターンは1マスだけ"], "นางตะเคียน": ["Nang Takhian", "ナーンタキアン"], "ใบ้หวย ได้การ์ดลอตเตอรี่ที่ถูกแน่": ["Lottery tip: get a Lottery card that's sure to win", "宝くじの予言:必ず当たる宝くじカード"], "กุมารทอง": ["Kuman Thong", "クマーントーン"], "เรียกทรัพย์ ได้ 3 ล้านต่อกิจการ (อย่างน้อย 5 ล้าน)": ["Brings wealth: ฿3M per business you own (at least ฿5M)", "金運:物件1件につき3百万(最低5百万)"], "ผีตาโขน": ["Phi Ta Khon", "ピーターコーン"], "ชวนเข้างานบุญ ได้การ์ดไอเทม 2 ใบ": ["Festival invite: draw 2 item cards", "お祭りに招待:アイテムカード2枚"], "ผีกระหัง": ["Krahang", "グラハン"], "พาบินไปลงจังหวัดสุ่ม": ["Flies you to a random province", "ランダムな県へ飛ばす"], "ผีร้าย": ["Bad ghost", "悪いおばけ"], "ผีใจดี": ["Kind ghost", "やさしいおばけ"], "ผีเอาแน่ไม่ได้": ["Unpredictable", "気まぐれおばけ"], "ผีลึกลับ": ["Mystery ghost", "なぞのおばけ"], "ไม่รู้ว่าเป็นผีอะไร อาจดีหรือร้ายก็ได้ เจอแล้วถึงจะรู้": ["No one knows what it is — good or bad. You'll find out when you meet it", "正体不明。良いか悪いかは会ってのお楽しみ"], "ผีเดินได้": ["Wandering ghost", "歩くおばけ"], "ผีอยู่กับที่": ["Stays in place", "動かないおばけ"], "{p} ใช้เครื่องรางกันคำสาป": ["{p} blocked the curse with an amulet", "{p}はお守りで呪いを防いだ"], "เครื่องรางคุ้มครอง!": ["Amulet protects!", "お守りが守った!"], "{p} อยู่ไกล{st}ที่สุด แต่เครื่องรางกันคำสาปไว้ได้": ["{p} was farthest from {st}, but the amulet blocked the curse", "{p}は{st}から一番遠かったが、お守りが呪いを防いだ"], "{p} อยู่ไกลสุด โดนสาป: {t}": ["{p} was farthest and got cursed: {t}", "{p}は一番遠くて呪われた:{t}"], "คำสาป": ["Curse", "呪い"], "{p} โดนสาป!": ["{p} is cursed!", "{p}が呪われた!"], "อยู่ไกล{st}ที่สุด ({n} ช่อง)": ["Farthest from {st} ({n} spaces)", "{st}から一番遠い({n}マス)"], "3 เทิร์น · แก้ได้ที่จังหวัดที่มีวัด": ["3 turns · cure it at a temple province", "3ターン・お寺のある県で解ける"], "{p} หายจากคำสาปแล้ว": ["{p}'s curse wore off", "{p}の呪いが解けた"], "วัดประจำ{st}": ["Temple of {st}", "{st}のお寺"], "ทำบุญแก้คำสาป?": ["Make merit to lift the curse?", "お参りして呪いを解く?"], "จ่าย {m} เพื่อแก้คำสาป{t}": ["Pay {m} to lift {t}", "{m}払って「{t}」を解く"], "ไม่เป็นไร": ["No thanks", "やめておく"], "ทำบุญ {m}": ["Make merit {m}", "お参り {m}"], "{p} ทำบุญแก้คำสาปที่{st}": ["{p} lifted the curse at {st}", "{p}は{st}でお参りして呪いを解いた"], "{p} ทำบุญแก้คำสาป": ["{p} makes merit to lift the curse", "{p}がお参りして呪いを解いた"], "ผีออกเดินเพ่นพ่าน {n} ตัว": ["{n} ghosts wandered around", "おばけが{n}体うろついた"], "เจอ{g}!": ["Met {g}!", "{g}に遭遇!"], "{p} ตอบถูก {t}หนีไปแล้ว": ["{p} answered right — {t} fled", "{p}が正解!{t}は逃げた"], "มีเครื่องราง ใช้ไล่ผีตัวนี้ไหม": ["You have an amulet. Use it to drive this ghost away?", "お守りがあります。使っておばけを追い払う?"], "ใช้เครื่องราง": ["Use amulet", "お守りを使う"], "{p} ใช้เครื่องรางไล่{t}": ["{p} drove off {t} with an amulet", "{p}はお守りで{t}を追い払った"], "{t}ขโมยเงิน{p} {m}": ["{t} stole {m} from {p}", "{t}が{p}から{m}を盗んだ"], "{t}ขโมยการ์ด{it}ของ{p}": ["{t} stole {p}'s {it}", "{t}が{p}の{it}を盗んだ"], "{t}หาการ์ดของ{p}ไม่เจอ": ["{t} found no cards on {p}", "{t}は{p}のカードを見つけられなかった"], "{p} โดนสาป: {t2}": ["{p} got cursed: {t2}", "{p}が呪われた:{t2}"], "{t}พา{p}หลงป่า": ["{t} led {p} astray", "{t}が{p}を森で迷わせた"], "{t}ใบ้หวยให้{p}": ["{t} gave {p} a lottery tip", "{t}が{p}に宝くじの番号を教えた"], "{t}เรียกทรัพย์ให้{p} {m}": ["{t} brought {p} {m}", "{t}が{p}に{m}を呼び込んだ"], "{p} ได้การ์ดจากงานบุญ {n} ใบ": ["{p} got {n} cards at the festival", "{p}はお祭りでカードを{n}枚もらった"], "{t}พา{p}บินไป{st}": ["{t} flew {p} to {st}", "{t}が{p}を{st}へ飛ばした"], "สาป: {t} {n}": ["Cursed: {t} {n}", "呪い:{t} {n}"], "ลอตเตอรี่ใบนี้ถูกแน่ (นางตะเคียนใบ้ให้)": ["This ticket is sure to win (tip from Nang Takhian)", "この宝くじは必ず当たる(ナーンタキアンのお告げ)"], "คำสาปขี้ลืม: ใช้การ์ดไม่ได้": ["Forgetful curse: no cards", "うっかりの呪い:カードが使えない"], "หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง": ["Lost in the woods: move 1 space this turn", "森で迷子:このターンは1マス"], "{p} กระเป๋ารั่ว เสีย {m}": ["{p}'s wallet leaked {m}", "{p}の財布から{m}がこぼれた"], "ยันต์ย้ายคำสาป": ["Curse Charm", "呪い移しのお札"], "ส่งคำสาปของคุณไปให้คนอื่น": ["Pass your curse to another player", "自分の呪いを他の人へ移す"], "เครื่องราง": ["Lucky Amulet", "お守り"], "กันผีร้ายหรือคำสาป 1 ครั้ง": ["Blocks one bad ghost or curse", "悪いおばけか呪いを1回防ぐ"], "ส่งคำสาปให้ใคร": ["Pass the curse to whom?", "誰に呪いを移す?"], "{p} ย้ายคำสาปไปให้{q}": ["{p} passed the curse to {q}", "{p}が呪いを{q}に移した"], "วัด: แก้คำสาปได้": ["Temple: lift curses here", "お寺:呪いを解ける"], "ผีโผล่ใหม่บนแผนที่": ["New ghosts appeared on the map", "マップに新しいおばけが出た"], "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด": ["First to the destination wins the prize; whoever is farthest is cursed for 3 turns (cure it at a temple)", "目的地に一番乗りで賞金。一番遠い人は3ターン呪われる(お寺で解ける)"], "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายตอบควิซถูกหนีได้": ["New ghosts appear each month. Pass a ghost's space to meet it; some ghosts wander. Answer a quiz to escape bad ones", "毎月おばけが現れる。おばけのマスを通ると遭遇。歩くおばけもいる。悪いおばけはクイズに正解すれば逃げられる"]});
-const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายตอบควิซถูกหนีได้", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
+Object.assign(TR,{"ตำส้มตำรัวๆ": ["Som Tam Smash", "ソムタム連打"], "แตะครกรัวๆ ให้ได้ {g} ครั้งใน 5 วินาที": ["Tap the mortar {g} times in 5 seconds", "5秒でうすを{g}回たたこう"], "ชงชาเย็นให้พอดีขีด": ["Perfect Thai Iced Tea", "タイティーをぴったりに"], "กดค้างเพื่อเทชา ปล่อยให้ตรงขีดแดง ล้นหรือขาดเกินไปถือว่าแพ้": ["Hold to pour, release on the red line. Too much or too little loses", "長押しでお茶をそそぎ、赤い線で離そう。多すぎ・少なすぎは負け"], "ตบยุง": ["Mosquito Swat", "蚊たたき"], "ยุงจะบินโผล่มา แตะตบให้ได้ {g} ตัวใน 8 วินาที": ["Mosquitoes pop up — swat {g} in 8 seconds", "出てくる蚊を8秒で{g}匹たたこう"], "สงกรานต์สาดน้ำ": ["Songkran Splash", "ソンクラーン水かけ"], "สาดน้ำใส่เพื่อนที่โผล่ตามหน้าต่าง ได้ {g} แต้มใน 9 วินาที ห้ามสาดคุณยาย (−2)": ["Splash friends in the windows — {g} points in 9 seconds. Don't splash Grandma (−2)", "窓から出る友だちに水をかけて9秒で{g}点。おばあちゃんはダメ(−2)"], "{p} เล่นมินิเกม": ["{p} plays a minigame", "{p}がミニゲームに挑戦"], "ผ่าน!": ["Passed!", "クリア!"], "ไม่ผ่าน": ["Failed", "失敗"], "มินิเกม: {g}": ["Minigame: {g}", "ミニゲーム:{g}"], "เริ่ม!": ["Start!", "スタート!"], "{p} ชนะมินิเกม{g}": ["{p} won the minigame {g}", "{p}がミニゲーム「{g}」をクリア"], "{p} แพ้มินิเกม{g}": ["{p} lost the minigame {g}", "{p}はミニゲーム「{g}」に失敗"], "ตำ!": ["Pound!", "たたく!"], "ตำได้ {n} ครั้ง (เป้า {g})": ["{n} pounds (goal {g})", "{n}回(目標{g})"], "กดค้างเพื่อเท": ["Hold to pour", "長押しでそそぐ"], "ชาล้นแก้ว!": ["The tea overflowed!", "お茶があふれた!"], "ห่างจากขีด {n}%": ["{n}% off the line", "線から{n}%ずれた"], "ไม่ได้เทชาเลย": ["You didn't pour any tea", "お茶をそそがなかった"], "ยุง": ["Mosquito", "蚊"], "ตบยุงได้ {n} ตัว (เป้า {g})": ["{n} mosquitoes (goal {g})", "{n}匹(目標{g})"], "คุณยาย": ["Grandma", "おばあちゃん"], "ได้ {n} แต้ม (เป้า {g})": ["{n} points (goal {g})", "{n}点(目標{g})"], "ผีท้าประลอง!": ["The ghost challenges you!", "おばけの挑戦!"], "ชนะคำท้า ผีจะหนีไปไม่แกล้ง": ["Win the challenge and the ghost runs away", "勝てばおばけは逃げていく"], "ผีท้าประลอง": ["Ghost challenge", "おばけの挑戦"], "ผีจะ: {x} · ชนะรอดตัว": ["Ghost will: {x} · win to escape", "おばけの効果:{x}・勝てば回避"], "{p} ชนะคำท้า {t}หนีไปแล้ว": ["{p} won — {t} fled", "{p}の勝ち!{t}は逃げた"], "โบนัสประจำสถานี{st}": ["{st} station bonus", "{st}駅ボーナス"], "ผ่านได้ {m} · ไม่ผ่านเสีย {m2}": ["Pass: +{m} · Fail: −{m2}", "成功で{m}・失敗で{m2}の損"], "{p} ได้โบนัส {m}": ["{p} won a bonus of {m}", "{p}がボーナス{m}獲得"], "ความท้าทาย": ["Challenges", "チャレンジ"], "ผสม": ["Mixed", "ミックス"], "มินิเกม": ["Minigames", "ミニゲーム"], "ผีร้ายท้าประลองก่อนแกล้ง และบางสถานีมีโบนัส · ผสม = สุ่มควิซหรือมินิเกม": ["Bad ghosts challenge you before causing trouble, and some stations give bonuses · Mixed = random quiz or minigame", "悪いおばけはいたずら前に挑戦してくる。駅ボーナスもあり・ミックス=クイズかミニゲームをランダム"], "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้": ["New ghosts appear each month. Pass a ghost's space to meet it; some wander. Beat a quiz or minigame to escape bad ones", "毎月おばけが現れる。おばけのマスを通ると遭遇。歩くおばけもいる。クイズかミニゲームに勝てば悪いおばけから逃げられる"]});
+const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
 const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
@@ -2341,8 +2358,8 @@ async function resolveSquare(id,arrived){
   else if(t==="st"){
     if(S.quiz&&Math.random()<0.35){
       const r=S.year>=2?12:8;
-      const ok=await askQuiz(id,T("ควิซประจำสถานี{st}",{st:id}),T("ตอบถูกได้ {m} · ตอบผิดเสีย {m2}",{m:r,m2:2}));
-      if(ok){p.money+=r;log("{p} ได้โบนัสควิซ {m}",{p:p.name,m:r});} else {p.money-=2;}
+      const ok=await challenge(id,T("โบนัสประจำสถานี{st}",{st:id}),T("ผ่านได้ {m} · ไม่ผ่านเสีย {m2}",{m:r,m2:2}));
+      if(ok){p.money+=r;log("{p} ได้โบนัส {m}",{p:p.name,m:r});} else {p.money-=2;}
       commit(); render();
     }
     await buySheet(id);
@@ -2459,9 +2476,9 @@ async function meetGhost(g){
   const face=ghostFace(g);
   if(G.kind==="bad"){
     if(S.quiz){
-      await say({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T("ผีท้าตอบควิซ!"),html:`${face}<p>${T("ตอบควิซถูก ผีจะหนีไปไม่แกล้ง")}</p>`,buttons:[{label:T("รับคำท้า"),value:1,primary:true}]},1600);
-      const ok=await askQuiz(nearestStation(p.node),T("ผีถามควิซ"),T("ผีจะ: {x} · ตอบถูกรอดตัว",{x:T(G.eff)}));
-      if(ok){ log("{p} ตอบถูก {t}หนีไปแล้ว",{p:p.name,t:G.n}); render(); return; }
+      await say({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T("ผีท้าประลอง!"),html:`${face}<p>${T("ชนะคำท้า ผีจะหนีไปไม่แกล้ง")}</p>`,buttons:[{label:T("รับคำท้า"),value:1,primary:true}]},1600);
+      const ok=await challenge(nearestStation(p.node),T("ผีท้าประลอง"),T("ผีจะ: {x} · ชนะรอดตัว",{x:T(G.eff)}));
+      if(ok){ log("{p} ชนะคำท้า {t}หนีไปแล้ว",{p:p.name,t:G.n}); render(); return; }
     }
     if(p.cards.includes("amulet")){
       const v=isBotTurn()?true:await modal({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T(G.n),html:`${face}<p>${T("มีเครื่องราง ใช้ไล่ผีตัวนี้ไหม")}</p>`,buttons:[{label:T("ใช้เครื่องราง"),value:true,gold:true},{label:T("รับผล"),value:false}]});
@@ -2639,6 +2656,95 @@ async function askQuiz(st,eyebrow,stake){
   return ok;
 }
 
+
+
+// ================= MINIGAMES =================
+// มินิเกมเดี่ยว 5–10 วิ ใช้แทนควิซบางครั้ง (ตอนเจอผีร้าย / โบนัสสถานี)
+const MINIS={
+  somtam:{n:"ตำส้มตำรัวๆ",how:"แตะครกรัวๆ ให้ได้ {g} ครั้งใน 5 วินาที",goal:24,run:mgSomtam},
+  tea:{n:"ชงชาเย็นให้พอดีขีด",how:"กดค้างเพื่อเทชา ปล่อยให้ตรงขีดแดง ล้นหรือขาดเกินไปถือว่าแพ้",goal:1,run:mgTea},
+  mosq:{n:"ตบยุง",how:"ยุงจะบินโผล่มา แตะตบให้ได้ {g} ตัวใน 8 วินาที",goal:7,run:mgMosq},
+  splash:{n:"สงกรานต์สาดน้ำ",how:"สาดน้ำใส่เพื่อนที่โผล่ตามหน้าต่าง ได้ {g} แต้มใน 9 วินาที ห้ามสาดคุณยาย (−2)",goal:6,run:mgSplash}
+};
+const MINI_KEYS=Object.keys(MINIS);
+// เลือกควิซหรือมินิเกมตามโหมดที่ตั้งไว้ · คืนค่า true ถ้าผ่าน
+async function challenge(st,eyebrow,stake){
+  const mode=S.chal||"mix";
+  const mini=mode==="mini"||(mode==="mix"&&Math.random()<0.5);
+  return mini?playMini(eyebrow,stake):askQuiz(st,eyebrow,stake);
+}
+const mgTimer=ms=>new Promise(r=>setTimeout(r,ms));
+async function playMini(eyebrow,stake){
+  const k=MINI_KEYS[Math.floor(Math.random()*MINI_KEYS.length)], M=MINIS[k], p=cur();
+  const head=`<p style="font-size:13px;color:var(--muted);margin:0 0 4px">${stake}</p>`;
+  let ok;
+  if(isBotTurn()){
+    ok=Math.random()<0.55;
+    await brief({eyebrow,title:T("{p} เล่นมินิเกม",{p:esc(p.name)}),html:head+`<p><b>${T(M.n)}</b></p><p>${T(ok?"ผ่าน!":"ไม่ผ่าน")}</p>`},1800);
+  } else {
+    await modal({eyebrow,title:T("มินิเกม: {g}",{g:T(M.n)}),html:head+`<div class="mg-how">${T(M.how,{g:M.goal})}</div>`,buttons:[{label:T("เริ่ม!"),value:1,primary:true}]});
+    const box=document.createElement("div"); box.className="mg-wrap";
+    box.innerHTML=`<div class="mg-top"><b>${T(M.n)}</b><span class="mg-score" id="mgScore"></span><span class="mg-time" id="mgTime"></span></div><div class="mg-arena" id="mgArena"></div>`;
+    document.body.appendChild(box);
+    const res=await M.run($("mgArena"),M.goal,(sc,tx)=>{ const e=$("mgScore"); if(e){ e.textContent=tx!==undefined?tx:sc; e.style.visibility=e.textContent===""?"hidden":""; } },(sec)=>{ const e=$("mgTime"); if(e) e.textContent=sec>0?T("{n} วิ",{n:Math.ceil(sec)}):""; });
+    ok=res.ok;
+    box.classList.add("done"); await mgTimer(500); box.remove();
+    await modal({eyebrow,title:T(ok?"ผ่าน!":"ไม่ผ่าน"),html:`<p class="mg-result ${ok?"win":"lose"}">${res.text}</p>`,buttons:[{label:T("ตกลง"),value:1,primary:true}]});
+  }
+  log(ok?"{p} ชนะมินิเกม{g}":"{p} แพ้มินิเกม{g}",{p:p.name,t:"",g:M.n});
+  return ok;
+}
+// นับถอยหลังแล้วคืน promise ที่จบเมื่อหมดเวลา
+function mgClock(sec,onTick){ const t0=performance.now(); return new Promise(r=>{ const iv=setInterval(()=>{ const left=sec-(performance.now()-t0)/1000; onTick(left); if(left<=0){ clearInterval(iv); r(); } },100); onTick(sec); }); }
+async function mgSomtam(ar,goal,score,tick){
+  let n=0, live=true;
+  ar.innerHTML=`<button class="mg-mortar" id="mgMortar" aria-label="${esc(T("ตำ!"))}"><svg viewBox="0 0 120 120" width="150" height="150"><ellipse cx="60" cy="96" rx="44" ry="10" fill="#0002"/><path d="M18 62h84l-10 30q-32 10-64 0z" fill="#B9773E" stroke="#5B3510" stroke-width="3"/><ellipse cx="60" cy="62" rx="42" ry="12" fill="#D79A5C" stroke="#5B3510" stroke-width="3"/><ellipse cx="60" cy="62" rx="32" ry="7" fill="#9BCB5A"/><circle cx="48" cy="61" r="4" fill="#E8453C"/><circle cx="70" cy="62" r="4" fill="#E8453C"/><g class="mg-pestle"><rect x="54" y="4" width="13" height="58" rx="6" fill="#C98B4E" stroke="#5B3510" stroke-width="3"/></g></svg></button>`;
+  const b=$("mgMortar"); score(0,`0 / ${goal}`);
+  b.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live) return; n++; score(n,`${n} / ${goal}`); b.classList.remove("hit"); void b.offsetWidth; b.classList.add("hit"); sfx("step"); },{passive:false});
+  await mgClock(5,tick); live=false;
+  return {ok:n>=goal,text:T("ตำได้ {n} ครั้ง (เป้า {g})",{n,g:goal})};
+}
+async function mgTea(ar,goal,score,tick){
+  const line=55+Math.random()*30, rate=42; let fill=0, holding=false, done=false, t0=0, pressed=false;
+  ar.innerHTML=`<div class="mg-tea"><div class="mg-glass" id="mgGlass"><div class="mg-tea-fill" id="mgFill"></div><div class="mg-line" style="bottom:${line}%"></div></div><button class="btn primary mg-hold" id="mgHold">${T("กดค้างเพื่อเท")}</button></div>`;
+  const f=$("mgFill"), h=$("mgHold"); score(0,"");
+  return new Promise(res=>{
+    let raf=0, last=0;
+    const frame=ts=>{ if(done) return; if(holding){ fill=Math.min(110,fill+rate*(ts-last)/1000); f.style.height=Math.min(100,fill)+"%"; if(fill>=100){ finish(); return; } } last=ts; raf=requestAnimationFrame(frame); };
+    const finish=()=>{ if(done) return; done=true; holding=false; cancelAnimationFrame(raf); clearTimeout(to); const diff=Math.abs(fill-line), ok=fill<100&&diff<=6;
+      res({ok,text:fill>=100?T("ชาล้นแก้ว!"):pressed?T("ห่างจากขีด {n}%",{n:Math.round(diff)}):T("ไม่ได้เทชาเลย")}); };
+    const to=setTimeout(finish,9000);
+    h.addEventListener("pointerdown",e=>{ e.preventDefault(); if(done||pressed) return; pressed=true; holding=true; last=performance.now(); h.classList.add("on"); },{passive:false});
+    const up=()=>{ if(holding){ holding=false; h.classList.remove("on"); setTimeout(finish,250); } };
+    h.addEventListener("pointerup",up); h.addEventListener("pointerleave",up); h.addEventListener("pointercancel",up);
+    raf=requestAnimationFrame(ts=>{ last=ts; frame(ts); });
+    tick(0);
+  });
+}
+async function mgMosq(ar,goal,score,tick){
+  let n=0, live=true; score(0,`0 / ${goal}`);
+  ar.classList.add("mg-room");
+  const spawn=()=>{ if(!live) return; const m=document.createElement("button"); m.className="mg-mosq"; m.setAttribute("aria-label",T("ยุง"));
+    m.style.left=(8+Math.random()*78)+"%"; m.style.top=(8+Math.random()*74)+"%"; m.textContent="🦟";
+    m.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||m.dataset.hit) return; m.dataset.hit=1; n++; score(n,`${n} / ${goal}`); m.textContent="💥"; sfx("land"); setTimeout(()=>m.remove(),200); },{passive:false});
+    ar.appendChild(m); setTimeout(()=>{ if(!m.dataset.hit) m.remove(); },1150); };
+  const iv=setInterval(spawn,560); spawn();
+  await mgClock(8,tick); live=false; clearInterval(iv);
+  return {ok:n>=goal,text:T("ตบยุงได้ {n} ตัว (เป้า {g})",{n,g:goal})};
+}
+async function mgSplash(ar,goal,score,tick){
+  let n=0, live=true; score(0,`0 / ${goal}`);
+  ar.innerHTML=`<div class="mg-house">${[...Array(9)].map((_,k)=>`<div class="mg-win" data-w="${k}"></div>`).join("")}</div>`;
+  const wins=[...ar.querySelectorAll(".mg-win")];
+  const pop=()=>{ if(!live) return; const free=wins.filter(w=>!w.firstChild); if(!free.length) return; const w=free[Math.floor(Math.random()*free.length)];
+    const gran=Math.random()<.27; const f=document.createElement("button"); f.className="mg-face"+(gran?" gran":""); f.textContent=gran?"👵":["😆","😝","🤪","😎"][Math.floor(Math.random()*4)];
+    f.setAttribute("aria-label",T(gran?"คุณยาย":"เพื่อน"));
+    f.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||f.dataset.hit) return; f.dataset.hit=1; n+=gran?-2:1; score(n,`${n} / ${goal}`); f.textContent="💦"; sfx(gran?"wrong":"pop"); setTimeout(()=>f.remove(),250); },{passive:false});
+    w.appendChild(f); setTimeout(()=>{ if(!f.dataset.hit) f.remove(); },900); };
+  const iv=setInterval(pop,520); pop();
+  await mgClock(9,tick); live=false; clearInterval(iv);
+  return {ok:n>=goal,text:T("ได้ {n} แต้ม (เป้า {g})",{n,g:goal})};
+}
 
 // ================= DICE FX =================
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
@@ -2986,27 +3092,27 @@ async function setupLocal(){
   let n=3, years=1;
   const names=PCOL.map((c,k)=>defaultCo(k));
   const bots=[false,true,true,true];
-  let quizOn=true, qTime=5, map="all";
+  let quizOn=true, qTime=5, map="all", chal="mix";
   while(true){
     const html=`<div class="field"><div class="label">${T("จำนวนผู้เล่น")}</div><div class="seg">${[2,3,4].map(v=>`<button data-val="n${v}" aria-pressed="${v===n}">${T("{n} คน",{n:v})}</button>`).join("")}</div></div>
       <div class="field"><div class="label">${T("ชื่อบริษัท")}</div><div class="names">${names.slice(0,n).map((v,k)=>`<label><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><input id="nm${k}" value="${esc(v)}" maxlength="18" aria-label="${T("ชื่อผู้เล่น")} ${k+1}">${k===0?`<span class="pm" style="min-width:64px;text-align:center">${T("คุณ")}</span>`:`<button class="btn" style="flex:none;min-height:42px;padding:0 10px;font-size:14px;min-width:64px" data-val="b${k}" aria-pressed="${bots[k]}">${T(bots[k]?"บอท":"คน")}</button>`}</label>`).join("")}</div><p class="note" style="margin-top:6px">${T("แตะปุ่มด้านขวาเพื่อสลับ คน / บอท")}</p></div>
       <div class="field"><div class="label">${T("ความยาวเกม")}</div><div class="seg"><button data-val="y1" aria-pressed="${years===1}">${T("1 ปี · ราว 45 นาที")}</button><button data-val="y2" aria-pressed="${years===2}">${T("2 ปี · มีรางใหม่")}</button></div></div>
       <div class="field"><div class="label">${T("แผนที่")}</div><div class="seg"><button data-val="mp_all" aria-pressed="${map==="all"}">${T("ทุกภาค · 27 สถานี")}</button><button data-val="mp_north" aria-pressed="${map==="north"}">${T("สายเหนือ · 15 สถานี")}</button></div><p class="note" style="margin-top:6px">${T("สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า")}</p></div>
-      <div class="field"><div class="label">${T("ควิซ")}</div><div class="seg"><button data-val="qz1" aria-pressed="${quizOn}">${T("เปิด")}</button><button data-val="qz0" aria-pressed="${!quizOn}">${T("@off")}</button></div><p class="note" style="margin-top:6px">${T("ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส")}</p></div>
-      ${quizOn?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}`;
+      <div class="field"><div class="label">${T("ความท้าทาย")}</div><div class="seg">${[["mix","ผสม"],["quiz","ควิซ"],["mini","มินิเกม"],["off","@off"]].map(([k,l])=>`<button data-val="ch_${k}" aria-pressed="${(quizOn?chal:"off")===k}">${T(l)}</button>`).join("")}</div><p class="note" style="margin-top:6px">${T("ผีร้ายท้าประลองก่อนแกล้ง และบางสถานีมีโบนัส · ผสม = สุ่มควิซหรือมินิเกม")}</p></div>
+      ${quizOn&&chal!=="mini"?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}`;
     const v=await modal({eyebrow:T("เล่นเครื่องเดียว"),title:T("ตั้งค่าเกม"),html,buttons:[{label:T("กลับ"),value:"back"},{label:T("เริ่มเกม"),value:"start",primary:true}]});
     for(let k=0;k<n;k++){const el=$("nm"+k); if(el&&el.value.trim()) names[k]=el.value.trim();}
     if(v==="back") return home();
     if(v&&v[0]==="n"){n=+v.slice(1);continue;}
     if(v&&v[0]==="b"){const k=+v.slice(1);bots[k]=!bots[k];continue;}
-    if(v==="qz1"||v==="qz0"){quizOn=v==="qz1";continue;}
+    if(v&&v.startsWith("ch_")){ const c=v.slice(3); quizOn=c!=="off"; if(quizOn) chal=c; continue; }
     if(v==="mp_all"||v==="mp_north"){map=v.slice(3);continue;}
     if(v&&v.startsWith("qt")){qTime=+v.slice(2);continue;}
     if(v&&v[0]==="y"){years=+v.slice(1);continue;}
     if(v==="start") break;
   }
   MODE="local"; newGame(names.slice(0,n),years,map);
-  S.players.forEach((p,k)=>{p.bot=k>0&&bots[k];}); S.quiz=quizOn; S.qTime=qTime;
+  S.players.forEach((p,k)=>{p.bot=k>0&&bots[k];}); S.quiz=quizOn; S.chal=chal; S.qTime=qTime;
   render(); focusNode("BKK",false);
   await info(T("จุดหมายแรก"),T("ทุกคนมุ่งหน้าไป <b>{st}</b> คนแรกที่ไปถึงได้ {m}",{st:S.dest,m:REWARD[S.dest]}),T("จับฉลาก"));
   await startMonth(); commit();
@@ -3138,8 +3244,8 @@ async function drawRoom(d){
     <div class="field"><div class="label">${T("ผู้เล่น")} ${seats.length}/4</div>${seats.map((s,k)=>`<div class="seat"><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><div>${k===me?`<input id="coName" value="${esc(s.co)}" maxlength="18" aria-label="${T("ชื่อบริษัท")}">`:`<b>${esc(s.co)}</b>`}<div class="who-n">${s.bot?T("บอท"):esc(profs[s.uid]?.name||T("เพื่อน"))}${k===me?" · "+T("คุณ"):""}${s.uid===d.host?" · "+T("เจ้าของห้อง"):""}</div></div></div>`).join("")}</div>
     <div class="field"><div class="label">${T("ความยาวเกม")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg"><button ${host?'data-val="y1"':"disabled"} aria-pressed="${d.years===1}">${T("1 ปี")}</button><button ${host?'data-val="y2"':"disabled"} aria-pressed="${d.years===2}">${T("2 ปี · มีรางใหม่")}</button></div></div>
     <div class="field"><div class="label">${T("แผนที่")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg"><button ${host?'data-val="mp_all"':"disabled"} aria-pressed="${d.map!=="north"}">${T("ทุกภาค")}</button><button ${host?'data-val="mp_north"':"disabled"} aria-pressed="${d.map==="north"}">${T("สายเหนือ")}</button></div></div>
-    <div class="field"><div class="label">${T("ควิซ")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg"><button ${host?'data-val="qz1"':"disabled"} aria-pressed="${d.quiz!==false}">${T("เปิด")}</button><button ${host?'data-val="qz0"':"disabled"} aria-pressed="${d.quiz===false}">${T("@off")}</button></div></div>
-    ${d.quiz!==false?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg">${[5,10,15,0].map(t=>`<button ${host?`data-val="qt${t}"`:"disabled"} aria-pressed="${(d.qTime??5)===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}
+    <div class="field"><div class="label">${T("ความท้าทาย")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg">${[["mix","ผสม"],["quiz","ควิซ"],["mini","มินิเกม"],["off","@off"]].map(([k,l])=>`<button ${host?`data-val="ch_${k}"`:"disabled"} aria-pressed="${(d.quiz===false?"off":(d.chal||"mix"))===k}">${T(l)}</button>`).join("")}</div></div>
+    ${d.quiz!==false&&d.chal!=="mini"?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}${host?"":" "+T("(เจ้าของห้องเลือก)")}</div><div class="seg">${[5,10,15,0].map(t=>`<button ${host?`data-val="qt${t}"`:"disabled"} aria-pressed="${(d.qTime??5)===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}
     <p class="note">${T(host?(seats.length<2?"รอเพื่อนหรือเพิ่มบอทอย่างน้อย 1 คน":"พร้อมแล้วกดเริ่มเกม · บอทเล่นบนเครื่องของคุณ ถ้าคุณปิดเกม ตาของบอทจะหยุดรอ"):"รอเจ้าของห้องกดเริ่มเกม")}</p>`;
   const btns=[{label:T(host?"ปิดห้อง":"ออกจากห้อง"),value:"leave"}];
   if(host&&seats.length<4) btns.push({label:T("เพิ่มบอท"),value:"addbot"});
@@ -3155,7 +3261,7 @@ async function drawRoom(d){
   if(v==="addbot"&&host&&seats.length<4){ const ns=[...seats,{uid:"bot_"+Math.random().toString(36).slice(2,8),co:defaultCo(seats.length),bot:true}]; try{await ON.ref.update({seats:ns});}catch(e){} return; }
   if(v==="delbot"&&host){ const k=seats.map(s=>!!s.bot).lastIndexOf(true); if(k>=0){ const ns=seats.filter((_,j)=>j!==k); try{await ON.ref.update({seats:ns});}catch(e){} } return; }
   if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return drawRoom(d); }
-  if(v==="qz1"||v==="qz0"){ try{await ON.ref.update({quiz:v==="qz1"});}catch(e){} return; }
+  if(v&&v.startsWith("ch_")&&host){ const c=v.slice(3); try{await ON.ref.update(c==="off"?{quiz:false}:{quiz:true,chal:c});}catch(e){} return; }
   if(v&&v.startsWith("qt")&&host){ try{await ON.ref.update({qTime:+v.slice(2)});}catch(e){} return; }
   if((v==="mp_all"||v==="mp_north")&&host){ try{await ON.ref.update({map:v.slice(3)});}catch(e){} return; }
   if(v==="y1"||v==="y2"){ try{await ON.ref.update({years:+v.slice(1)});}catch(e){} return; }
@@ -3171,7 +3277,7 @@ async function drawRoom(d){
 async function hostStart(d){
   const seats=d.seats;
   MODE="online"; ON.meta={...d,status:"play"};
-  newGame(seats.map(s=>s.co),d.years,d.map); S.quiz=d.quiz!==false; S.qTime=d.qTime??5;
+  newGame(seats.map(s=>s.co),d.years,d.map); S.quiz=d.quiz!==false; S.chal=d.chal||"mix"; S.qTime=d.qTime??5;
   S.players.forEach((p,k)=>{p.uid=seats[k].uid; p.bot=!!seats[k].bot;}); S.code=d.code; S.hostUid=ON.me;
   ON.seenLog=S.logN; ON.handledTurn=null;
   closeModal(); render(); focusNode("BKK",false);
@@ -3353,7 +3459,7 @@ function sfx(name){
   try{ SOUNDS[name](c.currentTime+.01); }catch(e){}
 }
 // เสียงตามบันทึกเหตุการณ์ ใช้ทั้งเครื่องที่เล่นและเครื่องเพื่อน (ออนไลน์) ให้ได้ยินเหมือนกัน
-const LOG_SFX=[[/คนแรก/,"arrive"],[/โดนสาป|ขโมย|หลงป่า|กระเป๋ารั่ว/,"ghost"],[/ใบ้หวย|เรียกทรัพย์|ทำบุญ/,"coins"],[/งานบุญ/,"card"],[/บินไป/,"use"],[/ผีโผล่|ผีออกเดิน/,"pop"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
+const LOG_SFX=[[/คนแรก/,"arrive"],[/ชนะมินิเกม|ชนะคำท้า/,"correct"],[/แพ้มินิเกม/,"wrong"],[/โดนสาป|ขโมย|หลงป่า|กระเป๋ารั่ว/,"ghost"],[/ใบ้หวย|เรียกทรัพย์|ทำบุญ/,"coins"],[/งานบุญ/,"card"],[/บินไป/,"use"],[/ผีโผล่|ผีออกเดิน/,"pop"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
   [/ปิดงบปีที่/,"coins"],[/ถูกลอตเตอรี่|โบนัส|ได้ .*ล้าน|ดังในโซเชียล|รับ .*ล้าน/,"coin"],[/ซื้อ/,"buy"],[/ใช้|ขับเอง|เหมาเครื่องบิน|ส่งม็อบ/,"use"],
   [/ผี/,"ghost"],[/ได้การ์ด/,"card"],[/จุดหมายใหม่/,"dest"],[/สงกรานต์|ปีใหม่|ตรุษจีน|ฤดู|ลอยกระทง|น้ำท่วม|ฝุ่น|รางใหม่|เดือนปิดงบ/,"event"]];
 let sfxQ=Promise.resolve();
