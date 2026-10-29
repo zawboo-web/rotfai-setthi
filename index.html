@@ -65,6 +65,7 @@ button:focus-visible,input:focus-visible,[data-node]:focus-visible{outline:3px s
 .stn-name{font-family:var(--font-d);font-weight:500;font-size:6px;fill:var(--ink)}
 .rail{stroke:var(--rail);stroke-width:2.8}
 .bus{stroke:var(--bus);stroke-width:1.2;stroke-dasharray:.6 1.7;stroke-linecap:round}
+.road{stroke:#C9A15A;stroke-width:1.9;stroke-linecap:round;opacity:.9}
 .fut{stroke:var(--new);stroke-width:2.3;stroke-dasharray:3 2;opacity:.75}
 svg.newrail .fut{stroke-dasharray:none;opacity:1}
 svg.newrail .barrier{display:none}
@@ -1907,6 +1908,21 @@ chain("rail",["BKK","e1","e2","CCO","c1","c2","CBI","p1","p2","PTY"]);
 chain("bus",["PTY","ry1","ry2","RYG","ct1","ct2","CTI","tr1","tr2","TRT"]);
 chain("rail",["BKK","s1","s2","NPT","s4","s5","RBR","s7","s8","PBI","s10","s11","HHN"]);
 chain("rail",["NPT","k1","k2","KRI"]);
+// ถนนเชื่อมเป็นวง: มีทางเลือกให้วางแผนหลบผีและอ้อมไปจุดหมาย
+Object.assign(NODES,{
+  q1:{x:113,y:256,t:"y"},q2:{x:88,y:238,t:"r"},                         // สุโขทัย–อุตรดิตถ์
+  n3:{x:194,y:200,t:"b"},n4:{x:194,y:174,t:"r"},n5:{x:186,y:148,t:"y"},  // น่าน–พะเยา
+  l1:{x:113,y:438,t:"b"},l2:{x:88,y:420,t:"y"},                          // สระบุรี–ลพบุรี
+  v1:{x:138,y:476,t:"r"},v2:{x:138,y:493,t:"y"},                         // สระบุรี–ฉะเชิงเทรา
+  i1:{x:174,y:534,t:"y"},i2:{x:196,y:560,t:"b"},i3:{x:196,y:590,t:"r"},i4:{x:196,y:620,t:"b"},i5:{x:196,y:650,t:"y"},i6:{x:190,y:680,t:"r"}, // ฉะเชิงเทรา–จันทบุรี (ถนนสายใน)
+  k3:{x:34,y:632,t:"r"},k4:{x:40,y:656,t:"b"}                            // กาญจนบุรี–เพชรบุรี
+});
+chain("road",["SKT","q1","q2","UTD"]);
+chain("road",["NAN","n3","n4","n5","PYO"]);
+chain("road",["SRB","l1","l2","LOP"]);
+chain("road",["SRB","v1","v2","CCO"]);
+chain("road",["CCO","i1","i2","i3","i4","i5","i6","CTI"]);
+chain("road",["KRI","k3","k4","PBI"]);
 [["DNC","f1"],["f1","PHR"],["PHR","f2"],["f2","PYO"]].forEach(e=>EDGES.push([e[0],e[1],"future"]));
 const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย",SRB:"สระบุรี",CCO:"ฉะเชิงเทรา",CBI:"ชลบุรี",PTY:"พัทยา",RYG:"ระยอง",CTI:"จันทบุรี",TRT:"ตราด",NPT:"นครปฐม",KRI:"กาญจนบุรี",RBR:"ราชบุรี",PBI:"เพชรบุรี",HHN:"หัวหิน"};
 const LABEL_R=new Set(["SKT","PAI","PYO","CRI","PHR","NAN","SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","RBR","PBI","HHN"]);
@@ -2030,9 +2046,9 @@ function commit(){
 const svg=$("board");
 function buildBoard(){
   let h=`<rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><rect x="0" y="236" width="210" height="560" fill="var(--field-c)"/><path d="M104 487H210V796H104z" fill="var(--field-e)"/><path d="M0 588H104V796H0z" fill="var(--field-w)"/>`;
-  h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">${T("ภาคตะวันออก")} ▶</text><text x="6" y="630" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ${T("ภาคตะวันตก")}</text>`;
+  h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">${T("ภาคตะวันออก")} ▶</text><text x="6" y="704" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ${T("ภาคตะวันตก")}</text>`;
   h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ${T("ภาคเหนือ")}</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ${T("ภาคกลาง")}</text>`;
-  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
+  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":k==="road"?"road":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
   h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
   h+=`<text class="barrier" x="${86+DX}" y="161" text-anchor="middle" font-size="3.4" font-weight="600" fill="#C8361E" font-family="Mitr">${T("รางใหม่ เปิด เม.ย. ปีที่ 2")}</text>`;
   for(const [id,n] of Object.entries(NODES)){
