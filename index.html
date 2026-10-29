@@ -149,8 +149,11 @@ svg.newrail .barrier{display:none}
 .tc-liq i{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(#F9B26E,#E0782A 30%,#C9611C);box-shadow:inset 0 3px 0 rgba(255,240,210,.8)}
 .tc-mark .mg-line{left:2%;right:2%}
 .tc-mark .mg-line::after{content:"";position:absolute;right:-12px;top:-6px;border:7px solid transparent;border-right-color:#E8453C}
-.tc-filter{position:absolute;left:38.3%;top:-2%;height:62%;clip-path:inset(0 0 63% 0);transform-origin:30% 10%;transition:clip-path .12s linear,transform .2s;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
-.tc-filter.pour{clip-path:inset(0 0 0 0);transform:rotate(-4deg)}
+.tc-pot{position:absolute;inset:0;transform-origin:45% 4%;transition:transform .2s}.tc-pot.pour{transform:rotate(-4deg)}
+.tc-filter,.tc-idle{position:absolute;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+.tc-filter{left:38.3%;top:1%;height:62%;opacity:0;clip-path:inset(0 0 60% 0);transition:clip-path .15s linear}
+.tc-idle{left:38.98%;top:4.51%;width:35.8%}
+.tc-pot.pour .tc-filter{opacity:1;clip-path:inset(0 0 0 0)}.tc-pot.pour .tc-idle{opacity:0}
 .tc-hint{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);padding:8px 18px;border-radius:99px;background:#2A2238;color:#fff;font-weight:700;font-size:15px;white-space:nowrap;pointer-events:none;transition:transform .1s}
 .tc-hint.on{transform:translateX(-50%) scale(.94);background:#E0782A}
 .tc-ok .tc-cup{animation:stSquash .3s}.tc-spill .tc-liq i{background:linear-gradient(#E8453C,#C9611C)}
@@ -2723,7 +2726,7 @@ async function playMini(eyebrow,stake,forceK,practice){
 }
 // นับถอยหลังแล้วคืน promise ที่จบเมื่อหมดเวลา
 function mgClock(sec,onTick){ const t0=performance.now(); return new Promise(r=>{ const iv=setInterval(()=>{ const left=sec-(performance.now()-t0)/1000; onTick(left); if(left<=0){ clearInterval(iv); r(); } },100); onTick(sec); }); }
-const MG_IMG={tea:["minigame/tea_bg.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
+const MG_IMG={tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
 function mgPreload(k){ (MG_IMG[k]||[]).forEach(u=>{ const i=new Image(); i.src=u; }); }
 async function mgSomtam(ar,goal,score,tick){
   let n=0, live=true, messy=false;
@@ -2746,7 +2749,7 @@ async function mgSomtam(ar,goal,score,tick){
 async function mgTea(ar,goal,score,tick){
   const line=50+Math.random()*32, rate=40; let fill=0, holding=false, done=false, pressed=false;
   ar.classList.add("mg-teashop");
-  ar.innerHTML=`<img class="st-bg" src="minigame/tea_bg.webp" alt=""><div class="tc-stage"><img class="tc-filter" id="tcFilter" src="minigame/tea_filter.webp" alt=""><img class="tc-cup" src="minigame/tea_cup.webp" alt="${esc(T("แก้วชาเย็น"))}"><div class="tc-liq"><i id="mgFill"></i></div><div class="tc-mark"><div class="mg-line" style="bottom:${line}%"></div></div></div><div class="tc-hint" id="mgHold">${T("กดค้างเพื่อเท")}</div>`;
+  ar.innerHTML=`<img class="st-bg" src="minigame/tea_bg.webp" alt=""><div class="tc-stage"><div class="tc-pot" id="tcFilter"><img class="tc-idle" src="minigame/tea_filter_idle.webp" alt=""><img class="tc-filter" src="minigame/tea_filter.webp" alt=""></div><img class="tc-cup" src="minigame/tea_cup.webp" alt="${esc(T("แก้วชาเย็น"))}"><div class="tc-liq"><i id="mgFill"></i></div><div class="tc-mark"><div class="mg-line" style="bottom:${line}%"></div></div></div><div class="tc-hint" id="mgHold">${T("กดค้างเพื่อเท")}</div>`;
   const f=$("mgFill"), h=$("mgHold"), flt=$("tcFilter"); score(0,"");
   return new Promise(res=>{
     let raf=0, last=0;
