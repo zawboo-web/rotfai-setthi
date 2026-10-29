@@ -72,6 +72,9 @@ svg.newrail .barrier{display:none}
 .reach{fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:1.4;cursor:pointer;animation:pulse 1.1s ease-in-out infinite}
 @keyframes pulse{50%{fill-opacity:.55}}
 .tok{transition:transform .17s ease-out}
+.gtok{transition:transform .9s cubic-bezier(.4,1.4,.5,1);cursor:pointer}
+.gfloat{animation:gfl 2.4s ease-in-out infinite}@keyframes gfl{50%{transform:translateY(-.8px)}}
+.curse-card{border:2px solid #8E5BC9;background:#F3ECFC;color:#2A2238;border-radius:14px;padding:14px;text-align:center;margin:4px 0 10px}.cc-name{font-family:var(--font-d);font-size:22px;font-weight:600;color:#5B2E9A}.cc-eff{font-size:15px;margin-top:4px}.cc-note{font-size:12.5px;color:#6B5E7A;margin-top:8px}
 .tok.active circle.body{stroke-width:1.4}
 .tok .halo{fill:none;stroke-width:1;opacity:.0}
 .tok.active .halo{opacity:.9;animation:halo 1.2s ease-out infinite}
@@ -332,8 +335,8 @@ const ITEM_TR={
   home:{n:["Ticket Home","帰宅きっぷ"],when:["Instead of rolling","サイコロの代わり"],eff:["Go straight to Bangkok","すぐバンコクへ移動"]},
   drive:{n:["Drive Yourself","自分で運転"],when:["Instead of rolling","サイコロの代わり"],eff:["Choose to move 1–6 spaces","1〜6マス好きなだけ進む"]},
   mob:{n:["Road Protest","道路デモ"],when:["Before rolling","サイコロの前"],eff:["One player can't move next turn","1人を次のターン足止め"]},
-  amulet:{n:["Lucky Amulet","お守り"],when:["Keep","持っておく"],eff:["Cancels one ghost result","おばけの効果を1回打ち消す"]},
-  pass:{n:["Ghost Pass","おばけ押しつけ券"],when:["Before rolling","サイコロの前"],eff:["Send your ghost to another player","取りついたおばけを他の人へ"]},
+  amulet:{n:["Lucky Amulet","お守り"],when:["Keep","持っておく"],eff:["Blocks one bad ghost or curse","悪いおばけか呪いを1回防ぐ"]},
+  pass:{n:["Curse Charm","呪い移しのお札"],when:["Before rolling","サイコロの前"],eff:["Pass your curse to another player","自分の呪いを他の人へ移す"]},
   lotto:{n:["Lottery","宝くじ"],when:["Before rolling","サイコロの前"],eff:["Roll 6: win ฿30M · 1–5: lose ฿1M","6で30百万当たり・1〜5は1百万の損"]},
   viral:{n:["Viral Review","バズった口コミ"],when:["Before rolling","サイコロの前"],eff:["Earn one business's yearly profit now","物件1つの年間利益をすぐ受け取る"]},
   insure:{n:["Insurance","保険"],when:["Keep","持っておく"],eff:["Skip one red-space or event payment","赤マスかイベントの支払いを1回免除"]},
@@ -1868,7 +1871,8 @@ Object.assign(TR,{
 "やり直す"
 ]
 });
-const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล แล้วผีไปติดคนที่อยู่ไกลที่สุด", "ผีทำเรื่องวุ่นทุกต้นเทิร์น อยู่ครบ 3 เทิร์นกลายร่างยักษ์ เดินผ่านคนอื่นเพื่อส่งผีต่อ", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
+Object.assign(TR,{"เต๋าเน่า": ["Rotten Dice", "くさったサイコロ"], "ทอยได้แค่ 1–3 แต้ม": ["You can only roll 1–3", "サイコロは1〜3しか出ない"], "ของแพง": ["Price Hike", "値上がり"], "ซื้อกิจการแพงขึ้น 50%": ["Businesses cost 50% more", "物件が50%高くなる"], "กระเป๋ารั่ว": ["Leaky Wallet", "財布に穴"], "เสียเงิน 1 ล้านทุกต้นเทิร์น": ["Lose ฿1M at the start of each turn", "毎ターン開始時に1百万失う"], "ดวงตก": ["Bad Luck", "運気ダウン"], "ช่องน้ำเงินได้ครึ่งเดียว ช่องแดงเสียสองเท่า": ["Blue spaces pay half, red spaces cost double", "青マスは半分、赤マスは2倍"], "ขี้ลืม": ["Forgetful", "うっかり"], "ใช้การ์ดไม่ได้": ["You can't use cards", "カードが使えない"], "หลงป่า": ["Lost in the Woods", "森で迷子"], "เดินได้แค่ 1 ช่อง": ["Move only 1 space", "1マスしか進めない"], "ผีปอบ": ["Phi Pop", "ピーポープ"], "ขโมยเงิน 5 ล้าน": ["Steals ฿5M", "5百万を盗む"], "ผีกระสือ": ["Krasue", "ガスー"], "ขโมยการ์ดไป 1 ใบ": ["Steals 1 card", "カードを1枚盗む"], "ผีเจ้าที่": ["Land Spirit", "土地神"], "สาปสุ่ม 1 อย่าง 3 เทิร์น": ["A random curse for 3 turns", "ランダムな呪いを3ターン"], "ผีกองกอย": ["Kong Koi", "コンコーイ"], "พาหลงป่า เทิร์นหน้าเดินได้แค่ 1 ช่อง": ["Leads you astray: move only 1 space next turn", "森で迷わせる:次のターンは1マスだけ"], "นางตะเคียน": ["Nang Takhian", "ナーンタキアン"], "ใบ้หวย ได้การ์ดลอตเตอรี่ที่ถูกแน่": ["Lottery tip: get a Lottery card that's sure to win", "宝くじの予言:必ず当たる宝くじカード"], "กุมารทอง": ["Kuman Thong", "クマーントーン"], "เรียกทรัพย์ ได้ 3 ล้านต่อกิจการ (อย่างน้อย 5 ล้าน)": ["Brings wealth: ฿3M per business you own (at least ฿5M)", "金運:物件1件につき3百万(最低5百万)"], "ผีตาโขน": ["Phi Ta Khon", "ピーターコーン"], "ชวนเข้างานบุญ ได้การ์ดไอเทม 2 ใบ": ["Festival invite: draw 2 item cards", "お祭りに招待:アイテムカード2枚"], "ผีกระหัง": ["Krahang", "グラハン"], "พาบินไปลงจังหวัดสุ่ม": ["Flies you to a random province", "ランダムな県へ飛ばす"], "ผีร้าย": ["Bad ghost", "悪いおばけ"], "ผีใจดี": ["Kind ghost", "やさしいおばけ"], "ผีเอาแน่ไม่ได้": ["Unpredictable", "気まぐれおばけ"], "ผีลึกลับ": ["Mystery ghost", "なぞのおばけ"], "ไม่รู้ว่าเป็นผีอะไร อาจดีหรือร้ายก็ได้ เจอแล้วถึงจะรู้": ["No one knows what it is — good or bad. You'll find out when you meet it", "正体不明。良いか悪いかは会ってのお楽しみ"], "ผีเดินได้": ["Wandering ghost", "歩くおばけ"], "ผีอยู่กับที่": ["Stays in place", "動かないおばけ"], "{p} ใช้เครื่องรางกันคำสาป": ["{p} blocked the curse with an amulet", "{p}はお守りで呪いを防いだ"], "เครื่องรางคุ้มครอง!": ["Amulet protects!", "お守りが守った!"], "{p} อยู่ไกล{st}ที่สุด แต่เครื่องรางกันคำสาปไว้ได้": ["{p} was farthest from {st}, but the amulet blocked the curse", "{p}は{st}から一番遠かったが、お守りが呪いを防いだ"], "{p} อยู่ไกลสุด โดนสาป: {t}": ["{p} was farthest and got cursed: {t}", "{p}は一番遠くて呪われた:{t}"], "คำสาป": ["Curse", "呪い"], "{p} โดนสาป!": ["{p} is cursed!", "{p}が呪われた!"], "อยู่ไกล{st}ที่สุด ({n} ช่อง)": ["Farthest from {st} ({n} spaces)", "{st}から一番遠い({n}マス)"], "3 เทิร์น · แก้ได้ที่จังหวัดที่มีวัด": ["3 turns · cure it at a temple province", "3ターン・お寺のある県で解ける"], "{p} หายจากคำสาปแล้ว": ["{p}'s curse wore off", "{p}の呪いが解けた"], "วัดประจำ{st}": ["Temple of {st}", "{st}のお寺"], "ทำบุญแก้คำสาป?": ["Make merit to lift the curse?", "お参りして呪いを解く?"], "จ่าย {m} เพื่อแก้คำสาป{t}": ["Pay {m} to lift {t}", "{m}払って「{t}」を解く"], "ไม่เป็นไร": ["No thanks", "やめておく"], "ทำบุญ {m}": ["Make merit {m}", "お参り {m}"], "{p} ทำบุญแก้คำสาปที่{st}": ["{p} lifted the curse at {st}", "{p}は{st}でお参りして呪いを解いた"], "{p} ทำบุญแก้คำสาป": ["{p} makes merit to lift the curse", "{p}がお参りして呪いを解いた"], "ผีออกเดินเพ่นพ่าน {n} ตัว": ["{n} ghosts wandered around", "おばけが{n}体うろついた"], "เจอ{g}!": ["Met {g}!", "{g}に遭遇!"], "{p} ตอบถูก {t}หนีไปแล้ว": ["{p} answered right — {t} fled", "{p}が正解!{t}は逃げた"], "มีเครื่องราง ใช้ไล่ผีตัวนี้ไหม": ["You have an amulet. Use it to drive this ghost away?", "お守りがあります。使っておばけを追い払う?"], "ใช้เครื่องราง": ["Use amulet", "お守りを使う"], "{p} ใช้เครื่องรางไล่{t}": ["{p} drove off {t} with an amulet", "{p}はお守りで{t}を追い払った"], "{t}ขโมยเงิน{p} {m}": ["{t} stole {m} from {p}", "{t}が{p}から{m}を盗んだ"], "{t}ขโมยการ์ด{it}ของ{p}": ["{t} stole {p}'s {it}", "{t}が{p}の{it}を盗んだ"], "{t}หาการ์ดของ{p}ไม่เจอ": ["{t} found no cards on {p}", "{t}は{p}のカードを見つけられなかった"], "{p} โดนสาป: {t2}": ["{p} got cursed: {t2}", "{p}が呪われた:{t2}"], "{t}พา{p}หลงป่า": ["{t} led {p} astray", "{t}が{p}を森で迷わせた"], "{t}ใบ้หวยให้{p}": ["{t} gave {p} a lottery tip", "{t}が{p}に宝くじの番号を教えた"], "{t}เรียกทรัพย์ให้{p} {m}": ["{t} brought {p} {m}", "{t}が{p}に{m}を呼び込んだ"], "{p} ได้การ์ดจากงานบุญ {n} ใบ": ["{p} got {n} cards at the festival", "{p}はお祭りでカードを{n}枚もらった"], "{t}พา{p}บินไป{st}": ["{t} flew {p} to {st}", "{t}が{p}を{st}へ飛ばした"], "สาป: {t} {n}": ["Cursed: {t} {n}", "呪い:{t} {n}"], "ลอตเตอรี่ใบนี้ถูกแน่ (นางตะเคียนใบ้ให้)": ["This ticket is sure to win (tip from Nang Takhian)", "この宝くじは必ず当たる(ナーンタキアンのお告げ)"], "คำสาปขี้ลืม: ใช้การ์ดไม่ได้": ["Forgetful curse: no cards", "うっかりの呪い:カードが使えない"], "หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง": ["Lost in the woods: move 1 space this turn", "森で迷子:このターンは1マス"], "{p} กระเป๋ารั่ว เสีย {m}": ["{p}'s wallet leaked {m}", "{p}の財布から{m}がこぼれた"], "ยันต์ย้ายคำสาป": ["Curse Charm", "呪い移しのお札"], "ส่งคำสาปของคุณไปให้คนอื่น": ["Pass your curse to another player", "自分の呪いを他の人へ移す"], "เครื่องราง": ["Lucky Amulet", "お守り"], "กันผีร้ายหรือคำสาป 1 ครั้ง": ["Blocks one bad ghost or curse", "悪いおばけか呪いを1回防ぐ"], "ส่งคำสาปให้ใคร": ["Pass the curse to whom?", "誰に呪いを移す?"], "{p} ย้ายคำสาปไปให้{q}": ["{p} passed the curse to {q}", "{p}が呪いを{q}に移した"], "วัด: แก้คำสาปได้": ["Temple: lift curses here", "お寺:呪いを解ける"], "ผีโผล่ใหม่บนแผนที่": ["New ghosts appeared on the map", "マップに新しいおばけが出た"], "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด": ["First to the destination wins the prize; whoever is farthest is cursed for 3 turns (cure it at a temple)", "目的地に一番乗りで賞金。一番遠い人は3ターン呪われる(お寺で解ける)"], "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายตอบควิซถูกหนีได้": ["New ghosts appear each month. Pass a ghost's space to meet it; some ghosts wander. Answer a quiz to escape bad ones", "毎月おばけが現れる。おばけのマスを通ると遭遇。歩くおばけもいる。悪いおばけはクイズに正解すれば逃げられる"]});
+const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายตอบควิซถูกหนีได้", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
 const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
@@ -1953,8 +1957,8 @@ const ITEMS={
   home:{n:"ตั๋วกลับบ้าน",when:"ใช้แทนการทอย",eff:"ย้ายไปกรุงเทพฯ ทันที",count:2},
   drive:{n:"ขับเองกำหนดเอง",when:"ใช้แทนการทอย",eff:"เลือกเดิน 1–6 ช่อง",count:2},
   mob:{n:"ม็อบปิดถนน",when:"ใช้ก่อนทอย",eff:"ผู้เล่น 1 คนห้ามเดินเทิร์นหน้า",count:2},
-  amulet:{n:"พระเครื่อง",when:"เก็บไว้",eff:"ยกเลิกผลตารางผี 1 ครั้ง",count:2},
-  pass:{n:"ตั๋วฝากผี",when:"ใช้ก่อนทอย",eff:"ส่งผีที่ติดตัวไปให้คนอื่น",count:1},
+  amulet:{n:"เครื่องราง",when:"เก็บไว้",eff:"กันผีร้ายหรือคำสาป 1 ครั้ง",count:2},
+  pass:{n:"ยันต์ย้ายคำสาป",when:"ใช้ก่อนทอย",eff:"ส่งคำสาปของคุณไปให้คนอื่น",count:2},
   lotto:{n:"ลอตเตอรี่",when:"ใช้ก่อนทอย",eff:"ทอย 6 รับ 30 ล้าน, 1–5 เสีย 1 ล้าน",count:2},
   viral:{n:"รีวิวไวรัล",when:"ใช้ก่อนทอย",eff:"รับเงินเท่ากำไรต่อปีของกิจการ 1 แห่ง",count:2},
   insure:{n:"ประกันภัย",when:"เก็บไว้",eff:"ไม่ต้องจ่ายช่องแดงหรืออีเวนต์ 1 ครั้ง",count:1},
@@ -2006,7 +2010,7 @@ function newGame(names,years,map){
   const deck=[]; for(const k in ITEMS) for(let i=0;i<ITEMS[k].count;i++) deck.push(k);
   S={phase:"play",years,year:1,month:0,turn:0,newRail:false,
      players:names.map((n,i)=>({name:n,color:PCOL[i][1],node:"BKK",money:100,cards:[]})),
-     owners:{},deck:shuffle(deck),discard:[],ghost:{holder:-1,count:0},skip:names.map(()=>false),
+     owners:{},deck:shuffle(deck),discard:[],ghosts:[],skip:names.map(()=>false),
      dest:null,map:map||"all",log:[],logN:0,songkran:false,stage:"begin",turnId:1,rev:0,tf:{nDice:1,cardUsed:false,locked:false},lastMove:null,report:null};
   S.dest=drawDest(true);
   log("เริ่มเกม ทุกคนออกจาก{st}พร้อมเงิน {m}",{st:"BKK",m:100});
@@ -2058,6 +2062,7 @@ function buildBoard(){
       else h+=`<text class="stn-num" x="${n.x}" y="${n.y+1.8}" text-anchor="middle">${PROPS_AT(id).length}</text>`;
       const r=LABEL_R.has(id), tx=r?n.x+9:n.x-9, nm=stN(id), avail=r?207-tx:tx-1.5, est=LANG==="th"?0:nm.length*(LANG==="ja"?6:3.15);
       h+=`<text class="stn-name" x="${tx}" y="${n.y+1}" text-anchor="${r?"start":"end"}"${est>avail?` textLength="${avail.toFixed(1)}" lengthAdjust="spacingAndGlyphs"`:""}>${esc(nm)}</text>`;
+      if(TEMPLES.has(id)) h+=`<g transform="translate(${n.x+(LABEL_R.has(id)?-6.2:6.2)},${n.y-6})" aria-label="${esc(T("วัด: แก้คำสาปได้"))}"><path d="M0 -3.2L1.6 0H-1.6Z M-2.4 0H2.4V2.2H-2.4Z" fill="#D9A400" stroke="#7A5A00" stroke-width=".3"/></g>`;
       h+=`<circle class="stn-hit" data-stn="${id}" cx="${n.x}" cy="${n.y}" r="8"/>`;
     } else {
       const s=n.t==="g"?5.2:7.4;
@@ -2101,9 +2106,27 @@ function renderTokens(){
     el.classList.toggle("active",S.phase==="play"&&i===S.turn);
     if(i===S.turn) g.appendChild(el);
   });
-  const gt=$("ghostTok");
-  if(S.ghost.holder>=0){const p=S.players[S.ghost.holder],n=NODES[p.node];gt.style.display="";gt.setAttribute("transform",`translate(${n.x+6.5},${n.y-6.5}) scale(1.25)`);g.appendChild(gt);}
-  else gt.style.display="none";
+  renderGhosts();
+}
+const GHOST_PATH="M-2.8 3V-.4a2.8 2.8 0 0 1 5.6 0V3l-.93-.75-.93.75-.94-.75-.93.75-.94-.75z";
+function renderGhosts(){
+  let lay=$("ghosts"); if(!lay){ lay=document.createElementNS("http://www.w3.org/2000/svg","g"); lay.id="ghosts"; $("toks").before(lay); }
+  const list=S.ghosts||[], seen=new Set();
+  list.forEach(gh=>{
+    seen.add(gh.id);
+    let el=lay.querySelector(`[data-ghost="${gh.id}"]`);
+    const G=GHOSTS[gh.k], col=gh.hidden?"#7A6A92":G.col, ring=gh.hidden?"#B9A6D6":G.kind==="bad"?"#D94335":G.kind==="good"?"#2E9A4E":"#E3A900";
+    const sig=`${gh.k}|${gh.hidden}`;
+    if(!el||el.dataset.sig!==sig){
+      if(el) el.remove();
+      el=document.createElementNS("http://www.w3.org/2000/svg","g"); el.setAttribute("class","gtok"); el.dataset.ghost=gh.id; el.dataset.sig=sig;
+      el.innerHTML=`<circle r="5.2" fill="var(--surface)" stroke="${ring}" stroke-width="1"/><g class="gfloat"><path d="${GHOST_PATH}" fill="${col}" stroke="#2A2238" stroke-width=".35"/><circle cx="-1" cy="-.5" r=".5" fill="#fff"/><circle cx="1" cy="-.5" r=".5" fill="#fff"/>${gh.hidden?`<text y="2.3" text-anchor="middle" font-size="3" font-weight="700" fill="#fff">?</text>`:""}</g><circle r="6.5" fill="transparent"/>`;
+      lay.appendChild(el);
+    }
+    const n=NODES[gh.node], onP=S.players.some(q=>q.node===gh.node);
+    el.style.transform=`translate(${n.x+(onP?5.5:0)}px,${n.y-(onP?5.5:0)}px)`;
+  });
+  lay.querySelectorAll(".gtok").forEach(el=>{ if(!seen.has(el.dataset.ghost)) el.remove(); });
 }
 function sizeBoard(){
   const m=$("map"); const base=Math.min(Math.max((m.clientWidth-2)/210,1.7),3.8)*zoom;
@@ -2130,23 +2153,23 @@ function renderPanel(){
   const p=cur(), i=S.turn, me=mySeat();
   const handHTML=(MODE==="online"&&i!==me)?`<span class="label" style="font-weight:400">${T("การ์ดในมือ {n} ใบ",{n:p.cards.length})}</span>`:p.cards.length?p.cards.map(k=>`<span class="mini">${itemN(k)}</span>`).join(""):`<span class="label" style="font-weight:400">${T("ยังไม่มีการ์ด")}</span>`;
   let prompt="", actions="";
-  const ghostMine=S.ghost.holder===i;
+  const cz=curseOf(i);
   if(S.phase!=="play"){ prompt=T(S.phase==="over"?"จบเกมแล้ว":"ตั้งค่าเกม"); }
   else if(botNow()){ prompt=T("{p} (บอท) กำลังเล่น…",{p:esc(p.name)}); }
   else if(!isMyTurn()){ prompt=T("รอ{p}เล่นอยู่… ทุกอย่างจะอัปเดตบนจอคุณเอง",{p:esc(p.name)}); }
   else if(UI.mode==="choose"){
     const usable=p.cards.some(k=>canUse(k));
-    prompt=T(S.tf.locked?"ผีเจ้าที่ขี้งอน: เทิร์นนี้เดินได้ 1 ช่อง":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย"));
+    prompt=T(S.tf.locked?"หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง":hasCurse(i,"nocard")?"คำสาปขี้ลืม: ใช้การ์ดไม่ได้":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย"));
     actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>${T("ใช้การ์ด")}</button><button class="btn primary" id="aRoll">${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`;
   } else if(UI.mode==="pick"){
     prompt=T("ได้ {n} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง",{n:UI.steps});
     actions=`<div class="picks">${[...UI.opts.keys()].map(id=>`<button class="pick" data-pick="${id}">${labelOf(id)}${id===S.dest?`<small>${T("จุดหมาย")}</small>`:""}</button>`).join("")}</div>`;
   } else prompt=UI.msg||"…";
   const dice=UI.dice.length?`<div class="dice">${UI.dice.map(dieHTML).join("")}</div>`:"";
-  const rows=S.players.map((q,k)=>`<button class="prow ${k===i?"cur":""}" data-player="${k}"><span class="dot" style="background:${q.color}"></span><span class="n">${esc(q.name)}${q.bot?`<span class="you" style="background:#6B5E7A">${T("บอท")}</span>`:""}${k===me?`<span class="you">${T("คุณ")}</span>`:""}${S.ghost.holder===k?` <span class="ghostb">${T("ผี {n}/3",{n:S.ghost.count})}</span>`:""}${S.skip[k]?` <span class="mini">${T("ติดม็อบ")}</span>`:""}</span><span class="v ${q.money<0?"neg":""}">${fmt(q.money)}</span><span class="a">${T("รวม {n}",{n:assets(k)})}</span></button>`).join("");
+  const rows=S.players.map((q,k)=>`<button class="prow ${k===i?"cur":""}" data-player="${k}"><span class="dot" style="background:${q.color}"></span><span class="n">${esc(q.name)}${q.bot?`<span class="you" style="background:#6B5E7A">${T("บอท")}</span>`:""}${k===me?`<span class="you">${T("คุณ")}</span>`:""}${q.curse?` <span class="ghostb">${T(CURSES[q.curse.k].n)} ${q.curse.left}</span>`:""}${S.skip[k]?` <span class="mini">${T("ติดม็อบ")}</span>`:""}</span><span class="v ${q.money<0?"neg":""}">${fmt(q.money)}</span><span class="a">${T("รวม {n}",{n:assets(k)})}</span></button>`).join("");
   $("panel").innerHTML=`
   <section class="card" aria-live="polite">
-    <div class="who">${tokSVG(p.color)}<div><div class="nm">${esc(p.name)}${i===me?`<span class="you">${T("คุณ")}</span>`:""}</div><div class="sub">${T("อยู่ที่{x}",{x:labelOf(p.node)})}${ghostMine?` · <span class="ghostb">${T("ผีติดตัว {n}/3",{n:S.ghost.count})}</span>`:""}</div></div>
+    <div class="who">${tokSVG(p.color)}<div><div class="nm">${esc(p.name)}${i===me?`<span class="you">${T("คุณ")}</span>`:""}</div><div class="sub">${T("อยู่ที่{x}",{x:labelOf(p.node)})}${cz?` · <span class="ghostb" title="${esc(T(CURSES[cz.k].eff))}">${T("สาป: {t} {n}",{t:CURSES[cz.k].n,n:cz.left})}</span>`:""}</div></div>
       <div class="money"><b class="${p.money<0?"neg":""}">${fmt(p.money)}</b><small>${T("ทรัพย์สินรวม {m}",{m:assets(i)})}</small></div></div>
     <div class="hand">${handHTML}</div>
     <div class="prompt">${prompt}</div>
@@ -2195,7 +2218,8 @@ function choosePlayer(title,exclude,html=""){
 function canUse(k){
   if(S.tf.locked&&["exp","sexp","home","drive","plane"].includes(k)) return false;
   if(k==="amulet"||k==="insure") return false;
-  if(k==="pass") return S.ghost.holder===S.turn;
+  if(hasCurse(S.turn,"nocard")) return false;
+  if(k==="pass") return !!curseOf(S.turn);
   if(k==="viral") return PROPS.some(p=>S.owners[p.id]===S.turn);
   if(k==="plane") return S.year>=2;
   return true;
@@ -2233,8 +2257,8 @@ async function useCard(k){
     case "home": discardCard(i,k); log("{p} ใช้{it}",{p:p.name,it:"home"}); await teleport("BKK",S.dest==="BKK"); p.cards.push(k); return "moved";
     case "plane": discardCard(i,k); log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); p.cards.push(k); return "moved";
     case "mob":{ const t=await choosePlayer(T("ม็อบปิดถนนใคร"),i,T("คนที่เลือกจะเดินไม่ได้ในเทิร์นหน้าของเขา")); if(t===null||t===undefined) return "cancel"; S.skip[t]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
-    case "pass":{ const t=await choosePlayer(T("ฝากผีให้ใคร"),i); if(t===null||t===undefined) return "cancel"; S.ghost={holder:t,count:0}; log("{p} ฝากผีให้{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
-    case "lotto":{ const d=rnd(6); UI.dice=[d]; render(); if(d===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});await info(T("ถูกรางวัล!"),T("ทอยได้ 6 รับ <b>{m}</b>",{m:30}));} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});await info(T("ไม่ถูก"),T("ทอยได้ {d} เสีย {m}",{d,m:1}));} return "ok"; }
+    case "pass":{ const t=await choosePlayer(T("ส่งคำสาปให้ใคร"),i); if(t===null||t===undefined) return "cancel"; S.players[t].curse=p.curse; p.curse=null; log("{p} ย้ายคำสาปไปให้{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
+    case "lotto":{ const d=p.lucky?6:rnd(6); p.lucky=false; UI.dice=[d]; render(); if(d===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});await info(T("ถูกรางวัล!"),T("ทอยได้ 6 รับ <b>{m}</b>",{m:30}));} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});await info(T("ไม่ถูก"),T("ทอยได้ {d} เสีย {m}",{d,m:1}));} return "ok"; }
     case "viral":{ const mine=PROPS.filter(q=>S.owners[q.id]===i);
       const v=await modal({title:itemN("viral"),html:`<div class="plist">${mine.map(q=>propRow(q,`<button class="btn gold" data-val="${q.id}">+${q.profit}</button>`)).join("")}</div>`,buttons:[{label:T("ยกเลิก"),value:null}]});
       if(v===null||v===undefined) return "cancel"; const q=PROPS[+v]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); return "ok"; }
@@ -2273,11 +2297,10 @@ async function onPick(id,fromBot){
   if(botNow()&&!fromBot) return;
   if(UI.mode!=="pick"||UI.busy||!UI.opts||!UI.opts.has(id)) return;
   UI.busy=true; const path=UI.opts.get(id); UI.mode="moving"; UI.msg=T("กำลังเดินทาง…"); UI.opts=null;
-  const i=S.turn,p=cur(); let passed=null;
-  if(S.ghost.holder===i){ for(const n of path.slice(1)){ const o=S.players.findIndex((q,k)=>k!==i&&q.node===n); if(o>=0){passed=o;break;} } }
+  const i=S.turn,p=cur();
+  const met=firstGhostOn(path);
   const start=p.node;
   p.node=id;
-  if(passed!==null){ S.ghost={holder:passed,count:0}; log("ผีกระโดดจาก{p}ไปหา{q}",{p:p.name,q:S.players[passed].name}); }
   S.lastMove={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:i,path};
   ON.seenMove=S.lastMove.id;
   commit();
@@ -2285,7 +2308,7 @@ async function onPick(id,fromBot){
   p.node=start; renderTokens();
   p.node=id; await animateMove(S.lastMove);
   render();
-  if(passed!==null) await info(T("ผีย้ายบ้าน!"),T("ระหว่างทางเจอ{q} ผีเลยกระโดดไปติดแทน",{q:esc(S.players[passed].name)}));
+  if(met&&(await meetGhost(met))==="moved"){ UI.busy=false; return endTurn(); }
   await resolveSquare(p.node,p.node===S.dest);
   UI.busy=false;
   endTurn();
@@ -2307,13 +2330,13 @@ async function resolveSquare(id,arrived){
     const rw=REWARD[id]; p.money+=rw; log("{p} ถึง{st}คนแรก รับ {m}",{p:p.name,st:id,m:rw}); commit(); render();
     await say({eyebrow:T("ถึงจุดหมาย"),title:T("{p} ถึง{st}คนแรก!",{p:esc(p.name),st:id}),html:wrapCard(destCard(id))+`<div class="big-num" style="color:#C8361E;text-align:center">+${money(rw)}</div>`});
     await buySheet(id);
-    await assignGhost(id);
+    await curseFarthest(id);
     S.dest=drawDest(false); log("จุดหมายใหม่: {st} รางวัล {m}",{st:S.dest,m:REWARD[S.dest]}); commit(); render(); focusNode(S.dest);
     await info(T("จุดหมายใหม่"),T("ทุกคนมุ่งหน้าไป <b>{st}</b> รางวัล {m}",{st:S.dest,m:REWARD[S.dest]}),T("จับฉลาก"));
     return;
   }
-  if(t==="b"){ const d=rnd(6); UI.dice=[d]; p.money+=d*2; log("{p} ได้ {m}จากช่องน้ำเงิน",{p:p.name,m:d*2}); commit(); render(); await info(T("ได้เงิน {m}",{m:d*2}),T("ทอยได้ {d} × {m}",{d,m:2}),T("ช่องน้ำเงิน")); }
-  else if(t==="r"){ const d=rnd(6); UI.dice=[d]; render(); if(await pay(i,d*2,T("ทอยได้ {d} × {m}",{d,m:2}),true)){log("{p} เสีย {m}ที่ช่องแดง",{p:p.name,m:d*2}); commit(); render(); await info(T("เสียเงิน {m}",{m:d*2}),T("ทอยได้ {d} × {m}",{d,m:2}),T("ช่องแดง"));} }
+  if(t==="b"){ const d=rnd(6), u=hasCurse(i,"unlucky"), g=u?d:d*2; UI.dice=[d]; p.money+=g; log("{p} ได้ {m}จากช่องน้ำเงิน",{p:p.name,m:g}); commit(); render(); await info(T("ได้เงิน {m}",{m:g}),T("ทอยได้ {d} × {m}",{d,m:u?1:2}),T("ช่องน้ำเงิน")); }
+  else if(t==="r"){ const d=rnd(6), u=hasCurse(i,"unlucky"), l=u?d*4:d*2; UI.dice=[d]; render(); if(await pay(i,l,T("ทอยได้ {d} × {m}",{d,m:u?4:2}),true)){log("{p} เสีย {m}ที่ช่องแดง",{p:p.name,m:l}); commit(); render(); await info(T("เสียเงิน {m}",{m:l}),T("ทอยได้ {d} × {m}",{d,m:u?4:2}),T("ช่องแดง"));} }
   else if(t==="y"||t==="jn"){ const c=drawItem(i); commit(); render(); if(c){log("{p} ได้การ์ดไอเทม",{p:p.name}); await say({eyebrow:T("ได้การ์ดไอเทม"),title:itemN(c),html:(MODE==="online"&&p.bot)?T("บอทเก็บการ์ดไว้ในมือ"):wrapCard(itemCard(c))});} else await info(T("มือเต็ม"),T("ถือการ์ดได้สูงสุด 5 ใบ รอบนี้ไม่ได้จั่ว")); }
   else if(t==="st"){
     if(S.quiz&&Math.random()<0.35){
@@ -2323,6 +2346,7 @@ async function resolveSquare(id,arrived){
       commit(); render();
     }
     await buySheet(id);
+    await templeCheck(i,id);
   }
 }
 async function buySheet(s){
@@ -2333,61 +2357,133 @@ async function buySheet(s){
   while(true){
     const free=props.filter(q=>S.owners[q.id]===undefined);
     if(!free.length) break;
-    const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b>${props.length>1?" · "+T("ปัดซ้ายขวาดูการ์ด"):""}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}${S.owners[q.id]!==undefined?`<div style="min-height:40px;display:grid;place-items:center">${ownerTag(S.owners[q.id])}</div>`:`<button class="btn primary" data-val="${q.id}" ${p.money<q.price?"disabled":""}>${T("ซื้อ {m}",{m:q.price})}</button>`}</div>`).join("")}</div>`;
+    const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b>${props.length>1?" · "+T("ปัดซ้ายขวาดูการ์ด"):""}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}${S.owners[q.id]!==undefined?`<div style="min-height:40px;display:grid;place-items:center">${ownerTag(S.owners[q.id])}</div>`:`<button class="btn primary" data-val="${q.id}" ${p.money<priceOf(q,i)?"disabled":""}>${T("ซื้อ {m}",{m:priceOf(q,i)})}</button>`}</div>`).join("")}</div>`;
     const mp=modal({eyebrow:T("สถานี{st}",{st:s}),title:T("ซื้อกิจการ"),html,buttons:[{label:T("เสร็จ"),value:"done"}]});
     if(shown) $("modal").classList.add("again"); shown=true;
     const v=await mp;
     if(v==="done"||v===undefined) break;
-    const q=PROPS[+v]; if(p.money<q.price) continue;
-    p.money-=q.price; S.owners[q.id]=i; log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:q.price}); commit(); render();
+    const q=PROPS[+v], pr=priceOf(q,i); if(p.money<pr) continue;
+    p.money-=pr; S.owners[q.id]=i; log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:pr}); commit(); render();
   }
 }
-async function assignGhost(dest){
+// ================= GHOSTS & CURSES =================
+// คำสาป: คนที่อยู่ไกลจุดหมายที่สุดตอนมีคนถึง โดนสุ่ม 1 อย่าง 3 เทิร์น แก้ได้ที่วัด
+const CURSES={
+  dice:{n:"เต๋าเน่า",eff:"ทอยได้แค่ 1–3 แต้ม"},
+  pricey:{n:"ของแพง",eff:"ซื้อกิจการแพงขึ้น 50%"},
+  leak:{n:"กระเป๋ารั่ว",eff:"เสียเงิน 1 ล้านทุกต้นเทิร์น"},
+  unlucky:{n:"ดวงตก",eff:"ช่องน้ำเงินได้ครึ่งเดียว ช่องแดงเสียสองเท่า"},
+  nocard:{n:"ขี้ลืม",eff:"ใช้การ์ดไม่ได้"},
+  slow:{n:"หลงป่า",eff:"เดินได้แค่ 1 ช่อง"}
+};
+const CURSE_POOL=["dice","pricey","leak","unlucky","nocard"];
+const TEMPLES=new Set(["AYT","SRB","SKT","LPN","NAN","CRI","NPT","PBI"]);
+const TEMPLE_FEE=5;
+// ผี: โผล่สุ่มต้นเดือน บางตัวเดินเองทุกสิ้นเดือน (ทอยเต๋าเหมือนผู้เล่น)
+const GHOSTS={
+  pop:{n:"ผีปอบ",kind:"bad",walk:true,eff:"ขโมยเงิน 5 ล้าน",art:"G01",col:"#C9474B"},
+  krasue:{n:"ผีกระสือ",kind:"bad",walk:true,eff:"ขโมยการ์ดไป 1 ใบ",art:"G02",col:"#E07A3A"},
+  chaoti:{n:"ผีเจ้าที่",kind:"bad",walk:false,eff:"สาปสุ่ม 1 อย่าง 3 เทิร์น",art:"G03",col:"#8E5BC9"},
+  kongkoi:{n:"ผีกองกอย",kind:"bad",walk:false,eff:"พาหลงป่า เทิร์นหน้าเดินได้แค่ 1 ช่อง",art:"G07",col:"#5E7A3A"},
+  takhian:{n:"นางตะเคียน",kind:"good",walk:false,eff:"ใบ้หวย ได้การ์ดลอตเตอรี่ที่ถูกแน่",art:"G08",col:"#2E9A6E"},
+  kuman:{n:"กุมารทอง",kind:"good",walk:false,eff:"เรียกทรัพย์ ได้ 3 ล้านต่อกิจการ (อย่างน้อย 5 ล้าน)",art:"G09",col:"#D9A400"},
+  takhon:{n:"ผีตาโขน",kind:"good",walk:true,eff:"ชวนเข้างานบุญ ได้การ์ดไอเทม 2 ใบ",art:"G10",col:"#2F7FC1"},
+  krahang:{n:"ผีกระหัง",kind:"wild",walk:true,eff:"พาบินไปลงจังหวัดสุ่ม",art:"G11",col:"#6B5FA8"}
+};
+const curseOf=i=>S.players[i]&&S.players[i].curse||null;
+const hasCurse=(i,k)=>{const c=curseOf(i);return !!(c&&c.k===k);};
+const priceOf=(q,i)=>hasCurse(i,"pricey")?Math.ceil(q.price*1.5):q.price;
+function applyCurse(i,k,turns){ S.players[i].curse={k,left:turns}; }
+async function curseFarthest(dest){
   const d=bfs(dest,S.newRail); let best=-1,bd=-1;
-  S.players.forEach((q,k)=>{ if(k===S.turn) return; const v=d[q.node]??0; if(v>bd||(v===bd&&q.money>S.players[best].money)){bd=v;best=k;} });
+  S.players.forEach((q,k)=>{ if(k===S.turn) return; const v=d[q.node]??0; if(v>bd||(v===bd&&best>=0&&q.money>S.players[best].money)){bd=v;best=k;} });
   if(best<0) return;
-  const was=S.ghost.holder; S.ghost={holder:best,count:was===best?S.ghost.count:0};
-  log("ผีไปติด{q} คนที่อยู่ไกลที่สุด",{q:S.players[best].name}); commit(); render();
-  await info(T("ผีมาแล้ว"),T("{q} อยู่ไกล{st}ที่สุด ({n} ช่อง) ผีตามไปติดตัว",{q:esc(S.players[best].name),st:dest,n:bd}),T("ผีปอบ"));
+  const q=S.players[best];
+  if(q.cards.includes("amulet")){ discardCard(best,"amulet"); log("{p} ใช้เครื่องรางกันคำสาป",{p:q.name}); commit(); render(); await info(T("เครื่องรางคุ้มครอง!"),T("{p} อยู่ไกล{st}ที่สุด แต่เครื่องรางกันคำสาปไว้ได้",{p:esc(q.name),st:dest})); return; }
+  const k=CURSE_POOL[Math.floor(Math.random()*CURSE_POOL.length)];
+  applyCurse(best,k,3);
+  log("{p} อยู่ไกลสุด โดนสาป: {t}",{p:q.name,t:CURSES[k].n}); commit(); render();
+  await say({eyebrow:T("คำสาป"),title:T("{p} โดนสาป!",{p:esc(q.name)}),html:curseHTML(k,T("อยู่ไกล{st}ที่สุด ({n} ช่อง)",{st:dest,n:bd}))});
 }
-async function ghostTurn(){
-  const i=S.turn,p=cur(); const giant=S.ghost.count>=3;
-  await say({eyebrow:T("ผีติดตัว"),title:T(giant?"ผีปอบกลายร่างเป็นร่างยักษ์!":"ผีปอบจะทำอะไรนะ"),html:T(giant?"อยู่ด้วยกันครบ 3 เทิร์น ผีโตขึ้นแล้ว":"ทอยเต๋าดูตารางผี"),buttons:[{label:T("ทอยตารางผี"),value:1,primary:true}]});
-  const d=rnd(6);
-  S.lastRoll={id:Date.now()+"-g"+Math.random().toString(36).slice(2,5),p:i,vals:[d],kind:"ghost"}; ON.seenRoll=S.lastRoll.id; commit();
-  await diceFX([d],T("ผีทอยได้ {d}",{d}),T(giant?"ตารางร่างยักษ์":"ตารางผี"));
-  UI.dice=[d]; render();
-  const GT=giant?[[1,2,"อาละวาด","กิจการทั้งหมดในสถานีที่คุณมีมากที่สุดคืนธนาคารฟรี"],[3,4,"ช้อปหนัก","เสียเงินสดครึ่งหนึ่ง"],[5,5,"ฉีกการ์ด","ทิ้งการ์ดทั้งหมด"],[6,6,"ขายของ","ขายกิจการแพงที่สุดคืนธนาคารครึ่งราคา"]]
-              :[[1,1,"ผีปอบสายช้อป","เสียเงิน 5 ล้าน"],[2,2,"ผีปอบสายช้อป","ทิ้งการ์ด 1 ใบแบบสุ่ม"],[3,3,"ผีกระสือเล่นหุ้น","ขายกิจการถูกที่สุดคืนธนาคารครึ่งราคา"],[4,4,"ผีเจ้าที่ขี้งอน","เทิร์นนี้เดินได้ 1 ช่อง ห้ามใช้การ์ดเคลื่อนที่"],[5,5,"ผีหลับ","ไม่มีอะไรเกิดขึ้น"],[6,6,"ผีเลี้ยงหมูกระทะ","จ่ายผู้เล่นคนอื่นคนละ 3 ล้าน"]];
-  const row=GT.find(r=>d>=r[0]&&d<=r[1]);
-  const gid=giant?"G06":({1:"G01",2:"G01",3:"G02",4:"G03",5:"G04",6:"G05"})[d];
-  const gface=wrapGhost(ghostCard(gid,T(giant?"ผีปอบร่างยักษ์":row[2]),T("ทอยได้ {d}",{d}),`<div class="gc-line">${T(row[3])}</div>`));
-  if(giant) S.ghost.count=0; else S.ghost.count++;
-  const harmless=!giant&&d===5;
-  if(!harmless&&S.quiz){
-    await say({eyebrow:T("ทอยได้ {d}",{d}),title:T("ผีท้าตอบควิซ!"),html:`${gface}<p>${T("ตอบควิซถูก ผีจะหนีไปไม่แกล้ง")}</p>`,buttons:[{label:T("รับคำท้า"),value:1,primary:true}]},1600);
-    const ok=await askQuiz(nearestStation(p.node),T("ผีถามควิซ"),T("ผีจะ: {x} · ตอบถูกรอดตัว",{x:T(row[3])}));
-    if(ok){ log("{p} ตอบถูก ผีหนีไปไม่แกล้ง",{p:p.name}); render(); return; }
+function curseHTML(k,why){ return `<div class="curse-card"><div class="cc-name">${T(CURSES[k].n)}</div><div class="cc-eff">${T(CURSES[k].eff)}</div><div class="cc-note">${why?why+" · ":""}${T("3 เทิร์น · แก้ได้ที่จังหวัดที่มีวัด")}</div></div>`; }
+async function curseTick(i){
+  const c=curseOf(i); if(!c) return;
+  c.left--; if(c.left<=0){ S.players[i].curse=null; log("{p} หายจากคำสาปแล้ว",{p:S.players[i].name}); }
+}
+async function templeCheck(i,node){
+  const p=S.players[i], c=curseOf(i);
+  if(!c||!TEMPLES.has(node)) return;
+  let ok;
+  if(p.bot) ok=p.money>=TEMPLE_FEE+5;
+  else ok=await modal({eyebrow:T("วัดประจำ{st}",{st:node}),title:T("ทำบุญแก้คำสาป?"),html:curseHTML(c.k)+`<p>${T("จ่าย {m} เพื่อแก้คำสาป{t}",{m:TEMPLE_FEE,t:CURSES[c.k].n})}</p>`,buttons:[{label:T("ไม่เป็นไร"),value:false},{label:T("ทำบุญ {m}",{m:TEMPLE_FEE}),value:true,primary:true,disabled:p.money<TEMPLE_FEE}]});
+  if(!ok) return;
+  p.money-=TEMPLE_FEE; p.curse=null; log("{p} ทำบุญแก้คำสาปที่{st}",{p:p.name,st:node}); commit(); render();
+  if(p.bot) await brief({eyebrow:T("วัดประจำ{st}",{st:node}),title:T("{p} ทำบุญแก้คำสาป",{p:esc(p.name)}),html:""},1400);
+}
+// ----- ผีบนแผนที่ -----
+function ghostSquares(){ return Object.keys(NODES).filter(id=>["b","r","y","g"].includes(NODES[id].t)); }
+function spawnGhosts(n){
+  S.ghosts=S.ghosts||[];
+  const busy=new Set([...S.players.map(p=>p.node),...S.ghosts.map(g=>g.node)]);
+  const pool=ghostSquares().filter(id=>!busy.has(id)&&!(NODES[id].t==="g"&&Math.random()<.5));
+  const kinds=Object.keys(GHOSTS); let made=0;
+  for(let k=0;k<n&&pool.length&&S.ghosts.length<4;k++){
+    const node=pool.splice(Math.floor(Math.random()*pool.length),1)[0];
+    const kind=kinds[Math.floor(Math.random()*kinds.length)];
+    S.ghosts.push({id:"g"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),k:kind,node,hidden:Math.random()<.3});
+    made++;
   }
-  if(!harmless&&p.cards.includes("amulet")){
-    const v=isBotTurn()?(giant||[1,3,6].includes(d)):await modal({eyebrow:T("ทอยได้ {d}",{d}),title:T(row[2]),html:`${gface}<p>${T("มีพระเครื่อง ใช้ยกเลิกผลนี้ไหม")}</p>`,buttons:[{label:T("ใช้พระเครื่อง"),value:true,gold:true},{label:T("รับผล"),value:false}]});
-    if(v){discardCard(i,"amulet");log("{p} ใช้พระเครื่องไล่ผี",{p:p.name});render();return;}
-  } else await say({eyebrow:T("ทอยได้ {d}",{d}),title:T(row[2]),html:gface},2000);
-  const mine=()=>PROPS.filter(q=>S.owners[q.id]===i);
-  if(!giant){
-    if(d===1){p.money-=5;log("ผีปอบช้อปด้วยเงิน{p} {m}",{p:p.name,m:5});}
-    if(d===2&&p.cards.length){const k=p.cards[Math.floor(Math.random()*p.cards.length)];discardCard(i,k);log("ผีทิ้งการ์ด{it}ของ{p}",{it:k,p:p.name});}
-    if(d===3){const m=mine().sort((a,b)=>a.price-b.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log("ผีขาย{pr}ของ{p}",{pr:m.id,p:p.name});}}
-    if(d===4){S.tf.locked=true;log("ผีเจ้าที่งอน {p}เดินได้ 1 ช่อง",{p:p.name});}
-    if(d===5){log("ผีของ{p}หลับอยู่",{p:p.name});}
-    if(d===6){S.players.forEach((q,k)=>{if(k!==i){q.money+=3;p.money-=3;}});log("{p} โดนผีพาเลี้ยงหมูกระทะทุกคน",{p:p.name});}
-  } else {
-    if(d<=2){const cnt={};mine().forEach(q=>cnt[q.s]=(cnt[q.s]||0)+1);const s=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];if(s){mine().filter(q=>q.s===s).forEach(q=>delete S.owners[q.id]);log("ผีปอบยักษ์อาละวาดที่{st} {p}เสียกิจการทั้งหมดที่นั่น",{st:s,p:p.name});}else log("ผีปอบยักษ์อาละวาด แต่{p}ไม่มีกิจการ",{p:p.name});}
-    else if(d<=4){if(p.money>0){const l=Math.floor(p.money/2);p.money-=l;log("ผีปอบยักษ์ช้อปหนัก {p}เสีย {m}",{p:p.name,m:l});}}
-    else if(d===5){p.cards.forEach(k=>S.discard.push(k));p.cards=[];log("ผีปอบยักษ์ฉีกการ์ดของ{p}ทั้งหมด",{p:p.name});}
-    else {const m=mine().sort((a,b)=>b.price-a.price)[0];if(m){delete S.owners[m.id];p.money+=Math.floor(m.price/2);log("ผีปอบยักษ์ขาย{pr}ของ{p}",{pr:m.id,p:p.name});}}
+  return made;
+}
+function walkGhosts(){
+  const a=adjacency(S.newRail); let moved=0;
+  (S.ghosts||[]).forEach(g=>{
+    if(!GHOSTS[g.k].walk) return;
+    let node=g.node, prev=null; const steps=rnd(6);
+    for(let k=0;k<steps;k++){ let nx=a[node].filter(n=>n!==prev); if(!nx.length) nx=a[node]; prev=node; node=nx[Math.floor(Math.random()*nx.length)]; }
+    if(NAME[node]){ const sq=a[node].filter(n=>!NAME[n]); if(sq.length) node=sq[Math.floor(Math.random()*sq.length)]; }
+    if(node!==g.node){ g.node=node; moved++; }
+  });
+}
+const ghostAt=node=>(S.ghosts||[]).find(g=>g.node===node);
+function firstGhostOn(path){ for(const n of path.slice(1)){ const g=ghostAt(n); if(g) return g; } return null; }
+function ghostLabel(g){ return g.hidden?T("ผีลึกลับ"):T(GHOSTS[g.k].n); }
+function ghostFace(g,sub){
+  const G=GHOSTS[g.k];
+  return wrapGhost(ghostCard(G.art,T(G.n),T(G.kind==="bad"?"ผีร้าย":G.kind==="good"?"ผีใจดี":"ผีเอาแน่ไม่ได้"),`<div class="gc-line">${T(G.eff)}</div>${sub?`<div class="gc-line" style="font-weight:600">${sub}</div>`:""}`));
+}
+// เจอผี: คืนค่า "moved" ถ้าถูกพาไปที่อื่น
+async function meetGhost(g){
+  const i=S.turn,p=cur(),G=GHOSTS[g.k];
+  S.ghosts=S.ghosts.filter(x=>x.id!==g.id); commit(); render();
+  const face=ghostFace(g);
+  if(G.kind==="bad"){
+    if(S.quiz){
+      await say({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T("ผีท้าตอบควิซ!"),html:`${face}<p>${T("ตอบควิซถูก ผีจะหนีไปไม่แกล้ง")}</p>`,buttons:[{label:T("รับคำท้า"),value:1,primary:true}]},1600);
+      const ok=await askQuiz(nearestStation(p.node),T("ผีถามควิซ"),T("ผีจะ: {x} · ตอบถูกรอดตัว",{x:T(G.eff)}));
+      if(ok){ log("{p} ตอบถูก {t}หนีไปแล้ว",{p:p.name,t:G.n}); render(); return; }
+    }
+    if(p.cards.includes("amulet")){
+      const v=isBotTurn()?true:await modal({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T(G.n),html:`${face}<p>${T("มีเครื่องราง ใช้ไล่ผีตัวนี้ไหม")}</p>`,buttons:[{label:T("ใช้เครื่องราง"),value:true,gold:true},{label:T("รับผล"),value:false}]});
+      if(v){ discardCard(i,"amulet"); log("{p} ใช้เครื่องรางไล่{t}",{p:p.name,t:G.n}); render(); return; }
+    } else if(!S.quiz) await say({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T(G.n),html:face},2000);
+  } else await say({eyebrow:T("เจอ{g}!",{g:T(G.n)}),title:T(G.n),html:face},2000);
+  switch(g.k){
+    case "pop": p.money-=5; log("{t}ขโมยเงิน{p} {m}",{t:G.n,p:p.name,m:5}); break;
+    case "krasue": if(p.cards.length){ const k=p.cards[Math.floor(Math.random()*p.cards.length)]; discardCard(i,k); log("{t}ขโมยการ์ด{it}ของ{p}",{t:G.n,it:k,p:p.name}); } else log("{t}หาการ์ดของ{p}ไม่เจอ",{t:G.n,p:p.name}); break;
+    case "chaoti":{ const k=CURSE_POOL[Math.floor(Math.random()*CURSE_POOL.length)]; applyCurse(i,k,3); log("{p} โดนสาป: {t2}",{p:p.name,t2:CURSES[k].n}); commit(); render(); await say({eyebrow:T(G.n),title:T("{p} โดนสาป!",{p:esc(p.name)}),html:curseHTML(k)}); break; }
+    case "kongkoi": applyCurse(i,"slow",1); log("{t}พา{p}หลงป่า",{t:G.n,p:p.name}); break;
+    case "takhian":{ if(p.cards.length<5){ p.cards.push("lotto"); } p.lucky=true; log("{t}ใบ้หวยให้{p}",{t:G.n,p:p.name}); break; }
+    case "kuman":{ const n=PROPS.filter(q=>S.owners[q.id]===i).length, m=Math.max(5,n*3); p.money+=m; log("{t}เรียกทรัพย์ให้{p} {m}",{t:G.n,p:p.name,m}); break; }
+    case "takhon":{ const a=drawItem(i), b=drawItem(i); log("{p} ได้การ์ดจากงานบุญ {n} ใบ",{p:p.name,n:(a?1:0)+(b?1:0)}); break; }
+    case "krahang":{ const st=Object.keys(NAME).filter(x=>x!==p.node); const to=st[Math.floor(Math.random()*st.length)]; log("{t}พา{p}บินไป{st}",{t:G.n,p:p.name,st:to}); commit(); render(); await teleport(to,to===S.dest); return "moved"; }
   }
-  render();
+  commit(); render();
+}
+function showGhost(id){
+  if(modalResolve) return; const g=(S.ghosts||[]).find(x=>x.id===id); if(!g) return;
+  if(g.hidden) return info(T("ผีลึกลับ"),T("ไม่รู้ว่าเป็นผีอะไร อาจดีหรือร้ายก็ได้ เจอแล้วถึงจะรู้"));
+  return modal({eyebrow:T(GHOSTS[g.k].walk?"ผีเดินได้":"ผีอยู่กับที่"),title:T(GHOSTS[g.k].n),html:ghostFace(g)});
 }
 async function settleDebts(){
   for(let i=0;i<S.players.length;i++){
@@ -2567,7 +2663,7 @@ async function diceFX(vals,label,sub){
 }
 function rollLabel(vals){ const s=vals.reduce((a,b)=>a+b,0); return {label:T("{n} แต้ม",{n:s}),sub:S.songkran&&vals.length?T("สงกรานต์รถติด −1"):""}; }
 async function rollAndShow(n){
-  const vals=[...Array(n)].map(()=>rnd(6));
+  const vals=[...Array(n)].map(()=>hasCurse(S.turn,"dice")?rnd(3):rnd(6));
   S.lastRoll={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:S.turn,vals,kind:"move"};
   ON.seenRoll=S.lastRoll.id; commit();
   const {label,sub}=rollLabel(vals); await diceFX(vals,label,sub);
@@ -2583,7 +2679,8 @@ function botPickDest(opts){
     let sc=(d[id]??99)*10; const t=NODES[id].t;
     if(t==="b") sc-=3; if(t==="r") sc+=3; if(t==="y"||t==="jn") sc-=2;
     if(t==="st"&&PROPS_AT(id).some(q=>S.owners[q.id]===undefined&&q.price<=p.money-10)) sc-=4;
-    if(S.ghost.holder===i&&path.slice(1).some(n=>S.players.some((q,k)=>k!==i&&q.node===n))) sc-=12;
+    const gh=firstGhostOn(path); if(gh){ const kk=GHOSTS[gh.k].kind; sc+=gh.hidden?3:kk==="bad"?25:kk==="good"?-10:0; }
+    if(curseOf(i)&&TEMPLES.has(id)) sc-=12;
     sc+=Math.random()*2;
     if(sc<bs){bs=sc;best=id;}
   }
@@ -2596,35 +2693,36 @@ async function botBuy(s){
   const free=props.filter(q=>S.owners[q.id]===undefined).sort((a,b)=>b.profit/b.price-a.profit/a.price);
   for(const q of free){
     const completes=props.every(x=>x.id===q.id||S.owners[x.id]===i);
-    if(p.money<q.price) continue;
-    if(completes||(!late&&p.money-q.price>=reserve)){ p.money-=q.price; S.owners[q.id]=i; bought.push(q); log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:q.price}); }
+    const pr=priceOf(q,i); if(p.money<pr) continue;
+    if(completes||(!late&&p.money-pr>=reserve)){ p.money-=pr; S.owners[q.id]=i; bought.push(q); log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:pr}); }
   }
   if(bought.length){ commit(); render(); await brief({eyebrow:T("สถานี{st}",{st:s}),title:T("{p} ซื้อกิจการ",{p:esc(p.name)}),html:`<div class="gc-row" style="justify-content:${bought.length===1?"center":"flex-start"}">${bought.map(q=>`<div class="gc-col">${propCard(q)}</div>`).join("")}</div>`},1900); }
 }
+const q_curse=j=>!!curseOf(j);
 async function botUseCard(){
   const i=S.turn,p=cur(); const has=k=>p.cards.includes(k)&&canUse(k);
   const d=bfs(S.dest,S.newRail), dist=d[p.node]??99;
   let k=null, arg=null;
   if(has("plane")&&dist>6) k="plane";
   else if(has("drive")&&dist>=1&&dist<=6&&endpoints(p.node,dist).has(S.dest)){k="drive";arg=dist;}
-  else if(has("pass")){k="pass";arg=S.players.map((q,j)=>({j,m:q.money})).filter(o=>o.j!==i).sort((a,b)=>b.m-a.m)[0].j;}
+  else if(has("pass")){k="pass";arg=S.players.map((q,j)=>({j,m:q.money})).filter(o=>o.j!==i&&!q_curse(o.j)).sort((a,b)=>b.m-a.m)[0]?.j; if(arg===undefined) k=null;}
   else if(has("sexp")&&dist>9) k="sexp";
   else if(has("exp")&&dist>4) k="exp";
   else if(has("viral")) k="viral";
   else if(has("mob")){const near=S.players.map((q,j)=>({j,v:d[q.node]??99})).filter(o=>o.j!==i&&o.v<=6).sort((a,b)=>a.v-b.v)[0]; if(near){k="mob";arg=near.j;}}
-  else if(has("lotto")&&p.money>20&&Math.random()<0.3) k="lotto";
+  else if(has("lotto")&&(p.lucky||(p.money>20&&Math.random()<0.3))) k="lotto";
   if(!k) return null;
   discardCard(i,k); S.tf.cardUsed=true;
   await brief({eyebrow:T("{p} ใช้การ์ด",{p:esc(p.name)}),title:itemN(k),html:wrapCard(itemCard(k))},1500);
   switch(k){
     case "plane": log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); return "moved";
     case "drive": log("{p} ขับเอง {n} ช่อง",{p:p.name,n:arg}); commit(); return arg;
-    case "pass": S.ghost={holder:arg,count:0}; log("{p} ฝากผีให้{q}",{p:p.name,q:S.players[arg].name}); break;
+    case "pass": S.players[arg].curse=p.curse; p.curse=null; log("{p} ย้ายคำสาปไปให้{q}",{p:p.name,q:S.players[arg].name}); break;
     case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); break;
     case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); break;
     case "mob": S.skip[arg]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[arg].name}); break;
     case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); break; }
-    case "lotto":{ const r=rnd(6); if(r===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});} break; }
+    case "lotto":{ const r=p.lucky?6:rnd(6); p.lucky=false; if(r===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});} break; }
   }
   commit(); render(); return null;
 }
@@ -2636,7 +2734,7 @@ async function botTurn(){
     S.tf={nDice:1,cardUsed:false,locked:false};
     render(); focusNode(p.node); await sleep(600);
     if(S.skip[i]){ S.skip[i]=false; log("{p} ติดม็อบ เดินไม่ได้",{p:p.name}); render(); await info(T("{p} ติดม็อบปิดถนน",{p:esc(p.name)}),T("เทิร์นนี้เดินไม่ได้")); UI.busy=false; return endTurn(); }
-    if(S.ghost.holder===i) await ghostTurn();
+    if(await turnStartEffects(i)){ UI.busy=false; return endTurn(); }
     S.stage="choose"; commit();
   }
   render(); await sleep(400);
@@ -2669,7 +2767,7 @@ async function startTurn(){
     if(MODE==="local"&&S.players.filter(q=>!q.bot).length<2) toast(T("ตาของ{p}",{p:p.name}));
     else if(MODE==="local") await modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ตาของ{p}",{p:esc(p.name)}),html:T("ส่งเครื่องให้{p} แล้วกดเริ่ม",{p:esc(p.name)}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]});
     else await modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ถึงตาคุณแล้ว"),html:T("{p} อยู่ที่{x} · จุดหมาย{st}",{p:esc(p.name),x:labelOf(p.node),st:S.dest}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]});
-    if(S.ghost.holder===i) await ghostTurn();
+    if(await turnStartEffects(i)) return endTurn();
     S.stage="choose"; commit();
   }
   UI.mode="choose"; render(); focusNode(p.node);
@@ -2677,6 +2775,7 @@ async function startTurn(){
 async function endTurn(){
   UI.mode="idle"; UI.msg="";
   await settleDebts();
+  await curseTick(S.turn);
   S.stage="begin"; S.turn++;
   if(S.turn>=S.players.length){
     S.turn=0;
@@ -2685,12 +2784,22 @@ async function endTurn(){
       if(S.year>=S.years) return gameOver();
       S.year++;
     }
+    walkGhosts();
     S.month=(S.month+1)%12;
     await startMonth();
   }
   S.turnId=(S.turnId||0)+1;
   commit();
   advance();
+}
+// ต้นเทิร์น: คำสาปทำงาน และผีที่เดินมาหยุดตรงตัวเรา
+async function turnStartEffects(i){
+  const p=S.players[i], c=curseOf(i);
+  if(c&&c.k==="leak"){ p.money-=1; log("{p} กระเป๋ารั่ว เสีย {m}",{p:p.name,m:1}); render(); }
+  if(c&&c.k==="slow"){ S.tf.locked=true; }
+  const g=ghostAt(p.node);
+  if(g){ commit(); if((await meetGhost(g))==="moved") return true; }
+  return false;
 }
 function beginTurn(){ return isBotTurn()?botTurn():startTurn(); }
 function advance(){
@@ -2705,7 +2814,9 @@ function ownersOf(filter,per){
   return out;
 }
 async function startMonth(){
-  S.songkran=false; render();
+  S.songkran=false; S.ghosts=S.ghosts||[];
+  if(spawnGhosts(S.players.length>=3?2:1)) log("ผีโผล่ใหม่บนแผนที่",{});
+  render();
   const m=S.month;
   if(m===0&&S.year===2&&!S.newRail){ S.newRail=true; log("รางใหม่เด่นชัย–แพร่–พะเยาเปิดแล้ว",{}); render(); await evInfo("เปิดรางใหม่!",T("รถไฟสายเด่นชัย–แพร่–พะเยาเปิดใช้ เดินทางขึ้นเหนือได้อีกเส้นทาง"),T("ข่าวการรถไฟ")); }
   const list=(arr,sign)=>arr.length?arr.map(([k,a,n])=>`<p>${esc(S.players[k].name)} ${sign}${money(a)} ${T("({n} แห่ง)",{n})}</p>`).join(""):`<p>${T("ไม่มีใครได้รับผล")}</p>`;
@@ -2756,7 +2867,7 @@ const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KR
 const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane"];
 const pad2=n=>String(n).padStart(2,"0");
 const ARTID={prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
-const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:6},(_,i)=>"G"+pad2(i+1)),...Array.from({length:9},(_,i)=>"E"+pad2(i+1))];
+const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:11},(_,i)=>"G"+pad2(i+1)),...Array.from({length:9},(_,i)=>"E"+pad2(i+1))];
 const GC_TYPE={[FOOD]:["#FF8A3D","#FFE3CC","#FFD3B0"],[AGRI]:["#45B864","#DDF5E3","#C6EDD0"],[TOUR]:["#3E9BE0","#DCEEFF","#C4E2FF"],[IND]:["#7E8AB0","#E3E8F2","#D0D8E8"]};
 const GC_KIND={dest:["#E8453C","#FFE0DA","#FFCBC2"],item:["#FFC21A","#FFF3C4","#FFE89A"],ghost:["#9B7BE0","#EDE5FF","#DCCEFF"],event:["#1FA59A","#D4F4EF","#B3EAE2"]};
 const gcVars=c=>`--c:${c[0]};--cl:${c[1]};--cl2:${c[2]}`;
@@ -3089,6 +3200,7 @@ $("menuBtn").onclick=async()=>{
 };
 svg.addEventListener("click",e=>{
   const t=e.target.closest("[data-node]"); if(t) return onPick(t.dataset.node);
+  const gk=e.target.closest("[data-ghost]"); if(gk&&S&&S.phase==="play") return showGhost(gk.dataset.ghost);
   const s=e.target.closest("[data-stn]"); if(s&&S&&S.phase==="play") return showStation(s.dataset.stn);
 });
 svg.addEventListener("keydown",e=>{const t=e.target.closest("[data-node]");if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onPick(t.dataset.node);}});
@@ -3123,7 +3235,7 @@ function musEvict(keep){ for(const k in MUS.bufs) if(k!==keep&&!STINGS.has(k)) d
 function musWant(){
   if(!S||S.phase==="setup") return "title";
   if(S.phase==="over") return "ending";
-  if(S.ghost&&S.ghost.holder>=0&&S.ghost.holder===S.turn) return "ghost";
+  if(S.players&&S.players[S.turn]&&S.players[S.turn].curse) return "ghost";
   if(S.year>=S.years&&S.month>=9) return "last";
   return "main";
 }
@@ -3163,7 +3275,7 @@ async function musSting(k,max){
 }
 function musLog(t){
   if(/คนแรก/.test(t)){ musSting("goal"); return BGM.on; }
-  if(/^ผีปอบยักษ์/.test(t)) musSting("giant");
+  if(/โดนสาป/.test(t)) musSting("giant");
   if(/^ปิดงบปีที่/.test(t)) musSting("yearend",22);
   return false;
 }
@@ -3241,7 +3353,7 @@ function sfx(name){
   try{ SOUNDS[name](c.currentTime+.01); }catch(e){}
 }
 // เสียงตามบันทึกเหตุการณ์ ใช้ทั้งเครื่องที่เล่นและเครื่องเพื่อน (ออนไลน์) ให้ได้ยินเหมือนกัน
-const LOG_SFX=[[/คนแรก/,"arrive"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
+const LOG_SFX=[[/คนแรก/,"arrive"],[/โดนสาป|ขโมย|หลงป่า|กระเป๋ารั่ว/,"ghost"],[/ใบ้หวย|เรียกทรัพย์|ทำบุญ/,"coins"],[/งานบุญ/,"card"],[/บินไป/,"use"],[/ผีโผล่|ผีออกเดิน/,"pop"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
   [/ปิดงบปีที่/,"coins"],[/ถูกลอตเตอรี่|โบนัส|ได้ .*ล้าน|ดังในโซเชียล|รับ .*ล้าน/,"coin"],[/ซื้อ/,"buy"],[/ใช้|ขับเอง|เหมาเครื่องบิน|ส่งม็อบ/,"use"],
   [/ผี/,"ghost"],[/ได้การ์ด/,"card"],[/จุดหมายใหม่/,"dest"],[/สงกรานต์|ปีใหม่|ตรุษจีน|ฤดู|ลอยกระทง|น้ำท่วม|ฝุ่น|รางใหม่|เดือนปิดงบ/,"event"]];
 let sfxQ=Promise.resolve();
