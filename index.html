@@ -14,7 +14,7 @@
 :root{
   --bg:#E7ECE4; --surface:#FFFFFF; --surface-2:#F3F6F1; --ink:#17232B; --muted:#5A6A6E; --line:#CBD4CC;
   --rail:#1F4E9C; --accent:#F2B705; --accent-ink:#2B2100; --bus:#9AA29A; --new:#E2711D;
-  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --sea:#B9DDF2; --field-ne:#F4E4D8; --lbl-ne:#B0705E; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
+  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --sea:#B9DDF2; --field-ne:#F4E4D8; --lbl-ne:#B0705E; --field-s:#DCEFE7; --lbl-s:#3E8C78; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
   --shadow:0 10px 30px rgba(20,35,40,.18);
   --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Maru Gothic ProN','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
   --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
@@ -22,12 +22,12 @@
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
 
 html,body{height:100%}
@@ -320,7 +320,7 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
   </header>
   <main class="stage">
     <div class="mapwrap">
-      <div class="map" id="map"><svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 22 400 760"></svg></div>
+      <div class="map" id="map"><svg id="board" xmlns="http://www.w3.org/2000/svg" viewBox="0 22 400 1050"></svg></div>
       <div class="zoom"><button id="zin" aria-label="ซูมเข้า">+</button><button id="zout" aria-label="ซูมออก">−</button></div>
     </div>
     <aside class="panel" id="panel"></aside>
@@ -372,10 +372,10 @@ function applyStaticLang(){
 }
 const langSeg=()=>`<div class="seg langseg" role="group" aria-label="Language">${LANGS.map(([k,n])=>`<button data-val="lang_${k}" aria-pressed="${LANG===k}">${n}</button>`).join("")}</div>`;
 
-const STN_TR={BKK:["Bangkok","バンコク"],AYT:["Ayutthaya","アユタヤ"],LOP:["Lopburi","ロッブリー"],NSW:["Nakhon Sawan","ナコーンサワン"],PSL:["Phitsanulok","ピッサヌローク"],SKT:["Sukhothai","スコータイ"],UTD:["Uttaradit","ウッタラディット"],DNC:["Den Chai","デンチャイ"],PHR:["Phrae","プレー"],NAN:["Nan","ナーン"],LPG:["Lampang","ランパーン"],LPN:["Lamphun","ランプーン"],CMI:["Chiang Mai","チェンマイ"],PAI:["Pai","パーイ"],PYO:["Phayao","パヤオ"],CRI:["Chiang Rai","チェンライ"],KCG:["Ko Chang","チャーン島"],PKC:["Pak Chong","パークチョン"],KRT:["Nakhon Ratchasima","ナコーンラーチャシーマー"],KKN:["Khon Kaen","コーンケン"],UDN:["Udon Thani","ウドーンターニー"],NKI:["Nong Khai","ノーンカーイ"],LOE:["Loei","ルーイ"],BRM:["Buriram","ブリーラム"],SRN:["Surin","スリン"],UBN:["Ubon Ratchathani","ウボンラーチャターニー"],MDH:["Mukdahan","ムクダハン"],NPM:["Nakhon Phanom","ナコーンパノム"],SKN:["Sakon Nakhon","サコンナコーン"],RET:["Roi Et","ローイエット"],SMT:["Ko Samet","サメット島"],
+const STN_TR={BKK:["Bangkok","バンコク"],AYT:["Ayutthaya","アユタヤ"],LOP:["Lopburi","ロッブリー"],NSW:["Nakhon Sawan","ナコーンサワン"],PSL:["Phitsanulok","ピッサヌローク"],SKT:["Sukhothai","スコータイ"],UTD:["Uttaradit","ウッタラディット"],DNC:["Den Chai","デンチャイ"],PHR:["Phrae","プレー"],NAN:["Nan","ナーン"],LPG:["Lampang","ランパーン"],LPN:["Lamphun","ランプーン"],CMI:["Chiang Mai","チェンマイ"],PAI:["Pai","パーイ"],PYO:["Phayao","パヤオ"],CRI:["Chiang Rai","チェンライ"],KCG:["Ko Chang","チャーン島"],PKC:["Pak Chong","パークチョン"],KRT:["Nakhon Ratchasima","ナコーンラーチャシーマー"],KKN:["Khon Kaen","コーンケン"],UDN:["Udon Thani","ウドーンターニー"],NKI:["Nong Khai","ノーンカーイ"],LOE:["Loei","ルーイ"],BRM:["Buriram","ブリーラム"],SRN:["Surin","スリン"],UBN:["Ubon Ratchathani","ウボンラーチャターニー"],MDH:["Mukdahan","ムクダハン"],NPM:["Nakhon Phanom","ナコーンパノム"],SKN:["Sakon Nakhon","サコンナコーン"],RET:["Roi Et","ローイエット"],PKN:["Prachuap Khiri Khan","プラチュワップキーリーカン"],CPN:["Chumphon","チュムポン"],RNG:["Ranong","ラノーン"],SNI:["Surat Thani","スラートターニー"],NST:["Nakhon Si Thammarat","ナコーンシータンマラート"],PLG:["Phatthalung","パッタルン"],HYI:["Hat Yai","ハートヤイ"],SGK:["Songkhla","ソンクラー"],KBI:["Krabi","クラビ"],PNA:["Phang Nga","パンガー"],PKT:["Phuket","プーケット"],TRG:["Trang","トラン"],KSM:["Ko Samui","サムイ島"],PPI:["Ko Phi Phi","ピピ島"],LNT:["Ko Lanta","ランタ島"],SMT:["Ko Samet","サメット島"],
  SRB:["Saraburi","サラブリー"],CCO:["Chachoengsao","チャチューンサオ"],CBI:["Chonburi","チョンブリー"],PTY:["Pattaya","パタヤ"],RYG:["Rayong","ラヨーン"],CTI:["Chanthaburi","チャンタブリー"],TRT:["Trat","トラート"],NPT:["Nakhon Pathom","ナコーンパトム"],KRI:["Kanchanaburi","カンチャナブリー"],RBR:["Ratchaburi","ラーチャブリー"],PBI:["Phetchaburi","ペッチャブリー"],HHN:["Hua Hin","ホアヒン"]};
 const PROP_TR=[["Chicken Rice Stall","カオマンガイ屋"],["Weekend Market Stall","週末マーケットの屋台"],["Cargo Port","貨物港"],["Roti Sai Mai Shop","ロティサイマイ屋"],["Grilled River Prawns","川エビ焼き屋"],["Island City Boat Tour","島めぐりボートツアー"],["Industrial Estate","工業団地"],["Sunflower Fields","ひまわり畑"],["Monkey Town Souvenirs","サルの町みやげ店"],["Rice Mill","精米所"],["Pak Nam Pho Mochi Shop","パークナームポーの餅屋"],["Chao Phraya River Port","チャオプラヤー川の港"],["Dangling-Legs Noodle Shop","足ぶらクイッティアオ屋"],["Dried Banana Factory","干しバナナ工場"],["Sukhothai Noodle Shop","スコータイ麺の店"],["Old City Bike Tour","古都サイクリングツアー"],["Lap Lae Durian Orchard","ラップレーのドリアン園"],["Langsat Orchard","ランサット園"],["Indigo Cloth Factory","藍染め布工場"],["Khanom Jeen Nam Ngiao","カノムチン・ナムニャオ屋"],["Old Town Homestay","古い町のホームステイ"],["Mountain Coffee Shop","山のコーヒー店"],["Golden Orange Orchard","金色みかん園"],["Rooster Bowl Factory","ニワトリ柄どんぶり工場"],["Horse Carriage Tours","観光馬車"],["Longan Orchard","ロンガン園"],["Brocade Silk Weaving","錦織シルク工房"],["Khao Soi Shop","カオソーイ屋"],["Sai Ua Sausage Shop","サイウア(ソーセージ)屋"],["Bo Sang Umbrella Workshop","ボーサーンの傘工房"],["Mae Rim Resort","メーリムのリゾート"],["Hill-View Café","山が見えるカフェ"],["Pai Riverside Homestay","パーイ川のホームステイ"],["Kwan Phayao Fish Restaurant","パヤオ湖の魚料理店"],["Lake Cruise","湖の遊覧船"],["Mountain Tea Plantation","山の茶畑"],["Nang Lae Pineapple Farm","ナーンレーのパイナップル畑"],["Golden Triangle Resort","ゴールデントライアングルのリゾート"],
- ["Muak Lek Dairy Farm","ムアックレックの牧場"],["Fresh-Milk Steakhouse","牧場ステーキ店"],["Cement Plant","セメント工場"],["Paet Rio Chicken Farm","ペートリウ養鶏場"],["Bang Khla Floating Market","バーンクラー水上マーケット"],["Car Assembly Plant","自動車組立工場"],["Nong Mon Bamboo Sticky Rice","ノーンモンのカオラーム屋"],["Ang Sila Oyster Farm","アーンシラーの牡蠣養殖場"],["Laem Chabang Deep-Sea Port","レムチャバン深海港"],["Beachfront Seafood","ビーチのシーフード店"],["Koh Larn Ferry","ラン島行きフェリー"],["Pattaya Beach Hotel","パタヤのビーチホテル"],["Rayong Fish Sauce Shop","ラヨーンの魚醤店"],["Rayong Durian Orchard","ラヨーンのドリアン園"],["Koh Samet Speedboat","サメット島行きボート"],["Map Ta Phut Petrochemical Estate","マプタプット石油化学団地"],["Crab Fried Noodles","カニ炒め麺の店"],["Mangosteen Orchard","マンゴスチン園"],["Gem Cutting Shop","宝石研磨店"],["Trat Golden Pineapple Farm","トラートの黄金パイナップル畑"],["Koh Chang Resort","チャーン島のリゾート"],["Red Pork Rice Shop","カオムーデーン屋"],["Nakhon Chai Si Pomelo Orchard","ナコーンチャイシーの文旦園"],["Don Wai Floating Market","ドンワイ水上マーケット"],["River Kwai Restaurant","クウェー川のレストラン"],["River Kwai Raft House","クウェー川の水上コテージ"],["Bo Phloi Sapphire Mine","ボープローイの宝石鉱山"],["Dragon Jar Pottery","竜の水がめ工房"],["Damnoen Saduak Floating Market","ダムヌンサドゥアク水上マーケット"],["Khanom Mo Kaeng Shop","カノムモーケーン屋"],["Rose Apple Orchard","ローズアップル園"],["Ban Laem Salt Fields","バーンレムの塩田"],["Hua Hin Seafood","ホアヒンのシーフード店"],["Pranburi Pineapple Farm","プラーンブリーのパイナップル畑"],["Hua Hin Seaside Resort","ホアヒンの海辺リゾート"],["Coral Snorkel Shop","サンゴのシュノーケル店"],["White Sand Beach Bungalows","白砂ビーチのバンガロー"],["Bang Bao Seafood","バンバオの海鮮料理店"],["Sai Kaew Beach Bar","サイケーオビーチのバー"],["Ao Prao Resort","アオプラオのリゾート"],["Khao Yai Vineyard", "カオヤイのぶどう園"],["Khao Yai Resort", "カオヤイのリゾート"],["Pak Chong Sweet Corn Stall", "パークチョンのスイートコーン屋"],["Korat Fried Noodle Shop", "コラート焼きビーフン屋"],["Pak Thong Chai Silk Mill", "パクトンチャイの絹織物工場"],["Suranari Industrial Estate", "スラナリー工業団地"],["Khao Suan Kwang Grilled Chicken", "カオスアンクワーンの焼き鳥屋"],["Sugar Mill", "製糖工場"],["Phu Wiang Dinosaur Museum", "プーウィアン恐竜博物館"],["Naem Nueang Restaurant", "ネームヌアン屋"],["Udon Night Bazaar", "ウドーンのナイトバザール"],["Red Lotus Lake Boat Tour", "赤い蓮の湖ボートツアー"],["Tha Sadet Mekong Market", "メコン川沿いのターサデット市場"],["Mekong River Fish Restaurant", "メコン川の魚料理店"],["Phu Ruea Highland Vegetable Farm", "プールアの高原野菜畑"],["Phu Kradueng Campground", "プークラドゥンのキャンプ場"],["Buriram Race Circuit", "ブリーラムのサーキット"],["Jasmine Rice Mill", "ジャスミン米の精米所"],["Ta Klang Elephant Village", "タークラーンの象の村"],["Surin Silk Weaving House", "スリンの絹織物工房"],["Krayasat Sweets Shop", "カヤサート(お菓子)屋"],["Ubon Moo Yor Shop", "ウボンのムーヨー屋"],["Candle Sculpture Workshop", "ろうそく彫刻工房"],["Khong Chiam River Cruise", "コーンチアムのリバークルーズ"],["Indochina Market", "インドシナ市場"],["Border Trade Depot", "国境交易所"],["Mekong Riverside Café", "メコン川沿いのカフェ"],["Mekong View Hotel", "メコンビューのホテル"],["Phon Yang Kham Beef Farm", "ポンヤーンカムの肉牛牧場"],["Indigo Dye Workshop", "藍染め工房"],["Thung Kula Jasmine Rice Fields", "トゥンクラーのジャスミン米の田んぼ"],["Roi Et Larb Shop", "ローイエットのラープ屋"]];
+ ["Muak Lek Dairy Farm","ムアックレックの牧場"],["Fresh-Milk Steakhouse","牧場ステーキ店"],["Cement Plant","セメント工場"],["Paet Rio Chicken Farm","ペートリウ養鶏場"],["Bang Khla Floating Market","バーンクラー水上マーケット"],["Car Assembly Plant","自動車組立工場"],["Nong Mon Bamboo Sticky Rice","ノーンモンのカオラーム屋"],["Ang Sila Oyster Farm","アーンシラーの牡蠣養殖場"],["Laem Chabang Deep-Sea Port","レムチャバン深海港"],["Beachfront Seafood","ビーチのシーフード店"],["Koh Larn Ferry","ラン島行きフェリー"],["Pattaya Beach Hotel","パタヤのビーチホテル"],["Rayong Fish Sauce Shop","ラヨーンの魚醤店"],["Rayong Durian Orchard","ラヨーンのドリアン園"],["Koh Samet Speedboat","サメット島行きボート"],["Map Ta Phut Petrochemical Estate","マプタプット石油化学団地"],["Crab Fried Noodles","カニ炒め麺の店"],["Mangosteen Orchard","マンゴスチン園"],["Gem Cutting Shop","宝石研磨店"],["Trat Golden Pineapple Farm","トラートの黄金パイナップル畑"],["Koh Chang Resort","チャーン島のリゾート"],["Red Pork Rice Shop","カオムーデーン屋"],["Nakhon Chai Si Pomelo Orchard","ナコーンチャイシーの文旦園"],["Don Wai Floating Market","ドンワイ水上マーケット"],["River Kwai Restaurant","クウェー川のレストラン"],["River Kwai Raft House","クウェー川の水上コテージ"],["Bo Phloi Sapphire Mine","ボープローイの宝石鉱山"],["Dragon Jar Pottery","竜の水がめ工房"],["Damnoen Saduak Floating Market","ダムヌンサドゥアク水上マーケット"],["Khanom Mo Kaeng Shop","カノムモーケーン屋"],["Rose Apple Orchard","ローズアップル園"],["Ban Laem Salt Fields","バーンレムの塩田"],["Hua Hin Seafood","ホアヒンのシーフード店"],["Pranburi Pineapple Farm","プラーンブリーのパイナップル畑"],["Hua Hin Seaside Resort","ホアヒンの海辺リゾート"],["Coral Snorkel Shop","サンゴのシュノーケル店"],["White Sand Beach Bungalows","白砂ビーチのバンガロー"],["Bang Bao Seafood","バンバオの海鮮料理店"],["Sai Kaew Beach Bar","サイケーオビーチのバー"],["Ao Prao Resort","アオプラオのリゾート"],["Khao Yai Vineyard", "カオヤイのぶどう園"],["Khao Yai Resort", "カオヤイのリゾート"],["Pak Chong Sweet Corn Stall", "パークチョンのスイートコーン屋"],["Korat Fried Noodle Shop", "コラート焼きビーフン屋"],["Pak Thong Chai Silk Mill", "パクトンチャイの絹織物工場"],["Suranari Industrial Estate", "スラナリー工業団地"],["Khao Suan Kwang Grilled Chicken", "カオスアンクワーンの焼き鳥屋"],["Sugar Mill", "製糖工場"],["Phu Wiang Dinosaur Museum", "プーウィアン恐竜博物館"],["Naem Nueang Restaurant", "ネームヌアン屋"],["Udon Night Bazaar", "ウドーンのナイトバザール"],["Red Lotus Lake Boat Tour", "赤い蓮の湖ボートツアー"],["Tha Sadet Mekong Market", "メコン川沿いのターサデット市場"],["Mekong River Fish Restaurant", "メコン川の魚料理店"],["Phu Ruea Highland Vegetable Farm", "プールアの高原野菜畑"],["Phu Kradueng Campground", "プークラドゥンのキャンプ場"],["Buriram Race Circuit", "ブリーラムのサーキット"],["Jasmine Rice Mill", "ジャスミン米の精米所"],["Ta Klang Elephant Village", "タークラーンの象の村"],["Surin Silk Weaving House", "スリンの絹織物工房"],["Krayasat Sweets Shop", "カヤサート(お菓子)屋"],["Ubon Moo Yor Shop", "ウボンのムーヨー屋"],["Candle Sculpture Workshop", "ろうそく彫刻工房"],["Khong Chiam River Cruise", "コーンチアムのリバークルーズ"],["Indochina Market", "インドシナ市場"],["Border Trade Depot", "国境交易所"],["Mekong Riverside Café", "メコン川沿いのカフェ"],["Mekong View Hotel", "メコンビューのホテル"],["Phon Yang Kham Beef Farm", "ポンヤーンカムの肉牛牧場"],["Indigo Dye Workshop", "藍染め工房"],["Thung Kula Jasmine Rice Fields", "トゥンクラーのジャスミン米の田んぼ"],["Roi Et Larb Shop", "ローイエットのラープ屋"],["Thap Sakae Coconut Grove", "タップサケーのココナッツ園"],["Sun-Dried Squid Stall", "一夜干しイカの店"],["Robusta Coffee Farm", "ロブスタコーヒー農園"],["Lady Finger Banana Orchard", "レディフィンガーバナナ園"],["Thung Wua Laen Beach Resort", "トゥンウアレーンビーチのリゾート"],["Raksawarin Hot Springs", "ラクサワリン温泉"],["Ranong Fishing Port", "ラノーン漁港"],["Surat Oyster Farm", "スラートの牡蠣養殖場"],["Oil Palm Plantation", "アブラヤシ農園"],["Chaiya Salted Egg Shop", "チャイヤーの塩卵の店"],["Khanom Jeen Kaeng Tai Pla", "カノムチン・ゲーンタイプラー屋"],["Nielloware Workshop", "ニエロ細工の工房"],["Khiriwong Mangosteen Orchard", "キーリーウォンのマンゴスチン園"],["Thale Noi Boat Tour", "タレーノーイのボートツアー"],["Sangyod Rice Fields", "サンヨート米の田んぼ"],["Kim Yong Market", "キムヨン市場"],["Hat Yai Fried Chicken", "ハートヤイのフライドチキン屋"],["Rubber Factory", "ゴム工場"],["Samila Seafood Restaurant", "サミラーの海鮮料理店"],["Samila Beach Hotel", "サミラービーチのホテル"],["Railay Rock Climbing Tours", "ライレイのロッククライミングツアー"],["Krabi Seafood Restaurant", "クラビの海鮮料理店"],["Phang Nga Bay Canoe Tours", "パンガー湾のカヌーツアー"],["Phang Nga Rubber Plantation", "パンガーのゴム園"],["Patong Beach Hotel", "パトンビーチのホテル"],["Phuket Hokkien Noodle Shop", "プーケットのホッケン麺の店"],["Phuket Old Town Café", "プーケット旧市街のカフェ"],["Trang Roast Pork Shop", "トランのローストポーク屋"],["Trang Rubber Plantation", "トランのゴム園"],["Chaweng Beach Resort", "チャウエンビーチのリゾート"],["Samui Coconut Plantation", "サムイ島のココナッツ園"],["Maya Bay Snorkel Tours", "マヤ湾のシュノーケルツアー"],["Loh Dalum Beach Bar", "ロダラムビーチのバー"],["Lanta Beach Bungalows", "ランタ島のビーチバンガロー"],["Lanta Old Town Restaurant", "ランタ旧市街のレストラン"]];
 const ITEM_TR={
   exp:{n:["Express Train","急行列車"],when:["Before rolling","サイコロの前"],eff:["Roll 2 dice","サイコロ2個で進む"]},
   sexp:{n:["Special Express","特急列車"],when:["Before rolling","サイコロの前"],eff:["Roll 3 dice","サイコロ3個で進む"]},
@@ -511,7 +511,24 @@ const QUIZ_TR=[
 [["What is the name of the important stupa symbolising Nakhon Phanom?", "Phra That Phanom", ["Phra That Doi Suthep", "Phra That Hariphunchai", "Phra That Choeng Chum"], "A festival honours it every year around February"], ["ナコーンパノム県を象徴する大切な仏塔の名前は?", "プラタート・パノム", ["プラタート・ドイステープ", "プラタート・ハリプンチャイ", "プラタート・チューンチュム"], "毎年2月ごろに参拝の祭りがある"]],
 [["Sakon Nakhon is famous for cloth dyed with which plant?", "Indigo", ["Turmeric", "Sappan wood", "Ebony fruit"], "Sakon Nakhon's indigo cloth has a beautiful deep blue colour"], ["サコンナコーン県で有名な、植物で染めた布は何染め?", "藍染め", ["ウコン染め", "スオウ染め", "黒檀の実染め"], "サコンナコーンの藍染めは美しい深い青色"]],
 [["Which vast plain growing top-quality jasmine rice covers several provinces including Roi Et?", "Thung Kula Rong Hai", ["Thung Salaeng Luang", "Thung Rangsit", "Thung Bua Tong"], "Once a dry wasteland, it now grows some of the best jasmine rice"], ["ローイエットなど複数の県にまたがる、最高級ジャスミン米の大平原は?", "トゥンクラー・ローンハイ", ["トゥンサレーンルアン", "トゥンランシット", "トゥンブアトーン"], "かつては乾いた荒れ地、今は最高のジャスミン米の産地"]],
-[["What is the Isan festival of firing rockets to ask for rain called?", "Bun Bang Fai", ["Bun Phawet", "Bun Khao Chi", "Bun Kathin"], "The most famous is in Yasothon, around May"], ["雨乞いのためにロケットを打ち上げるイサーンの祭りは?", "ブン・バンファイ", ["ブン・パウェート", "ブン・カオチー", "ブン・カティン"], "ヤソートンの祭りが最も有名で、5月ごろ開かれる"]]
+[["What is the Isan festival of firing rockets to ask for rain called?", "Bun Bang Fai", ["Bun Phawet", "Bun Khao Chi", "Bun Kathin"], "The most famous is in Yasothon, around May"], ["雨乞いのためにロケットを打ち上げるイサーンの祭りは?", "ブン・バンファイ", ["ブン・パウェート", "ブン・カオチー", "ブン・カティン"], "ヤソートンの祭りが最も有名で、5月ごろ開かれる"]],
+[["Where is the narrowest point of Thailand, from the Gulf to the Myanmar border?", "Prachuap Khiri Khan", ["Chumphon", "Ranong", "Phetchaburi"], "It is only about 11 km wide, in Mueang Prachuap district"], ["タイの国土が最も狭くなる地点(タイ湾からミャンマー国境まで)はどの県?", "プラチュワップキーリーカン", ["チュムポン", "ラノーン", "ペッチャブリー"], "幅は約11kmしかなく、プラチュワップの中心郡にある"]],
+[["Which province is called the \"Gateway to the South\" and grows the most robusta coffee in Thailand?", "Chumphon", ["Ranong", "Surat Thani", "Krabi"], "Chumphon produces more robusta coffee than any other province"], ["「南部への玄関口」と呼ばれ、タイで最もロブスタコーヒーを栽培する県は?", "チュムポン", ["ラノーン", "スラートターニー", "クラビ"], "チュムポンはロブスタコーヒーの生産量が国内一"]],
+[["Which is Thailand's rainiest province, described as \"eight months rain, four months sun\"?", "Ranong", ["Chumphon", "Trang", "Phuket"], "It rains in Ranong for about eight months a year"], ["「雨8か月、晴れ4か月」と言われるタイで最も雨の多い県は?", "ラノーン", ["チュムポン", "トラン", "プーケット"], "ラノーンは1年のうち約8か月雨が降る"]],
+[["Ko Samui belongs to which province?", "Surat Thani", ["Chumphon", "Nakhon Si Thammarat", "Krabi"], "Surat Thani includes Ko Samui, Ko Pha-ngan and Ko Tao"], ["サムイ島はどの県にある?", "スラートターニー", ["チュムポン", "ナコーンシータンマラート", "クラビ"], "スラートターニー県にはサムイ島、パンガン島、タオ島がある"]],
+[["What are Ko Samui's famous oddly shaped rocks with a legend of an old couple called?", "Hin Ta Hin Yai", ["Hin Phat", "Hin Chang", "Hin Sam Wan"], "Hin Ta Hin Yai stand by Lamai Beach"], ["老夫婦の伝説がある、サムイ島の不思議な形の有名な岩は?", "ヒンター・ヒンヤーイ", ["ヒンパット", "ヒンチャーン", "ヒンサームワーン"], "ラマイビーチのそばにある"]],
+[["The most important great stupa of southern Thailand is in which province?", "Nakhon Si Thammarat", ["Songkhla", "Phatthalung", "Surat Thani"], "It has long been the spiritual heart of the South"], ["南部で最も大切な大仏塔がある県は?", "ナコーンシータンマラート", ["ソンクラー", "パッタルン", "スラートターニー"], "昔から南部の人々の心のよりどころ"]],
+[["What is the southern folk art of shadow plays with carved leather puppets called?", "Nang Talung", ["Nora", "Likay", "Rod puppets"], "Nakhon Si Thammarat and Phatthalung are famous for it"], ["彫った革の人形を使う南部の影絵芝居は?", "ナンタルン", ["ノーラー", "リケー", "棒人形劇"], "ナコーンシータンマラートとパッタルンが有名"]],
+[["What is the freshwater lake in Phatthalung full of water birds and red lotuses called?", "Thale Noi", ["Red Lotus Sea", "Bueng Boraphet", "Kwan Phayao"], "Thale Noi is a wildlife sanctuary, home to swimming water buffalo too"], ["水鳥が多く赤い蓮が咲くパッタルン県の淡水湖は?", "タレーノーイ", ["赤い蓮の海", "ブンボーラペット", "パヤオ湖"], "野生生物保護区で、泳ぐ水牛もいる"]],
+[["What is Phatthalung's famous native red rice called?", "Sangyod rice", ["Jasmine rice", "Riceberry", "Khiao Ngu sticky rice"], "Sangyod rice of Phatthalung is a registered geographical indication"], ["パッタルン県名産の赤い在来米は?", "サンヨート米", ["ジャスミン米", "ライスベリー", "キアオグー餅米"], "パッタルンのサンヨート米は地理的表示に登録されている"]],
+[["The golden mermaid statue on Samila Beach is in which province?", "Songkhla", ["Phuket", "Satun", "Pattani"], "The golden mermaid is the symbol of Samila Beach"], ["サミラービーチの金の人魚像がある県は?", "ソンクラー", ["プーケット", "サトゥーン", "パッターニー"], "金の人魚はサミラービーチのシンボル"]],
+[["Hat Yai, the South's big trading city, is in which province?", "Songkhla", ["Satun", "Phatthalung", "Trang"], "Hat Yai isn't a province — it's Songkhla's largest district"], ["南部の大きな商業都市ハートヤイはどの県にある?", "ソンクラー", ["サトゥーン", "パッタルン", "トラン"], "ハートヤイは県ではなく、ソンクラー県最大の郡"]],
+[["What is Thailand's largest island?", "Phuket", ["Ko Samui", "Ko Chang", "Ko Lanta"], "Phuket is linked to the mainland by the Sarasin Bridge"], ["タイで一番大きい島は?", "プーケット", ["サムイ島", "チャーン島", "ランタ島"], "プーケットはサラシン橋で本土とつながっている"]],
+[["In which festival do people in Phuket dress in white and eat vegetarian food every October?", "Vegetarian Festival", ["Songkran", "Loy Krathong", "Chinese New Year"], "Phuket's festival features parades and firecrackers throughout"], ["毎年10月、プーケットの人々が白い服を着て精進料理を食べる祭りは?", "ベジタリアン祭り", ["ソンクラーン", "ロイクラトン", "旧正月"], "パレードや爆竹で町じゅうがにぎわう"]],
+[["The world-famous nail-shaped limestone rock in the sea is in which bay?", "Phang Nga Bay", ["Gulf of Thailand", "Maya Bay", "Ao Nang"], "Ko Tapu stands in front of Khao Phing Kan in Ao Phang Nga National Park"], ["海に立つ釘の形の有名な石灰岩は、どの湾にある?", "パンガー湾", ["タイ湾", "マヤ湾", "アオナン"], "タプー島はアオパンガー国立公園のカオピンガンの前にある"]],
+[["The famous Maya Bay is in which island group?", "Phi Phi Islands", ["Similan Islands", "Ang Thong Islands", "Surin Islands"], "The Phi Phi Islands are part of Krabi province"], ["有名なマヤ湾があるのはどの諸島?", "ピピ諸島", ["シミラン諸島", "アーントーン諸島", "スリン諸島"], "ピピ諸島はクラビ県にある"]],
+[["Trang's famous breakfast is roast pork eaten with what?", "Dim sum", ["Sticky rice", "Rice porridge", "Khanom jeen noodles"], "Locals love roast pork with dim sum and coffee for breakfast"], ["トラン県の名物朝ごはんは、ローストポークと何?", "飲茶", ["もち米", "お粥", "カノムチン"], "地元の人は朝にローストポークと飲茶とコーヒーを楽しむ"]],
+[["Which sea-people group has traditionally lived on Ko Lanta?", "Urak Lawoi", ["Moken", "Hmong", "Karen"], "The Urak Lawoi hold a boat-floating ceremony twice a year"], ["ランタ島に昔から暮らす海の民は?", "ウラクラウォイ", ["モーケン", "モン", "カレン"], "ウラクラウォイの人々は年に2回、舟流しの儀式を行う"]]
 ];
 function quizIn(i){ const q=QUIZ[i]; if(LANG==="th"||!QUIZ_TR[i]) return q; const t=QUIZ_TR[i][LI()]; return [q[0],t[0],t[1],t[2],t[3]]; }
 
@@ -1948,6 +1965,7 @@ Object.assign(TR,{"ร้านขายการ์ด": ["Card Shop", "カー�
 Object.assign(TR,{"ของดีหายาก": ["Rare Treasure", "レアなお宝"], "ของดีประจำ{st}": ["Treasure of {st}", "{st}のお宝"], "เจอของหายาก!": ["A rare treasure!", "レアなお宝発見!"], "มีชิ้นเดียวในเกม ใครถึงก่อนได้ก่อน": ["Only one in the game — first come, first served", "ゲームに1つだけ。早い者勝ち"], "มีชิ้นเดียวในเกม · มูลค่า {m} นับรวมทรัพย์สิน": ["One of a kind · worth {m}, counts toward assets", "1点もの・価値{m}(総資産に加算)"], "ไม่ซื้อ": ["Pass", "買わない"], "{p} ได้ของหายาก{t} {m}": ["{p} got the treasure {t} for {m}", "{p}がお宝「{t}」を{m}で入手"], "{p} ได้{t}!": ["{p} got {t}!", "{p}が{t}を入手!"], "ของหายาก:": ["Treasures:", "お宝:"], "ยังไม่มีเจ้าของ ({m})": ["Unclaimed ({m})", "持ち主なし({m})"], "{t}ได้กลิ่นทุเรียนของ{p} หนีไปแล้ว": ["{t} smelled {p}'s durian and fled", "{t}は{p}のドリアンのにおいで逃げた"], "ผีหนีกลิ่นทุเรียน!": ["The ghost flees the durian!", "おばけがドリアンから逃げた!"], "ทุเรียนหลงลับแลกลิ่นแรงจนผีไม่กล้าเข้าใกล้": ["The Long Lap Lae durian smells so strong no ghost dares come near", "ロンラップレードリアンのにおいが強すぎて、おばけは近寄れない"], "✦ บางสถานีมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน": ["✦ Some stations hold a one-of-a-kind treasure. First to stop there may buy it — each has a special power and counts toward assets", "✦ 一部の駅には1点もののお宝がある。最初に止まった人が買える。特殊能力があり総資産に加算"], "ทุเรียนหลงลับแลลูกแรกของปี": ["First Long Lap Lae Durian of the Year", "その年最初のロンラップレードリアン"], "กลิ่นแรงจนผีร้ายไม่กล้าเข้าใกล้ เจอผีร้ายแล้วผีหนีไปเอง": ["So pungent that bad ghosts flee on sight", "においが強烈で、悪いおばけは逃げていく"], "ร่มบ่อสร้างลายทองคำ": ["Gold-Painted Bo Sang Umbrella", "金描きのボーサーン傘"], "ช่องแดงเสียเงินครึ่งเดียว": ["Red spaces cost only half", "赤マスの損が半分"], "ผ้าไหมยกดอกทองคำ": ["Golden Brocade Silk", "金の錦織シルク"], "ปิดงบทุกปีรับเพิ่ม 5 ล้าน": ["+5M at every year-end", "毎年の決算で+5百万"], "ชามตราไก่ใบแรก": ["The First Rooster Bowl", "最初のニワトリ柄どんぶり"], "หยุดช่องการ์ดจั่ว 2 ใบ": ["Draw 2 on card spaces", "カードマスで2枚引く"], "สังคโลกโบราณ": ["Ancient Sangkhalok Celadon", "古代サンカローク焼き"], "ซื้อกิจการลด 10%": ["Businesses cost 10% less", "物件が10%引き"], "โอ่งมังกรยักษ์": ["Giant Dragon Jar", "巨大な竜の水がめ"], "ช่องน้ำเงินได้เพิ่ม 3 ล้าน": ["+3M on blue spaces", "青マスで+3百万"], "ไพลินเม็ดงาม": ["Flawless Chanthaburi Sapphire", "極上のチャンタブリーサファイア"], "ของสะสมมูลค่าสูงสุดในเกม": ["The most valuable collectible in the game", "ゲームで最も高価なコレクション"], "ไข่มุกทะเลตะวันออก": ["Eastern Sea Pearl", "東の海の真珠"], "นั่งเรือฟรี ไม่ติดคลื่น": ["Free boat rides, never stopped by waves", "船が無料、波で欠航しない"]});
 Object.assign(TR,{"ภาคตะวันออกเฉียงเหนือ": ["Northeast (Isan)", "東北部(イサーン)"], "ฟอสซิลไดโนเสาร์ภูเวียง": ["Phu Wiang Dinosaur Fossil", "プーウィアンの恐竜化石"], "ปิดงบ กิจการท่องเที่ยวของคุณได้เพิ่มแห่งละ 2 ล้าน": ["Year-end: +2M for each of your tourism businesses", "決算で観光物件1つにつき+2百万"], "แคนไม้ไผ่ทองคำ": ["Golden Bamboo Khaen", "金の竹笙(ケーン)"], "ทุกต้นเดือนรับ 1 ล้าน": ["+1M at the start of every month", "毎月の始めに+1百万"]});
 Object.assign(TR,{"บุญบั้งไฟ": ["Rocket Festival", "ロケット祭り"], "แห่เทียนพรรษา": ["Candle Festival", "ろうそく祭り"], "จุดบั้งไฟขอฝน เจ้าของกิจการเกษตรและท่องเที่ยวในภาคอีสานรับ 3 ล้านต่อแห่ง": ["Rockets are fired to call the rain. Owners of Isan farming and tourism businesses get 3M each", "雨乞いのロケットが打ち上がる。イサーンの農業・観光物件の持ち主は1つにつき3百万"], "เจ้าของกิจการที่อุบลราชธานีและกิจการท่องเที่ยวในภาคอีสานรับ 4 ล้านต่อแห่ง": ["Owners of businesses in Ubon Ratchathani and Isan tourism businesses get 4M each", "ウボンラーチャターニーの物件とイサーンの観光物件の持ち主は1つにつき4百万"], "บุญบั้งไฟ กิจการเกษตรและท่องเที่ยวในอีสานรับ 3 ล้านต่อแห่ง": ["Rocket Festival: Isan farming and tourism businesses get 3M each", "ロケット祭り:イサーンの農業・観光物件に1つにつき3百万"], "แห่เทียนพรรษา กิจการอุบลฯ และท่องเที่ยวอีสานรับ 4 ล้านต่อแห่ง": ["Candle Festival: Ubon and Isan tourism businesses get 4M each", "ろうそく祭り:ウボンとイサーンの観光物件に1つにつき4百万"], "เกษตรและท่องเที่ยวในอีสาน +3/แห่ง": ["Isan farming & tourism +3 each", "イサーンの農業・観光 +3/件"], "กิจการอุบลฯ และท่องเที่ยวอีสาน +4/แห่ง": ["Ubon & Isan tourism +4 each", "ウボンとイサーンの観光 +4/件"]});
+Object.assign(TR,{"ภาคใต้": ["South", "南部"], "ช่วงมรสุมของทะเลนี้ ({t}) คลื่นแรงกว่าปกติ": ["Monsoon season on this sea ({t}): rougher waves", "この海のモンスーンの時期({t})は波が高い"], "มิ.ย.–ก.ย.": ["Jun–Sep", "6〜9月"], "พ.ย.–ม.ค.": ["Nov–Jan", "11〜1月"], "พ.ค.–ต.ค.": ["May–Oct", "5〜10月"], "หนังตะลุงชุดครู": ["Master Shadow Puppet Set", "名人の影絵人形セット"], "ต้นปี (เม.ย.) ได้การ์ดไอเทมฟรี 1 ใบ": ["Get a free item card every April", "毎年4月にアイテムカードを1枚もらえる"], "เรือหัวโทงทองคำ": ["Golden Long-tail Boat", "金のロングテールボート"], "ทอยเต๋าได้ 6 รับ 3 ล้าน": ["Roll a 6 to get 3M", "6が出たら3百万"], "{p} ทอยได้ 6 เรือหัวโทงทองคำนำโชค รับ {m}": ["{p} rolled a 6 — the golden long-tail brings luck: +{m}", "{p}は6を出した!金のロングテールボートの幸運で{m}"], "เทศกาลกินเจภูเก็ต": ["Phuket Vegetarian Festival", "プーケットのベジタリアン祭り"], "เจ้าของกิจการที่ภูเก็ตและร้านอาหารในภาคใต้รับ 3 ล้านต่อแห่ง": ["Owners of Phuket businesses and southern restaurants get 3M each", "プーケットの物件と南部の飲食物件の持ち主は1つにつき3百万"], "เทศกาลกินเจภูเก็ต กิจการภูเก็ตและร้านอาหารภาคใต้รับ 3 ล้านต่อแห่ง": ["Phuket Vegetarian Festival: Phuket businesses and southern restaurants get 3M each", "プーケットのベジタリアン祭り:プーケットの物件と南部の飲食物件に1つにつき3百万"], "กิจการภูเก็ตและร้านอาหารภาคใต้ +3/แห่ง": ["Phuket & southern food +3 each", "プーケットと南部の飲食 +3/件"]});
 const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ สุดสายแต้มเกินเด้งกลับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "สถานีที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา", "✦ บางสถานีมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
@@ -2022,17 +2040,41 @@ chain("bus",["UDN","lo1","lo2","LOE"]);
 chain("bus",["UBN","md1","md2","MDH","np1","np2","NPM"]);
 chain("road",["UDN","sn1","sn2","SKN","sn4","sn5","NPM"]);
 chain("road",["KKN","re1","re2","RET","re4","re5","UBN"]);
+// ภาคใต้
+Object.assign(NODES,{
+  s12:{x:63,y:731,t:"b"},s13:{x:63,y:748,t:"r"},PKN:{x:63,y:765,t:"st"},
+  cp1:{x:76,y:779,t:"y"},cp2:{x:90,y:794,t:"b"},CPN:{x:104,y:809,t:"st"},
+  rn1:{x:86,y:821,t:"g"},rn2:{x:68,y:833,t:"g"},RNG:{x:50,y:845,t:"st"},
+  cp4:{x:112,y:825,t:"r"},cp5:{x:120,y:841,t:"b"},cp6:{x:128,y:857,t:"y"},SNI:{x:136,y:873,t:"st"},
+  so1:{x:136,y:890,t:"b"},so2:{x:136,y:907,t:"r"},NST:{x:136,y:924,t:"st"},
+  pl1:{x:136,y:941,t:"y"},pl2:{x:136,y:958,t:"b"},PLG:{x:136,y:975,t:"st"},
+  hy1:{x:136,y:992,t:"r"},hy2:{x:136,y:1009,t:"y"},HYI:{x:136,y:1026,t:"st"},
+  sg1:{x:156,y:1034,t:"g"},sg2:{x:176,y:1040,t:"g"},SGK:{x:196,y:1046,t:"st"},
+  kb1:{x:116,y:885,t:"g"},kb2:{x:96,y:900,t:"g"},KBI:{x:76,y:915,t:"st"},
+  pg1:{x:46,y:861,t:"g"},pg2:{x:42,y:877,t:"g"},PNA:{x:38,y:893,t:"st"},
+  pn1:{x:51,y:901,t:"b"},pn2:{x:64,y:908,t:"y"},
+  pk1:{x:34,y:910,t:"r"},PKT:{x:30,y:927,t:"st"},
+  tg1:{x:88,y:935,t:"r"},tg2:{x:96,y:955,t:"b"},TRG:{x:104,y:975,t:"st"},tp1:{x:120,y:975,t:"y"},
+  KSM:{x:190,y:873,t:"st"},PPI:{x:52,y:952,t:"st"},LNT:{x:64,y:994,t:"st"}
+});
+chain("rail",["HHN","s12","s13","PKN","cp1","cp2","CPN","cp4","cp5","cp6","SNI","so1","so2","NST","pl1","pl2","PLG","hy1","hy2","HYI"]);
+chain("bus",["CPN","rn1","rn2","RNG","pg1","pg2","PNA","pk1","PKT"]);
+chain("bus",["SNI","kb1","kb2","KBI"]);
+chain("bus",["HYI","sg1","sg2","SGK"]);
+chain("road",["PNA","pn1","pn2","KBI","tg1","tg2","TRG","tp1","PLG"]);
+EDGES.push(["SNI","KSM","sea"],["PKT","PPI","sea"],["KBI","PPI","sea"],["KBI","LNT","sea"]);
 // เกาะ: ไปได้ทางเรือเท่านั้น
 Object.assign(NODES,{KCG:{x:148,y:777,t:"st"},SMT:{x:114,y:690,t:"st"}});
 EDGES.push(["TRT","KCG","sea"],["RYG","SMT","sea"]);
 [["DNC","f1"],["f1","PHR"],["PHR","f2"],["f2","PYO"]].forEach(e=>EDGES.push([e[0],e[1],"future"]));
-const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย",SRB:"สระบุรี",CCO:"ฉะเชิงเทรา",CBI:"ชลบุรี",PTY:"พัทยา",RYG:"ระยอง",CTI:"จันทบุรี",TRT:"ตราด",NPT:"นครปฐม",KRI:"กาญจนบุรี",RBR:"ราชบุรี",PBI:"เพชรบุรี",HHN:"หัวหิน",KCG:"เกาะช้าง",SMT:"เกาะเสม็ด",PKC:"ปากช่อง",KRT:"นครราชสีมา",KKN:"ขอนแก่น",UDN:"อุดรธานี",NKI:"หนองคาย",LOE:"เลย",BRM:"บุรีรัมย์",SRN:"สุรินทร์",UBN:"อุบลราชธานี",MDH:"มุกดาหาร",NPM:"นครพนม",SKN:"สกลนคร",RET:"ร้อยเอ็ด"};
+const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย",SRB:"สระบุรี",CCO:"ฉะเชิงเทรา",CBI:"ชลบุรี",PTY:"พัทยา",RYG:"ระยอง",CTI:"จันทบุรี",TRT:"ตราด",NPT:"นครปฐม",KRI:"กาญจนบุรี",RBR:"ราชบุรี",PBI:"เพชรบุรี",HHN:"หัวหิน",KCG:"เกาะช้าง",SMT:"เกาะเสม็ด",PKC:"ปากช่อง",KRT:"นครราชสีมา",KKN:"ขอนแก่น",UDN:"อุดรธานี",NKI:"หนองคาย",LOE:"เลย",BRM:"บุรีรัมย์",SRN:"สุรินทร์",UBN:"อุบลราชธานี",MDH:"มุกดาหาร",NPM:"นครพนม",SKN:"สกลนคร",RET:"ร้อยเอ็ด",PKN:"ประจวบคีรีขันธ์",CPN:"ชุมพร",RNG:"ระนอง",SNI:"สุราษฎร์ธานี",NST:"นครศรีธรรมราช",PLG:"พัทลุง",HYI:"หาดใหญ่",SGK:"สงขลา",KBI:"กระบี่",PNA:"พังงา",PKT:"ภูเก็ต",TRG:"ตรัง",KSM:"เกาะสมุย",PPI:"เกาะพีพี",LNT:"เกาะลันตา"};
 const LABEL_UP=new Set(["PKC","BRM","SKN","RET"]), LABEL_DN=new Set(["KRT"]);
 const ISAN=new Set(["PKC","KRT","KKN","UDN","NKI","LOE","BRM","SRN","UBN","MDH","NPM","SKN","RET"]);
-const LABEL_R=new Set(["NKI","SRN","UBN","MDH","NPM","SMT","SKT","PAI","PYO","CRI","PHR","NAN","SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","RBR","PBI","HHN"]);
-const EAST=new Set(["CCO","CBI","PTY","RYG","CTI","TRT","KCG","SMT"]), WEST=new Set(["KRI","RBR","PBI","HHN"]);
+const SOUTH=new Set(["CPN","RNG","SNI","NST","PLG","HYI","SGK","KBI","PNA","PKT","TRG","KSM","PPI","LNT"]);
+const LABEL_R=new Set(["CPN","NST","PLG","SGK","KBI","PKT","KSM","NKI","SRN","UBN","MDH","NPM","SMT","SKT","PAI","PYO","CRI","PHR","NAN","SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","RBR","PBI","HHN"]);
+const EAST=new Set(["CCO","CBI","PTY","RYG","CTI","TRT","KCG","SMT"]), WEST=new Set(["KRI","RBR","PBI","HHN","PKN"]);
 const CLASSIC=["BKK","AYT","LOP","NSW","PSL","SKT","UTD","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"];
-const regionOf=s=>ISAN.has(s)?"ภาคตะวันออกเฉียงเหนือ":NORTH.has(s)?"ภาคเหนือ":EAST.has(s)?"ภาคตะวันออก":WEST.has(s)?"ภาคตะวันตก":"ภาคกลาง";
+const regionOf=s=>SOUTH.has(s)?"ภาคใต้":ISAN.has(s)?"ภาคตะวันออกเฉียงเหนือ":NORTH.has(s)?"ภาคเหนือ":EAST.has(s)?"ภาคตะวันออก":WEST.has(s)?"ภาคตะวันตก":"ภาคกลาง";
 const NORTH=new Set(["UTD","DNC","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"]);
 const FOOD="อาหาร",AGRI="เกษตร",TOUR="ท่องเที่ยว",IND="อุตสาหกรรม";
 const TYPE_COL={[FOOD]:"#E8742A",[AGRI]:"#3E9B4F",[TOUR]:"#2F7FC1",[IND]:"#6B5FA8"};
@@ -2051,7 +2093,8 @@ const PROPS=[["BKK","ร้านข้าวมันไก่",FOOD,10,3],["BK
  ["HHN","ร้านซีฟู้ดหัวหิน",FOOD,15,5],["HHN","สวนสับปะรดปราณบุรี",AGRI,15,5],["HHN","รีสอร์ตริมทะเลหัวหิน",TOUR,70,11],
  ["KCG","ร้านดำน้ำดูปะการัง",TOUR,35,9],["KCG","บังกะโลหาดทรายขาว",TOUR,25,7],["KCG","ร้านซีฟู้ดบ้านสลักเพชร",FOOD,10,4],
  ["SMT","บาร์ริมหาดทรายแก้ว",FOOD,15,5],["SMT","รีสอร์ตอ่าวพร้าว",TOUR,70,13],
- ["PKC","ไร่องุ่นเขาใหญ่",AGRI,25,7],["PKC","รีสอร์ตเขาใหญ่",TOUR,60,10],["PKC","ร้านข้าวโพดหวานปากช่อง",FOOD,6,2],["KRT","ร้านผัดหมี่โคราช",FOOD,6,2],["KRT","โรงทอผ้าไหมปักธงชัย",IND,35,5],["KRT","นิคมอุตสาหกรรมสุรนารี",IND,70,8],["KKN","ร้านไก่ย่างเขาสวนกวาง",FOOD,8,3],["KKN","โรงงานน้ำตาล",IND,50,6],["KKN","พิพิธภัณฑ์ไดโนเสาร์ภูเวียง",TOUR,25,6],["UDN","ร้านแหนมเนือง",FOOD,10,3],["UDN","ไนท์บาซาร์อุดร",TOUR,20,5],["UDN","เรือชมทะเลบัวแดง",TOUR,30,7],["NKI","ตลาดท่าเสด็จริมโขง",TOUR,20,5],["NKI","ร้านปลาแม่น้ำโขง",FOOD,10,3],["LOE","ไร่ผักเมืองหนาวภูเรือ",AGRI,15,5],["LOE","ลานกางเต็นท์ภูกระดึง",TOUR,25,6],["BRM","สนามแข่งรถบุรีรัมย์",TOUR,80,11],["BRM","โรงสีข้าวหอมมะลิ",AGRI,20,6],["SRN","หมู่บ้านช้างตากลาง",TOUR,20,5],["SRN","โรงทอผ้าไหมสุรินทร์",IND,30,4],["SRN","ร้านกระยาสารท",FOOD,6,2],["UBN","ร้านหมูยออุบล",FOOD,8,3],["UBN","โรงหล่อเทียนพรรษา",IND,25,4],["UBN","ล่องเรือโขงเจียม",TOUR,25,6],["MDH","ตลาดอินโดจีน",TOUR,25,6],["MDH","ด่านการค้าชายแดน",IND,60,8],["NPM","ร้านกาแฟริมโขง",FOOD,10,3],["NPM","โรงแรมวิวแม่น้ำโขง",TOUR,40,8],["SKN","ฟาร์มโคขุนโพนยางคำ",AGRI,30,8],["SKN","ร้านผ้าย้อมคราม",IND,20,4],["RET","นาข้าวหอมมะลิทุ่งกุลา",AGRI,25,7],["RET","ร้านลาบร้อยเอ็ด",FOOD,6,2]]
+ ["PKC","ไร่องุ่นเขาใหญ่",AGRI,25,7],["PKC","รีสอร์ตเขาใหญ่",TOUR,60,10],["PKC","ร้านข้าวโพดหวานปากช่อง",FOOD,6,2],["KRT","ร้านผัดหมี่โคราช",FOOD,6,2],["KRT","โรงทอผ้าไหมปักธงชัย",IND,35,5],["KRT","นิคมอุตสาหกรรมสุรนารี",IND,70,8],["KKN","ร้านไก่ย่างเขาสวนกวาง",FOOD,8,3],["KKN","โรงงานน้ำตาล",IND,50,6],["KKN","พิพิธภัณฑ์ไดโนเสาร์ภูเวียง",TOUR,25,6],["UDN","ร้านแหนมเนือง",FOOD,10,3],["UDN","ไนท์บาซาร์อุดร",TOUR,20,5],["UDN","เรือชมทะเลบัวแดง",TOUR,30,7],["NKI","ตลาดท่าเสด็จริมโขง",TOUR,20,5],["NKI","ร้านปลาแม่น้ำโขง",FOOD,10,3],["LOE","ไร่ผักเมืองหนาวภูเรือ",AGRI,15,5],["LOE","ลานกางเต็นท์ภูกระดึง",TOUR,25,6],["BRM","สนามแข่งรถบุรีรัมย์",TOUR,80,11],["BRM","โรงสีข้าวหอมมะลิ",AGRI,20,6],["SRN","หมู่บ้านช้างตากลาง",TOUR,20,5],["SRN","โรงทอผ้าไหมสุรินทร์",IND,30,4],["SRN","ร้านกระยาสารท",FOOD,6,2],["UBN","ร้านหมูยออุบล",FOOD,8,3],["UBN","โรงหล่อเทียนพรรษา",IND,25,4],["UBN","ล่องเรือโขงเจียม",TOUR,25,6],["MDH","ตลาดอินโดจีน",TOUR,25,6],["MDH","ด่านการค้าชายแดน",IND,60,8],["NPM","ร้านกาแฟริมโขง",FOOD,10,3],["NPM","โรงแรมวิวแม่น้ำโขง",TOUR,40,8],["SKN","ฟาร์มโคขุนโพนยางคำ",AGRI,30,8],["SKN","ร้านผ้าย้อมคราม",IND,20,4],["RET","นาข้าวหอมมะลิทุ่งกุลา",AGRI,25,7],["RET","ร้านลาบร้อยเอ็ด",FOOD,6,2],
+ ["PKN","สวนมะพร้าวทับสะแก",AGRI,15,5],["PKN","ร้านปลาหมึกแดดเดียว",FOOD,8,3],["CPN","สวนกาแฟโรบัสต้า",AGRI,20,6],["CPN","สวนกล้วยเล็บมือนาง",AGRI,10,4],["CPN","รีสอร์ตหาดทุ่งวัวแล่น",TOUR,30,7],["RNG","บ่อน้ำแร่ร้อนรักษะวาริน",TOUR,20,5],["RNG","ท่าเรือประมงระนอง",IND,40,5],["SNI","ฟาร์มหอยนางรมสุราษฎร์",AGRI,15,5],["SNI","สวนปาล์มน้ำมัน",AGRI,30,8],["SNI","ร้านไข่เค็มไชยา",FOOD,6,2],["NST","ร้านขนมจีนแกงไตปลา",FOOD,6,2],["NST","โรงงานเครื่องถมนคร",IND,25,4],["NST","สวนมังคุดคีรีวง",AGRI,15,5],["PLG","เรือชมทะเลน้อย",TOUR,20,5],["PLG","นาข้าวสังข์หยด",AGRI,10,4],["HYI","ตลาดกิมหยง",TOUR,20,5],["HYI","ร้านไก่ทอดหาดใหญ่",FOOD,8,3],["HYI","โรงงานยางพารา",IND,50,6],["SGK","ร้านอาหารทะเลสมิหลา",FOOD,10,3],["SGK","โรงแรมหาดสมิหลา",TOUR,40,8],["KBI","ทัวร์ปีนผาไร่เลย์",TOUR,30,7],["KBI","ร้านอาหารทะเลกระบี่",FOOD,10,3],["PNA","ทัวร์พายเรือแคนูอ่าวพังงา",TOUR,35,8],["PNA","สวนยางพาราพังงา",AGRI,15,5],["PKT","โรงแรมหาดป่าตอง",TOUR,90,14],["PKT","ร้านหมี่ฮกเกี้ยนภูเก็ต",FOOD,8,3],["PKT","คาเฟ่ย่านเมืองเก่าภูเก็ต",TOUR,25,6],["TRG","ร้านหมูย่างเมืองตรัง",FOOD,10,3],["TRG","สวนยางพาราตรัง",AGRI,20,6],["KSM","รีสอร์ตหาดเฉวง",TOUR,80,13],["KSM","สวนมะพร้าวเกาะสมุย",AGRI,15,5],["PPI","ทัวร์ดำน้ำอ่าวมาหยา",TOUR,40,10],["PPI","บาร์ริมหาดอ่าวโละดาลัม",FOOD,15,5],["LNT","บ้านพักริมหาดลันตา",TOUR,30,8],["LNT","ร้านอาหารเมืองเก่าลันตา",FOOD,8,3]]
   .map(([s,n,t,price,profit],id)=>({id,s,n,t,price,profit}));
 const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
 const ITEMS={
@@ -2068,7 +2111,7 @@ const ITEMS={
   plane:{n:"เหมาเครื่องบิน",when:"ใช้แทนการทอย · ปีที่ 2",eff:"ย้ายไปจุดหมายทันที",count:1}
 };
 // ร้านขายการ์ด: ราคาซื้อ (ขายคืนได้ครึ่งราคา)
-const SHOPS=new Set(["BKK","NSW","CMI","CRI","PTY","HHN","KCG","KRT","UBN"]);
+const SHOPS=new Set(["BKK","NSW","CMI","CRI","PTY","HHN","KCG","KRT","UBN","HYI","PKT"]);
 const CARD_PRICE={exp:4,sexp:8,home:6,drive:10,mob:5,amulet:6,pass:6,lotto:2,viral:10,insure:5,plane:30};
 const sellPrice=k=>Math.floor(CARD_PRICE[k]/2);
 // ของดีหายาก: แต่ละอย่างมีชิ้นเดียว ใครหยุดที่สถานีนั้นก่อนซื้อได้ · นับรวมในทรัพย์สิน และมีพลังพิเศษ
@@ -2082,7 +2125,9 @@ const TREASURES={
   sapphire:{s:"CTI",n:"ไพลินเม็ดงาม",val:35,eff:"ของสะสมมูลค่าสูงสุดในเกม"},
   pearl:{s:"KCG",n:"ไข่มุกทะเลตะวันออก",val:20,eff:"นั่งเรือฟรี ไม่ติดคลื่น"},
   fossil:{s:"KKN",n:"ฟอสซิลไดโนเสาร์ภูเวียง",val:25,eff:"ปิดงบ กิจการท่องเที่ยวของคุณได้เพิ่มแห่งละ 2 ล้าน"},
-  khaen:{s:"RET",n:"แคนไม้ไผ่ทองคำ",val:15,eff:"ทุกต้นเดือนรับ 1 ล้าน"}
+  khaen:{s:"RET",n:"แคนไม้ไผ่ทองคำ",val:15,eff:"ทุกต้นเดือนรับ 1 ล้าน"},
+  puppet:{s:"NST",n:"หนังตะลุงชุดครู",val:15,eff:"ต้นปี (เม.ย.) ได้การ์ดไอเทมฟรี 1 ใบ"},
+  longtail:{s:"KBI",n:"เรือหัวโทงทองคำ",val:20,eff:"ทอยเต๋าได้ 6 รับ 3 ล้าน"}
 };
 const TRE_AT=st=>Object.keys(TREASURES).find(k=>TREASURES[k].s===st);
 const treOwner=k=>S&&S.tre?S.tre[k]:undefined;
@@ -2106,12 +2151,16 @@ function bfs(from,newRail){
 }
 const D0=bfs("BKK",false);
 // เรือและเครื่องบิน
-const ISLANDS=new Set(["KCG","SMT"]);
-const FERRY={TRT:"KCG",KCG:"TRT",RYG:"SMT",SMT:"RYG"};
-const AIRPORTS=["BKK","PSL","CMI","CRI","TRT","HHN","KKN","UDN","UBN"];
+const ISLANDS=new Set(["KCG","SMT","KSM","PPI","LNT"]);
+const FERRY={TRT:["KCG"],KCG:["TRT"],RYG:["SMT"],SMT:["RYG"],SNI:["KSM"],KSM:["SNI"],PKT:["PPI"],PPI:["PKT","KBI"],KBI:["PPI","LNT"],LNT:["KBI"]};
+const SEA_ZONE={KCG:"east",SMT:"east",KSM:"gulf",PPI:"andaman",LNT:"andaman"};
+const ROUGH={east:[2,3,4,5],gulf:[7,8,9],andaman:[1,2,3,4,5,6]};   // เดือนมรสุม (0=เม.ย.)
+const ROUGH_TXT={east:"มิ.ย.–ก.ย.",gulf:"พ.ย.–ม.ค.",andaman:"พ.ค.–ต.ค."};
+const AIRPORTS=["BKK","PSL","CMI","CRI","TRT","HHN","KKN","UDN","UBN","PKT","KBI","HYI","KSM"];
 const BOAT_FARE=2;
-const rainy=()=>S&&S.month>=2&&S.month<=5;   // มิ.ย.–ก.ย. มรสุม
-const waveMax=()=>rainy()?2:1;
+const zoneOf=(a,b)=>SEA_ZONE[ISLANDS.has(a)?a:b];
+const rainy=(a,b)=>!!S&&ROUGH[zoneOf(a,b)].includes(S.month);
+const waveMax=(a,b)=>rainy(a,b)?2:1;
 const flyFare=(a,b)=>5+Math.ceil((bfs(a,false)[b]||0)*0.7);
 const REWARD={}; for(const s in NAME) if(s!=="DNC") REWARD[s]=s==="BKK"?20:5+D0[s];
 
@@ -2181,9 +2230,9 @@ function commit(){
 // ================= BOARD =================
 const svg=$("board");
 function buildBoard(){
-  let h=`<rect x="0" y="0" width="400" height="796" fill="var(--field-c)"/><rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><path d="M196 196H400V472H178V400H196z" fill="var(--field-ne)"/><path d="M104 487H210V796H104z" fill="var(--field-e)"/><path d="M0 588H104V796H0z" fill="var(--field-w)"/>`;
+  let h=`<rect x="0" y="0" width="400" height="1100" fill="var(--field-c)"/><path d="M0 796H250V1100H0z" fill="var(--field-s)"/><rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><path d="M196 196H400V472H178V400H196z" fill="var(--field-ne)"/><path d="M104 487H210V796H104z" fill="var(--field-e)"/><path d="M0 588H104V796H0z" fill="var(--field-w)"/>`;
   h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">${T("ภาคตะวันออก")} ▶</text><text x="6" y="704" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ${T("ภาคตะวันตก")}</text>`;
-  h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ${T("ภาคเหนือ")}</text><text x="394" y="206" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-ne)" font-family="Mitr">${T("ภาคตะวันออกเฉียงเหนือ")} ▶</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ${T("ภาคกลาง")}</text>`;
+  h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ${T("ภาคเหนือ")}</text><text x="6" y="808" font-size="4.6" font-weight="600" fill="var(--lbl-s)" font-family="Mitr">▼ ${T("ภาคใต้")}</text><text x="394" y="206" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-ne)" font-family="Mitr">${T("ภาคตะวันออกเฉียงเหนือ")} ▶</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ${T("ภาคกลาง")}</text>`;
   for(const id of ISLANDS){const n=NODES[id];h+=`<ellipse cx="${n.x}" cy="${n.y}" rx="12" ry="10" fill="var(--sea)"/>`;}
   for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];if(k==="sea"){h+=`<line class="sea" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;continue;}h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":k==="road"?"road":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
   h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
@@ -2271,7 +2320,7 @@ function renderGhosts(){
 }
 function sizeBoard(){
   const m=$("map"); const base=Math.min(Math.max((m.clientWidth-2)/210,1.7),3.8)*zoom;
-  svg.style.width=(400*base)+"px"; svg.style.height=(760*base)+"px"; svg.dataset.scale=base;
+  svg.style.width=(400*base)+"px"; svg.style.height=(1050*base)+"px"; svg.dataset.scale=base;
 }
 function focusNode(id,smooth=true){
   const m=$("map"),n=NODES[id],sc=+svg.dataset.scale||2;
@@ -2305,7 +2354,7 @@ function renderPanel(){
     const isl=ISLANDS.has(p.node);
     if(isl) prompt=T("อยู่บนเกาะ ต้องนั่งเรือกลับฝั่ง");
     actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>${T("ใช้การ์ด")}</button>`
-      +((FERRY[p.node]||AIRPORTS.includes(p.node))?`<div class="travel-row">${FERRY[p.node]?`<button class="btn travel" id="aBoat">⛴ ${T("เรือไป{st}",{st:FERRY[p.node]})}</button>`:""}${AIRPORTS.includes(p.node)?`<button class="btn travel" id="aFly">✈ ${T("บิน")}</button>`:""}</div>`:"")
+      +((FERRY[p.node]||AIRPORTS.includes(p.node))?`<div class="travel-row">${(FERRY[p.node]||[]).map(to=>`<button class="btn travel" data-boat="${to}">⛴ ${T("เรือไป{st}",{st:to})}</button>`).join("")}${AIRPORTS.includes(p.node)?`<button class="btn travel" id="aFly">✈ ${T("บิน")}</button>`:""}</div>`:"")
       +(isl?"":`<button class="btn primary" id="aRoll">${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`);
   } else if(UI.mode==="pick"){
     prompt=T("ได้ {n} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง",{n:UI.steps});
@@ -2324,7 +2373,7 @@ function renderPanel(){
   </section>
   <section class="card"><div class="label">${T("อันดับ · แตะเพื่อดูกิจการ")}</div><div class="board-list">${rows}</div></section>
   <section class="card"><div class="label">${T("ข่าวล่าสุด")}</div><div class="log">${S.log.slice(0,5).map(t=>`<div>${esc(logText(t))}</div>`).join("")}</div></section>`;
-  if(isMyTurn()&&UI.mode==="choose"){ const r=$("aRoll"); if(r) r.onclick=onRoll; const c=$("aCard"); if(c) c.onclick=onCard; const bt=$("aBoat"); if(bt) bt.onclick=onBoat; const fl=$("aFly"); if(fl) fl.onclick=onFly; }
+  if(isMyTurn()&&UI.mode==="choose"){ const r=$("aRoll"); if(r) r.onclick=onRoll; const c=$("aCard"); if(c) c.onclick=onCard; document.querySelectorAll("[data-boat]").forEach(b=>b.onclick=()=>onBoat(b.dataset.boat)); const fl=$("aFly"); if(fl) fl.onclick=onFly; }
   document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>onPick(b.dataset.pick));
   document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
 }
@@ -2412,19 +2461,19 @@ async function useCard(k){
   }
   return "cancel";
 }
-async function onBoat(){
+async function onBoat(to){
   if(UI.busy||!isMyTurn()||UI.mode!=="choose") return;
-  const p=cur(), to=FERRY[p.node]; if(!to) return;
-  const w=waveMax();
-  const ok=await modal({eyebrow:T("ท่าเรือ{st}",{st:p.node}),title:T("นั่งเรือไป{st}?",{st:to}),html:`<p>${T("ค่าเรือ {m} · ทอยเต๋าก่อนออกเรือ ถ้าได้ {n} คลื่นแรง เรือไม่ออก (ไม่เสียค่าเรือ)",{m:BOAT_FARE,n:w>1?"1–2":"1"})}</p>${rainy()?`<p class="note">${T("ช่วงมรสุม (มิ.ย.–ก.ย.) คลื่นแรงกว่าปกติ")}</p>`:""}`,buttons:[{label:T("ยกเลิก"),value:false},{label:T("ขึ้นเรือ"),value:true,primary:true,disabled:p.money<BOAT_FARE&&!ISLANDS.has(p.node)}]});
+  const p=cur(); if(!(FERRY[p.node]||[]).includes(to)) return;
+  const w=waveMax(p.node,to);
+  const ok=await modal({eyebrow:T("ท่าเรือ{st}",{st:p.node}),title:T("นั่งเรือไป{st}?",{st:to}),html:`<p>${T("ค่าเรือ {m} · ทอยเต๋าก่อนออกเรือ ถ้าได้ {n} คลื่นแรง เรือไม่ออก (ไม่เสียค่าเรือ)",{m:BOAT_FARE,n:w>1?"1–2":"1"})}</p>${rainy(p.node,to)?`<p class="note">${T("ช่วงมรสุมของทะเลนี้ ({t}) คลื่นแรงกว่าปกติ",{t:ROUGH_TXT[zoneOf(p.node,to)]})}</p>`:""}`,buttons:[{label:T("ยกเลิก"),value:false},{label:T("ขึ้นเรือ"),value:true,primary:true,disabled:p.money<BOAT_FARE&&!ISLANDS.has(p.node)}]});
   if(!ok) return;
-  UI.busy=true; UI.mode="moving"; await takeBoat(); UI.busy=false; endTurn();
+  UI.busy=true; UI.mode="moving"; await takeBoat(to); UI.busy=false; endTurn();
 }
-async function takeBoat(){
-  const p=cur(), from=p.node, to=FERRY[from];
+async function takeBoat(to){
+  const p=cur(), from=p.node;
   const pearl=hasTre(S.turn,"pearl");
   const d=pearl?6:(await rollAndShow(1))[0];
-  if(d<=waveMax()){
+  if(d<=waveMax(from,to)){
     log("{p} รอเรือที่{st} คลื่นแรง เรือไม่ออก",{p:p.name,st:from}); commit(); render();
     await info(T("คลื่นแรง!"),T("ทอยได้ {d} เรือไม่ออก รอเทิร์นหน้า",{d}),T("ท่าเรือ{st}",{st:from}));
     return;
@@ -2448,10 +2497,10 @@ async function takeFlight(to){
 // บอท: นั่งเรือ/บิน ถ้าช่วยให้ใกล้จุดหมายขึ้นมาก
 async function botTravel(){
   const p=cur(), d=bfs(S.dest,S.newRail), here=d[p.node]??99;
-  const to=FERRY[p.node];
+  const to=(FERRY[p.node]||[]).slice().sort((a,b)=>(d[a]??99)-(d[b]??99))[0];
   if(to&&(ISLANDS.has(p.node)||((d[to]??99)<here&&p.money>=BOAT_FARE))){
     await brief({eyebrow:T("ท่าเรือ{st}",{st:p.node}),title:T("{p} นั่งเรือไป{st}",{p:esc(p.name),st:to}),html:""},1200);
-    await takeBoat(); return true;
+    await takeBoat(to); return true;
   }
   if(AIRPORTS.includes(p.node)&&p.flew!==S.dest){
     let best=null,bd=here;
@@ -2621,7 +2670,7 @@ const CURSES={
   slow:{n:"หลงป่า",eff:"เดินได้แค่ 1 ช่อง"}
 };
 const CURSE_POOL=["dice","pricey","leak","unlucky","nocard"];
-const TEMPLES=new Set(["AYT","SRB","SKT","LPN","NAN","CRI","NPT","PBI","NPM","NKI"]);
+const TEMPLES=new Set(["AYT","SRB","SKT","LPN","NAN","CRI","NPT","PBI","NPM","NKI","NST"]);
 const TEMPLE_FEE=5;
 // ผี: โผล่สุ่มต้นเดือน บางตัวเดินเองทุกสิ้นเดือน (ทอยเต๋าเหมือนผู้เล่น)
 const GHOSTS={
@@ -2865,7 +2914,24 @@ const QUIZ=[
  ["NPM", "พระธาตุองค์สำคัญคู่จังหวัดนครพนม ชื่ออะไร", "พระธาตุพนม", ["พระธาตุดอยสุเทพ", "พระธาตุหริภุญชัย", "พระธาตุเชิงชุม"], "ทุกปีมีงานนมัสการพระธาตุพนมช่วงเดือนกุมภาพันธ์"],
  ["SKN", "จังหวัดสกลนครมีชื่อเสียงเรื่องผ้าย้อมสีจากพืชชนิดใด", "คราม", ["ขมิ้น", "ฝาง", "มะเกลือ"], "ผ้าย้อมครามสกลนครให้สีน้ำเงินเข้มสวยงาม"],
  ["RET", "ทุ่งนาขนาดใหญ่ที่ปลูกข้าวหอมมะลิชั้นดี ครอบคลุมหลายจังหวัดรวมทั้งร้อยเอ็ด ชื่ออะไร", "ทุ่งกุลาร้องไห้", ["ทุ่งแสลงหลวง", "ทุ่งรังสิต", "ทุ่งบัวตอง"], "เดิมเป็นที่แห้งแล้ง ปัจจุบันเป็นแหล่งข้าวหอมมะลิที่ดีที่สุดแห่งหนึ่ง"],
- ["*", "ประเพณีจุดบั้งไฟขอฝนของชาวอีสาน เรียกว่าอะไร", "บุญบั้งไฟ", ["บุญผะเหวด", "บุญข้าวจี่", "บุญกฐิน"], "งานบุญบั้งไฟที่ยโสธรมีชื่อเสียงที่สุด จัดราวเดือนพฤษภาคม"]
+ ["*", "ประเพณีจุดบั้งไฟขอฝนของชาวอีสาน เรียกว่าอะไร", "บุญบั้งไฟ", ["บุญผะเหวด", "บุญข้าวจี่", "บุญกฐิน"], "งานบุญบั้งไฟที่ยโสธรมีชื่อเสียงที่สุด จัดราวเดือนพฤษภาคม"],
+ ["PKN", "จุดที่แผ่นดินไทยแคบที่สุด (จากอ่าวไทยถึงชายแดนพม่า) อยู่ในจังหวัดใด", "ประจวบคีรีขันธ์", ["ชุมพร", "ระนอง", "เพชรบุรี"], "จุดแคบที่สุดกว้างประมาณ 11 กิโลเมตร อยู่ในอำเภอเมืองประจวบฯ"],
+ ["CPN", "จังหวัดที่ได้ชื่อว่าเป็น \"ประตูสู่ภาคใต้\" และปลูกกาแฟโรบัสต้ามากที่สุดในไทย คือจังหวัดใด", "ชุมพร", ["ระนอง", "สุราษฎร์ธานี", "กระบี่"], "ชุมพรผลิตกาแฟโรบัสต้าได้มากที่สุดของประเทศ"],
+ ["RNG", "จังหวัดที่ฝนตกชุกที่สุดของไทย จนมีคำพูดว่า \"ฝนแปด แดดสี่\" คือจังหวัดใด", "ระนอง", ["ชุมพร", "ตรัง", "ภูเก็ต"], "ระนองมีฝนตกเกือบ 8 เดือนต่อปี"],
+ ["SNI", "เกาะสมุยอยู่ในจังหวัดใด", "สุราษฎร์ธานี", ["ชุมพร", "นครศรีธรรมราช", "กระบี่"], "สุราษฎร์ธานีมีเกาะสมุย เกาะพะงัน และเกาะเต่า"],
+ ["KSM", "หินรูปร่างแปลกตาชื่อดังที่มีตำนานคู่ตายายบนเกาะสมุย เรียกว่าอะไร", "หินตาหินยาย", ["หินพัด", "หินช้าง", "หินสามวาฬ"], "หินตาหินยายอยู่ริมหาดละไม"],
+ ["NST", "พระบรมธาตุเจดีย์องค์สำคัญที่สุดของภาคใต้ อยู่ที่จังหวัดใด", "นครศรีธรรมราช", ["สงขลา", "พัทลุง", "สุราษฎร์ธานี"], "พระบรมธาตุเจดีย์นครศรีธรรมราชเป็นศูนย์รวมใจชาวใต้มายาวนาน"],
+ ["NST", "การแสดงเงาบนจอผ้าด้วยตัวหนังแกะสลัก เป็นศิลปะพื้นบ้านของภาคใต้ เรียกว่าอะไร", "หนังตะลุง", ["โนรา", "ลิเก", "หุ่นกระบอก"], "นครศรีธรรมราชและพัทลุงเป็นแหล่งหนังตะลุงที่มีชื่อ"],
+ ["PLG", "ทะเลสาบน้ำจืดที่มีนกน้ำมากมายและดอกบัวแดงบานเต็มผืนน้ำในจังหวัดพัทลุง ชื่ออะไร", "ทะเลน้อย", ["ทะเลบัวแดง", "บึงบอระเพ็ด", "กว๊านพะเยา"], "ทะเลน้อยเป็นเขตห้ามล่าสัตว์ป่า มีควายน้ำด้วย"],
+ ["PLG", "ข้าวพันธุ์พื้นเมืองเมล็ดสีแดงที่ขึ้นชื่อของจังหวัดพัทลุง คือข้าวอะไร", "ข้าวสังข์หยด", ["ข้าวหอมมะลิ", "ข้าวไรซ์เบอร์รี่", "ข้าวเหนียวเขี้ยวงู"], "ข้าวสังข์หยดเมืองพัทลุงได้รับขึ้นทะเบียนสิ่งบ่งชี้ทางภูมิศาสตร์"],
+ ["SGK", "รูปปั้นนางเงือกทองที่หาดสมิหลา อยู่จังหวัดใด", "สงขลา", ["ภูเก็ต", "สตูล", "ปัตตานี"], "นางเงือกทองเป็นสัญลักษณ์ของหาดสมิหลา"],
+ ["HYI", "หาดใหญ่ เมืองการค้าใหญ่ของภาคใต้ อยู่ในจังหวัดใด", "สงขลา", ["สตูล", "พัทลุง", "ตรัง"], "หาดใหญ่ไม่ใช่จังหวัด แต่เป็นอำเภอที่ใหญ่ที่สุดของสงขลา"],
+ ["PKT", "เกาะที่ใหญ่ที่สุดของประเทศไทย คือเกาะอะไร", "ภูเก็ต", ["เกาะสมุย", "เกาะช้าง", "เกาะลันตา"], "ภูเก็ตเชื่อมกับแผ่นดินใหญ่ด้วยสะพานสารสิน"],
+ ["PKT", "เทศกาลที่ชาวภูเก็ตแต่งชุดขาวและกินอาหารเจทุกเดือนตุลาคม คือเทศกาลอะไร", "เทศกาลกินเจ", ["สงกรานต์", "ลอยกระทง", "ตรุษจีน"], "เทศกาลกินเจภูเก็ตมีขบวนแห่และจุดประทัดตลอดงาน"],
+ ["PNA", "เขาหินปูนรูปตะปูกลางทะเลที่โด่งดังไปทั่วโลก อยู่ในอ่าวใด", "อ่าวพังงา", ["อ่าวไทย", "อ่าวมาหยา", "อ่าวนาง"], "เกาะตะปูอยู่หน้าเขาพิงกัน ในอุทยานแห่งชาติอ่าวพังงา"],
+ ["KBI", "อ่าวมาหยาที่สวยงามโด่งดัง อยู่ในหมู่เกาะใด", "หมู่เกาะพีพี", ["หมู่เกาะสิมิลัน", "หมู่เกาะอ่างทอง", "หมู่เกาะสุรินทร์"], "หมู่เกาะพีพีอยู่ในจังหวัดกระบี่"],
+ ["TRG", "อาหารเช้าขึ้นชื่อของจังหวัดตรัง คือหมูย่างกินคู่กับอะไร", "ติ่มซำ", ["ข้าวเหนียว", "โจ๊ก", "ขนมจีน"], "ชาวตรังนิยมกินหมูย่างกับติ่มซำและกาแฟเป็นมื้อเช้า"],
+ ["LNT", "ชาวเลกลุ่มหนึ่งที่อาศัยอยู่บนเกาะลันตามาแต่ดั้งเดิม คือกลุ่มใด", "อูรักลาโว้ย", ["มอแกน", "ม้ง", "กะเหรี่ยง"], "ชาวอูรักลาโว้ยมีประเพณีลอยเรือปีละสองครั้ง"]
 ];
 const QUIZ_PROV={DNC:"PHR"};
 function nearestStation(node){
@@ -3036,6 +3102,7 @@ async function diceFX(vals,label,sub){
 function rollLabel(vals){ const s=vals.reduce((a,b)=>a+b,0); return {label:T("{n} แต้ม",{n:s}),sub:S.songkran&&vals.length?T("สงกรานต์รถติด −1"):""}; }
 async function rollAndShow(n){
   const vals=[...Array(n)].map(()=>hasCurse(S.turn,"dice")?rnd(3):rnd(6));
+  if(hasTre(S.turn,"longtail")&&vals.includes(6)){ cur().money+=3; log("{p} ทอยได้ 6 เรือหัวโทงทองคำนำโชค รับ {m}",{p:cur().name,m:3}); }
   S.lastRoll={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),p:S.turn,vals,kind:"move"};
   ON.seenRoll=S.lastRoll.id; commit();
   const {label,sub}=rollLabel(vals); await diceFX(vals,label,sub);
@@ -3190,7 +3257,7 @@ function ownersOf(filter,per){
 }
 async function startMonth(){
   S.songkran=false; S.ghosts=S.ghosts||[];
-  S.players.forEach((q,k)=>{ if(hasTre(k,"khaen")) q.money+=1; });
+  S.players.forEach((q,k)=>{ if(hasTre(k,"khaen")) q.money+=1; if(S.month===0&&hasTre(k,"puppet")) drawItem(k); });
   if(spawnGhosts(S.players.length>=3?2:1)) log("ผีโผล่ใหม่บนแผนที่",{});
   render();
   const m=S.month;
@@ -3202,6 +3269,7 @@ async function startMonth(){
   if(m===1){ const r=ownersOf(q=>ISAN.has(q.s)&&(q.t===AGRI||q.t===TOUR),3); r.forEach(([k,a])=>S.players[k].money+=a); log("บุญบั้งไฟ กิจการเกษตรและท่องเที่ยวในอีสานรับ 3 ล้านต่อแห่ง",{}); render(); await evInfo("บุญบั้งไฟ",`<p>${T("จุดบั้งไฟขอฝน เจ้าของกิจการเกษตรและท่องเที่ยวในภาคอีสานรับ 3 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
   if(m===3){ const r=ownersOf(q=>q.s==="UBN"||(ISAN.has(q.s)&&q.t===TOUR),4); r.forEach(([k,a])=>S.players[k].money+=a); log("แห่เทียนพรรษา กิจการอุบลฯ และท่องเที่ยวอีสานรับ 4 ล้านต่อแห่ง",{}); render(); await evInfo("แห่เทียนพรรษา",`<p>${T("เจ้าของกิจการที่อุบลราชธานีและกิจการท่องเที่ยวในภาคอีสานรับ 4 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
   if(m===5){ const r=ownersOf(q=>q.t===AGRI,2); await evInfo("น้ำท่วม",`<p>${T("เจ้าของกิจการเกษตรจ่ายค่าซ่อม 2 ล้านต่อแห่ง")}</p>`+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,T("ค่าซ่อมหลังน้ำท่วม"),true); log("น้ำท่วม กิจการเกษตรจ่ายค่าซ่อม",{}); render(); }
+  if(m===6){ const r=ownersOf(q=>q.s==="PKT"||(SOUTH.has(q.s)&&q.t===FOOD),3); r.forEach(([k,a])=>S.players[k].money+=a); log("เทศกาลกินเจภูเก็ต กิจการภูเก็ตและร้านอาหารภาคใต้รับ 3 ล้านต่อแห่ง",{}); render(); await evInfo("เทศกาลกินเจภูเก็ต",`<p>${T("เจ้าของกิจการที่ภูเก็ตและร้านอาหารในภาคใต้รับ 3 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
   if(m===7){ const r=ownersOf(q=>q.s==="CMI"||q.s==="SKT",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ลอยกระทง/ยี่เป็ง กิจการเชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง",{}); render(); await evInfo("ลอยกระทง / ยี่เป็ง",`<p>${T("เจ้าของกิจการที่เชียงใหม่และสุโขทัยรับ 5 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
   if(m===8){ const got=S.players.map((p,k)=>{const c=drawItem(k);return `<p>${esc(p.name)}: ${T(c?"ได้การ์ด 1 ใบ":"มือเต็ม")}</p>`;}).join(""); log("ปีใหม่ ทุกคนได้การ์ดไอเทม",{}); render(); await evInfo("ปีใหม่",`<p>${T("ทุกคนจั่วการ์ดไอเทม 1 ใบ")}</p>`+got,E); }
   if(m===9){ const r=ownersOf(q=>q.t===TOUR&&NORTH.has(q.s),2); await evInfo("ฝุ่น PM2.5",`<p>${T("เจ้าของกิจการท่องเที่ยวในภาคเหนือจ่าย 2 ล้านต่อแห่ง")}</p>`+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,T("นักท่องเที่ยวหายเพราะฝุ่น"),true); log("ฝุ่น PM2.5 ท่องเที่ยวภาคเหนือจ่าย 2 ล้านต่อแห่ง",{}); render(); }
@@ -3243,11 +3311,11 @@ async function showGameOver(){
 
 // ================= CARD ART & FACES =================
 const ART={map:{}};
-const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN","KCG","SMT","PKC","KRT","KKN","UDN","NKI","LOE","BRM","SRN","UBN","MDH","NPM","SKN","RET"];
+const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN","KCG","SMT","PKC","KRT","KKN","UDN","NKI","LOE","BRM","SRN","UBN","MDH","NPM","SKN","RET","PKN","CPN","RNG","SNI","NST","PLG","HYI","SGK","KBI","PNA","PKT","TRG","KSM","PPI","LNT"];
 const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane"];
 const pad2=n=>String(n).padStart(2,"0");
 const ARTID={tre:k=>"T"+pad2(Object.keys(TREASURES).indexOf(k)+1),prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
-const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:11},(_,i)=>"G"+pad2(i+1)),...Array.from({length:11},(_,i)=>"E"+pad2(i+1)),...Object.keys(TREASURES).map((k,i)=>"T"+pad2(i+1))];
+const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:11},(_,i)=>"G"+pad2(i+1)),...Array.from({length:12},(_,i)=>"E"+pad2(i+1)),...Object.keys(TREASURES).map((k,i)=>"T"+pad2(i+1))];
 const GC_TYPE={[FOOD]:["#FF8A3D","#FFE3CC","#FFD3B0"],[AGRI]:["#45B864","#DDF5E3","#C6EDD0"],[TOUR]:["#3E9BE0","#DCEEFF","#C4E2FF"],[IND]:["#7E8AB0","#E3E8F2","#D0D8E8"]};
 const GC_KIND={treasure:["#C99A2E","#FFF4D6","#FBE6B0"],dest:["#E8453C","#FFE0DA","#FFCBC2"],item:["#FFC21A","#FFF3C4","#FFE89A"],ghost:["#9B7BE0","#EDE5FF","#DCCEFF"],event:["#1FA59A","#D4F4EF","#B3EAE2"]};
 const gcVars=c=>`--c:${c[0]};--cl:${c[1]};--cl2:${c[2]}`;
@@ -3271,8 +3339,8 @@ function eventCard(id,month,name,lines){
 }
 const wrapCard=c=>`<div class="gc-wrap">${c}</div>`;
 const wrapGhost=c=>`<div class="gc-wrap ghost">${c}</div>`;
-const EVID={"สงกรานต์":"E01","ฤดูผลไม้":"E02","น้ำท่วม":"E03","ลอยกระทง / ยี่เป็ง":"E04","ปีใหม่":"E05","ฝุ่น PM2.5":"E06","ตรุษจีน":"E07","เดือนปิดงบ":"E08","เปิดรางใหม่!":"E09","บุญบั้งไฟ":"E10","แห่เทียนพรรษา":"E11"};
-const EVTXT={E01:"รถติด ทุกคนเดิน −1 ช่อง · กิจการท่องเที่ยวรับ 2 ล้าน/แห่ง",E02:"กิจการเกษตรรับ 3 ล้าน/แห่ง",E03:"กิจการเกษตรจ่ายค่าซ่อม 2 ล้าน/แห่ง",E04:"กิจการเชียงใหม่และสุโขทัยรับ 5 ล้าน/แห่ง",E05:"ทุกคนจั่วการ์ดไอเทม 1 ใบ",E06:"ท่องเที่ยวภาคเหนือจ่าย 2 ล้าน/แห่ง",E07:"กิจการนครสวรรค์รับ 5 ล้าน/แห่ง",E08:"จบเดือนนี้ทุกกิจการจ่ายกำไร ผูกขาด ×2",E09:"รางเด่นชัย–แพร่–พะเยาเปิดใช้",E10:"เกษตรและท่องเที่ยวในอีสาน +3/แห่ง",E11:"กิจการอุบลฯ และท่องเที่ยวอีสาน +4/แห่ง"};
+const EVID={"สงกรานต์":"E01","ฤดูผลไม้":"E02","น้ำท่วม":"E03","ลอยกระทง / ยี่เป็ง":"E04","ปีใหม่":"E05","ฝุ่น PM2.5":"E06","ตรุษจีน":"E07","เดือนปิดงบ":"E08","เปิดรางใหม่!":"E09","บุญบั้งไฟ":"E10","แห่เทียนพรรษา":"E11","เทศกาลกินเจภูเก็ต":"E12"};
+const EVTXT={E01:"รถติด ทุกคนเดิน −1 ช่อง · กิจการท่องเที่ยวรับ 2 ล้าน/แห่ง",E02:"กิจการเกษตรรับ 3 ล้าน/แห่ง",E03:"กิจการเกษตรจ่ายค่าซ่อม 2 ล้าน/แห่ง",E04:"กิจการเชียงใหม่และสุโขทัยรับ 5 ล้าน/แห่ง",E05:"ทุกคนจั่วการ์ดไอเทม 1 ใบ",E06:"ท่องเที่ยวภาคเหนือจ่าย 2 ล้าน/แห่ง",E07:"กิจการนครสวรรค์รับ 5 ล้าน/แห่ง",E08:"จบเดือนนี้ทุกกิจการจ่ายกำไร ผูกขาด ×2",E09:"รางเด่นชัย–แพร่–พะเยาเปิดใช้",E10:"เกษตรและท่องเที่ยวในอีสาน +3/แห่ง",E11:"กิจการอุบลฯ และท่องเที่ยวอีสาน +4/แห่ง",E12:"กิจการภูเก็ตและร้านอาหารภาคใต้ +3/แห่ง"};
 function evInfo(title,html,eyebrow){
   const id=EVID[title];
   if(!id) return info(T(title),html,eyebrow);
