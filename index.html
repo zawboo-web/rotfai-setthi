@@ -164,6 +164,13 @@ svg.newrail .barrier{display:none}
 .mg-tea{display:flex;flex-direction:column;align-items:center;gap:16px}.mg-glass{position:relative;width:110px;height:220px;border:4px solid #2A2238;border-top:0;border-radius:0 0 22px 22px;background:#EAF6FF;overflow:hidden}
 .mg-tea-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(#F7A35C,#E0782A)}.mg-line{position:absolute;left:-4px;right:-4px;height:3px;background:#E8453C;box-shadow:0 0 0 1px #fff}
 .mg-hold{min-width:180px;min-height:56px;font-size:17px;touch-action:none}.mg-hold.on{transform:scale(.96);filter:brightness(1.1)}
+.mg-art{display:block;place-items:initial}
+.mg-mosq{position:absolute;width:30%;height:auto;margin:-10% 0 0 -15%;font-size:0;background:none;border:0;padding:0;touch-action:none;animation:mgFly .9s ease-in-out infinite alternate}
+.mg-mosq img{width:100%;transform:scaleX(var(--fx,1));filter:drop-shadow(0 4px 4px rgba(0,0,0,.35));pointer-events:none}
+@keyframes mgFly{to{transform:translate(var(--dx),var(--dy))}}.mg-mosq.hit{animation:mgSquash .4s ease-out forwards}@keyframes mgSquash{30%{transform:scale(1.15)}to{opacity:0;transform:scale(.9) translateY(10px)}}
+.spl-stage{pointer-events:auto}.spl-win{position:absolute;width:14%;aspect-ratio:1;transform:translate(-50%,-50%)}
+.spl-face{position:absolute;inset:0;padding:0;border:0;background:none;touch-action:none;animation:mgPop .15s ease-out both}.spl-face img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35));pointer-events:none}
+.spl-face.wet img{filter:brightness(1.1) saturate(.8) drop-shadow(0 0 6px #6EC6FF)}.spl-drop{position:absolute;inset:0;display:grid;place-items:center;font-size:30px;animation:mgPop .2s ease-out both}
 .mg-room{background:linear-gradient(#FFF6E3,#F3E3C2)}.mg-mosq{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;font-size:34px;background:none;border:0;animation:mgBuzz .25s ease-in-out infinite alternate;touch-action:none}
 @keyframes mgBuzz{to{transform:translate(4px,-3px) rotate(8deg)}}
 .mg-house{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:88%;height:88%}.mg-win{background:#7EC8E3;border:4px solid #8B5A2B;border-radius:10px;display:grid;place-items:center;overflow:hidden}
@@ -348,7 +355,7 @@ const treN=k=>T(TREASURES[k].n), treF=k=>T(TREASURES[k].eff);
 function typeN(t){ return LANG==="th"?t:({"อาหาร":["Food","グルメ"],"เกษตร":["Farm","農業"],"ท่องเที่ยว":["Tourism","観光"],"อุตสาหกรรม":["Industry","工業"]}[t]||[t,t])[LI()]; }
 function monthN(m){ return LANG==="th"?MONTHS[m]:(LANG==="en"?["Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar"]:["4月","5月","6月","7月","8月","9月","10月","11月","12月","1月","2月","3月"])[m]; }
 function colorN(k){ return LANG==="th"?PCOL[k][0]:[["Red","赤"],["Blue","青"],["Green","緑"],["Yellow","黄"]][k][LI()]; }
-function defaultCo(k){ return LANG==="th"?"รถไฟ"+PCOL[k][0]:LANG==="en"?colorN(k)+" Rail":colorN(k)+"鉄道"; }
+function defaultCo(k){ return LANG==="th"?"ตุ๊กตุ๊ก"+PCOL[k][0]:LANG==="en"?colorN(k)+" Tuk-Tuk":colorN(k)+"トゥクトゥク"; }
 // แทนค่าตัวแปร: st=สถานี, pr=กิจการ, it=ไอเทม, m=เงิน, mo=เดือน, prs=รายการกิจการ, sts=รายการสถานี
 function fillVars(s,a){ return s.replace(/\{(\w+)\}/g,(_,k)=>{ const v=a?a[k]:undefined; if(v===undefined) return "";
   const b=k.replace(/\d+$/,"");
@@ -3079,7 +3086,7 @@ async function playMini(eyebrow,stake,forceK,practice){
 }
 // นับถอยหลังแล้วคืน promise ที่จบเมื่อหมดเวลา
 function mgClock(sec,onTick){ const t0=performance.now(); return new Promise(r=>{ const iv=setInterval(()=>{ const left=sec-(performance.now()-t0)/1000; onTick(left); if(left<=0){ clearInterval(iv); r(); } },100); onTick(sec); }); }
-const MG_IMG={tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
+const MG_IMG={mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
 function mgPreload(k){ (MG_IMG[k]||[]).forEach(u=>{ const i=new Image(); i.src=u; }); }
 async function mgSomtam(ar,goal,score,tick){
   let n=0, live=true, messy=false;
@@ -3120,23 +3127,32 @@ async function mgTea(ar,goal,score,tick){
 }
 async function mgMosq(ar,goal,score,tick){
   let n=0, live=true; score(0,`0 / ${goal}`);
-  ar.classList.add("mg-room");
+  ar.classList.add("mg-art");
+  ar.innerHTML=`<img class="st-bg" src="minigame/mosq_bg.webp" alt="">`;
   const spawn=()=>{ if(!live) return; const m=document.createElement("button"); m.className="mg-mosq"; m.setAttribute("aria-label",T("ยุง"));
-    m.style.left=(8+Math.random()*78)+"%"; m.style.top=(8+Math.random()*74)+"%"; m.textContent="🦟";
-    m.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||m.dataset.hit) return; m.dataset.hit=1; n++; score(n,`${n} / ${goal}`); m.textContent="💥"; sfx("land"); setTimeout(()=>m.remove(),200); },{passive:false});
+    const flip=Math.random()<.5; m.style.left=(10+Math.random()*76)+"%"; m.style.top=(10+Math.random()*70)+"%";
+    m.style.setProperty("--fx",flip?-1:1); m.style.setProperty("--dx",(Math.random()*40-20)+"px"); m.style.setProperty("--dy",(Math.random()*30-15)+"px");
+    m.innerHTML=`<img src="minigame/mosq.webp" alt="">`;
+    m.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||m.dataset.hit) return; m.dataset.hit=1; n++; score(n,`${n} / ${goal}`);
+      m.classList.add("hit"); m.firstChild.src="minigame/mosq_hit.webp"; sfx("land"); setTimeout(()=>m.remove(),420); },{passive:false});
     ar.appendChild(m); setTimeout(()=>{ if(!m.dataset.hit) m.remove(); },1150); };
   const iv=setInterval(spawn,560); spawn();
   await mgClock(8,tick); live=false; clearInterval(iv);
   return {ok:n>=goal,text:T("ตบยุงได้ {n} ตัว (เป้า {g})",{n,g:goal})};
 }
+// หน้าต่าง 9 ช่องบนภาพตึกแถว (ตำแหน่งเป็น % ของภาพสี่เหลี่ยมจัตุรัส)
+const SPL_WIN=[[25.5,20.5],[50,20.5],[74.5,20.5],[25.5,45],[50,45],[74.5,45],[25.5,80],[50,80],[74.5,80]];
+const AV_IDS=["A01","A02","A03","A04","A05","A06","A07","A08"];
 async function mgSplash(ar,goal,score,tick){
   let n=0, live=true; score(0,`0 / ${goal}`);
-  ar.innerHTML=`<div class="mg-house">${[...Array(9)].map((_,k)=>`<div class="mg-win" data-w="${k}"></div>`).join("")}</div>`;
-  const wins=[...ar.querySelectorAll(".mg-win")];
+  ar.classList.add("mg-art");
+  ar.innerHTML=`<div class="tc-stage spl-stage"><img class="st-bg" src="minigame/splash_bg.webp" alt="">${SPL_WIN.map(([x,y],k)=>`<div class="spl-win" data-w="${k}" style="left:${x}%;top:${y}%"></div>`).join("")}</div>`;
+  const wins=[...ar.querySelectorAll(".spl-win")];
   const pop=()=>{ if(!live) return; const free=wins.filter(w=>!w.firstChild); if(!free.length) return; const w=free[Math.floor(Math.random()*free.length)];
-    const gran=Math.random()<.27; const f=document.createElement("button"); f.className="mg-face"+(gran?" gran":""); f.textContent=gran?"👵":["😆","😝","🤪","😎"][Math.floor(Math.random()*4)];
+    const gran=Math.random()<.27; const f=document.createElement("button"); f.className="spl-face"+(gran?" gran":"");
+    f.innerHTML=`<img src="${gran?"minigame/granny.webp":`avatars/${AV_IDS[Math.floor(Math.random()*AV_IDS.length)]}_face.webp`}" alt="">`;
     f.setAttribute("aria-label",T(gran?"คุณยาย":"เพื่อน"));
-    f.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||f.dataset.hit) return; f.dataset.hit=1; n+=gran?-2:1; score(n,`${n} / ${goal}`); f.textContent="💦"; sfx(gran?"wrong":"pop"); setTimeout(()=>f.remove(),250); },{passive:false});
+    f.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||f.dataset.hit) return; f.dataset.hit=1; n+=gran?-2:1; score(n,`${n} / ${goal}`); f.classList.add("wet"); f.insertAdjacentHTML("beforeend",`<span class="spl-drop">💦</span>`); sfx(gran?"wrong":"pop"); setTimeout(()=>f.remove(),320); },{passive:false});
     w.appendChild(f); setTimeout(()=>{ if(!f.dataset.hit) f.remove(); },900); };
   const iv=setInterval(pop,520); pop();
   await mgClock(9,tick); live=false; clearInterval(iv);
