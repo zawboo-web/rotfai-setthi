@@ -379,6 +379,7 @@ const PROP_TR=[["Chicken Rice Stall","カオマンガイ屋"],["Weekend Market S
 const ITEM_TR={
   exp:{n:["Express Train","急行列車"],when:["Before rolling","サイコロの前"],eff:["Roll 2 dice","サイコロ2個で進む"]},
   sexp:{n:["Special Express","特急列車"],when:["Before rolling","サイコロの前"],eff:["Roll 3 dice","サイコロ3個で進む"]},
+  hsr:{n:["High-Speed Train","高速鉄道"],when:["Before rolling","サイコロの前"],eff:["Roll 5 dice","サイコロ5個で進む"]},
   home:{n:["Ticket Home","帰宅きっぷ"],when:["Instead of rolling","サイコロの代わり"],eff:["Go straight to Bangkok","すぐバンコクへ移動"]},
   drive:{n:["Drive Yourself","自分で運転"],when:["Instead of rolling","サイコロの代わり"],eff:["Choose to move 1–6 spaces","1〜6マス好きなだけ進む"]},
   mob:{n:["Road Protest","道路デモ"],when:["Before rolling","サイコロの前"],eff:["One player can't move next turn","1人を次のターン足止め"]},
@@ -2100,6 +2101,7 @@ const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
 const ITEMS={
   exp:{n:"รถด่วน",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 2 ลูก",count:4},
   sexp:{n:"รถด่วนพิเศษ",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 3 ลูก",count:2},
+  hsr:{n:"รถไฟความเร็วสูง",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 5 ลูก",count:1},
   home:{n:"ตั๋วกลับบ้าน",when:"ใช้แทนการทอย",eff:"ย้ายไปกรุงเทพฯ ทันที",count:2},
   drive:{n:"ขับเองกำหนดเอง",when:"ใช้แทนการทอย",eff:"เลือกเดิน 1–6 ช่อง",count:2},
   mob:{n:"ม็อบปิดถนน",when:"ใช้ก่อนทอย",eff:"ผู้เล่น 1 คนห้ามเดินเทิร์นหน้า",count:2},
@@ -2112,7 +2114,7 @@ const ITEMS={
 };
 // ร้านขายการ์ด: ราคาซื้อ (ขายคืนได้ครึ่งราคา)
 const SHOPS=new Set(["BKK","NSW","CMI","CRI","PTY","HHN","KCG","KRT","UBN","HYI","PKT"]);
-const CARD_PRICE={exp:4,sexp:8,home:6,drive:10,mob:5,amulet:6,pass:6,lotto:2,viral:10,insure:5,plane:30};
+const CARD_PRICE={exp:4,sexp:8,hsr:15,home:6,drive:10,mob:5,amulet:6,pass:6,lotto:2,viral:10,insure:5,plane:30};
 const sellPrice=k=>Math.floor(CARD_PRICE[k]/2);
 // ของดีหายาก: แต่ละอย่างมีชิ้นเดียว ใครหยุดที่สถานีนั้นก่อนซื้อได้ · นับรวมในทรัพย์สิน และมีพลังพิเศษ
 const TREASURES={
@@ -2411,13 +2413,13 @@ function choosePlayer(title,exclude,html=""){
 
 // ================= ACTIONS =================
 function canUse(k){
-  if(S.tf.locked&&["exp","sexp","home","drive","plane"].includes(k)) return false;
+  if(S.tf.locked&&["exp","sexp","hsr","home","drive","plane"].includes(k)) return false;
   if(k==="amulet"||k==="insure") return false;
   if(hasCurse(S.turn,"nocard")) return false;
   if(k==="pass") return !!curseOf(S.turn);
   if(k==="viral") return PROPS.some(p=>S.owners[p.id]===S.turn);
   if(k==="plane") return S.year>=2;
-  if(["exp","sexp","drive"].includes(k)&&ISLANDS.has(cur().node)) return false;
+  if(["exp","sexp","hsr","drive"].includes(k)&&ISLANDS.has(cur().node)) return false;
   return true;
 }
 async function onCard(){
@@ -2447,6 +2449,7 @@ async function useCard(k){
   switch(k){
     case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); return "ok";
     case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); return "ok";
+    case "hsr": S.tf.nDice=5; log("{p} ใช้{it}",{p:p.name,it:"hsr"}); return "ok";
     case "drive":{
       const v=await modal({title:itemN("drive"),html:T("เลือกจำนวนช่องที่จะเดิน"),buttons:[1,2,3,4,5,6].map(n=>({label:String(n),value:n})).concat([{label:T("ยกเลิก"),value:null}])});
       if(!v) return "cancel"; log("{p} ขับเอง {n} ช่อง",{p:p.name,n:v}); return v; }
@@ -3145,6 +3148,7 @@ async function botUseCard(){
   if(has("plane")&&dist>6) k="plane";
   else if(has("drive")&&dist>=1&&dist<=6&&endpoints(p.node,dist).has(S.dest)){k="drive";arg=dist;}
   else if(has("pass")){k="pass";arg=S.players.map((q,j)=>({j,m:q.money})).filter(o=>o.j!==i&&!q_curse(o.j)).sort((a,b)=>b.m-a.m)[0]?.j; if(arg===undefined) k=null;}
+  else if(has("hsr")&&dist>15) k="hsr";
   else if(has("sexp")&&dist>9) k="sexp";
   else if(has("exp")&&dist>4) k="exp";
   else if(has("viral")) k="viral";
@@ -3158,6 +3162,7 @@ async function botUseCard(){
     case "drive": log("{p} ขับเอง {n} ช่อง",{p:p.name,n:arg}); commit(); return arg;
     case "pass": S.players[arg].curse=p.curse; p.curse=null; log("{p} ย้ายคำสาปไปให้{q}",{p:p.name,q:S.players[arg].name}); break;
     case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); break;
+    case "hsr": S.tf.nDice=5; log("{p} ใช้{it}",{p:p.name,it:"hsr"}); break;
     case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); break;
     case "mob": S.skip[arg]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[arg].name}); break;
     case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); break; }
@@ -3312,7 +3317,7 @@ async function showGameOver(){
 // ================= CARD ART & FACES =================
 const ART={map:{}};
 const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN","KCG","SMT","PKC","KRT","KKN","UDN","NKI","LOE","BRM","SRN","UBN","MDH","NPM","SKN","RET","PKN","CPN","RNG","SNI","NST","PLG","HYI","SGK","KBI","PNA","PKT","TRG","KSM","PPI","LNT"];
-const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane"];
+const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane","hsr"];
 const pad2=n=>String(n).padStart(2,"0");
 const ARTID={tre:k=>"T"+pad2(Object.keys(TREASURES).indexOf(k)+1),prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
 const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:11},(_,i)=>"G"+pad2(i+1)),...Array.from({length:12},(_,i)=>"E"+pad2(i+1)),...Object.keys(TREASURES).map((k,i)=>"T"+pad2(i+1))];
