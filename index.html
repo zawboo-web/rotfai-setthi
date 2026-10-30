@@ -14,7 +14,7 @@
 :root{
   --bg:#E7ECE4; --surface:#FFFFFF; --surface-2:#F3F6F1; --ink:#17232B; --muted:#5A6A6E; --line:#CBD4CC;
   --rail:#1F4E9C; --accent:#F2B705; --accent-ink:#2B2100; --bus:#9AA29A; --new:#E2711D;
-  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
+  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --sea:#B9DDF2; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
   --shadow:0 10px 30px rgba(20,35,40,.18);
   --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Maru Gothic ProN','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
   --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
@@ -22,12 +22,12 @@
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
 
 html,body{height:100%}
@@ -66,6 +66,7 @@ button:focus-visible,input:focus-visible,[data-node]:focus-visible{outline:3px s
 .rail{stroke:var(--rail);stroke-width:2.8}
 .bus{stroke:var(--bus);stroke-width:1.2;stroke-dasharray:.6 1.7;stroke-linecap:round}
 .road{stroke:#C9A15A;stroke-width:1.9;stroke-linecap:round;opacity:.9}
+.sea{stroke:#3E9BE0;stroke-width:1.6;stroke-dasharray:2.4 1.6;stroke-linecap:round}
 .fut{stroke:var(--new);stroke-width:2.3;stroke-dasharray:3 2;opacity:.75}
 svg.newrail .fut{stroke-dasharray:none;opacity:1}
 svg.newrail .barrier{display:none}
@@ -97,6 +98,7 @@ svg.newrail .barrier{display:none}
 .btn{min-height:48px;padding:0 16px;border-radius:12px;font-family:var(--font-d);font-weight:500;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1;background:var(--surface-2);border:1px solid var(--line)}
 .btn.primary{background:var(--rail);border-color:var(--rail);color:#fff}
 .btn.gold{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.travel{border-color:#3E9BE0;color:#2F6FDE;background:var(--surface);flex:1}.travel-row{display:flex;gap:8px;flex-basis:100%;order:-1}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .dice{display:flex;gap:8px;justify-content:center;margin-top:10px}
 .die{width:46px;height:46px;border-radius:11px;background:var(--surface);border:2px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px}
@@ -367,10 +369,10 @@ function applyStaticLang(){
 }
 const langSeg=()=>`<div class="seg langseg" role="group" aria-label="Language">${LANGS.map(([k,n])=>`<button data-val="lang_${k}" aria-pressed="${LANG===k}">${n}</button>`).join("")}</div>`;
 
-const STN_TR={BKK:["Bangkok","バンコク"],AYT:["Ayutthaya","アユタヤ"],LOP:["Lopburi","ロッブリー"],NSW:["Nakhon Sawan","ナコーンサワン"],PSL:["Phitsanulok","ピッサヌローク"],SKT:["Sukhothai","スコータイ"],UTD:["Uttaradit","ウッタラディット"],DNC:["Den Chai","デンチャイ"],PHR:["Phrae","プレー"],NAN:["Nan","ナーン"],LPG:["Lampang","ランパーン"],LPN:["Lamphun","ランプーン"],CMI:["Chiang Mai","チェンマイ"],PAI:["Pai","パーイ"],PYO:["Phayao","パヤオ"],CRI:["Chiang Rai","チェンライ"],
+const STN_TR={BKK:["Bangkok","バンコク"],AYT:["Ayutthaya","アユタヤ"],LOP:["Lopburi","ロッブリー"],NSW:["Nakhon Sawan","ナコーンサワン"],PSL:["Phitsanulok","ピッサヌローク"],SKT:["Sukhothai","スコータイ"],UTD:["Uttaradit","ウッタラディット"],DNC:["Den Chai","デンチャイ"],PHR:["Phrae","プレー"],NAN:["Nan","ナーン"],LPG:["Lampang","ランパーン"],LPN:["Lamphun","ランプーン"],CMI:["Chiang Mai","チェンマイ"],PAI:["Pai","パーイ"],PYO:["Phayao","パヤオ"],CRI:["Chiang Rai","チェンライ"],KCG:["Ko Chang","チャーン島"],SMT:["Ko Samet","サメット島"],
  SRB:["Saraburi","サラブリー"],CCO:["Chachoengsao","チャチューンサオ"],CBI:["Chonburi","チョンブリー"],PTY:["Pattaya","パタヤ"],RYG:["Rayong","ラヨーン"],CTI:["Chanthaburi","チャンタブリー"],TRT:["Trat","トラート"],NPT:["Nakhon Pathom","ナコーンパトム"],KRI:["Kanchanaburi","カンチャナブリー"],RBR:["Ratchaburi","ラーチャブリー"],PBI:["Phetchaburi","ペッチャブリー"],HHN:["Hua Hin","ホアヒン"]};
 const PROP_TR=[["Chicken Rice Stall","カオマンガイ屋"],["Weekend Market Stall","週末マーケットの屋台"],["Cargo Port","貨物港"],["Roti Sai Mai Shop","ロティサイマイ屋"],["Grilled River Prawns","川エビ焼き屋"],["Island City Boat Tour","島めぐりボートツアー"],["Industrial Estate","工業団地"],["Sunflower Fields","ひまわり畑"],["Monkey Town Souvenirs","サルの町みやげ店"],["Rice Mill","精米所"],["Pak Nam Pho Mochi Shop","パークナームポーの餅屋"],["Chao Phraya River Port","チャオプラヤー川の港"],["Dangling-Legs Noodle Shop","足ぶらクイッティアオ屋"],["Dried Banana Factory","干しバナナ工場"],["Sukhothai Noodle Shop","スコータイ麺の店"],["Old City Bike Tour","古都サイクリングツアー"],["Lap Lae Durian Orchard","ラップレーのドリアン園"],["Langsat Orchard","ランサット園"],["Indigo Cloth Factory","藍染め布工場"],["Khanom Jeen Nam Ngiao","カノムチン・ナムニャオ屋"],["Old Town Homestay","古い町のホームステイ"],["Mountain Coffee Shop","山のコーヒー店"],["Golden Orange Orchard","金色みかん園"],["Rooster Bowl Factory","ニワトリ柄どんぶり工場"],["Horse Carriage Tours","観光馬車"],["Longan Orchard","ロンガン園"],["Brocade Silk Weaving","錦織シルク工房"],["Khao Soi Shop","カオソーイ屋"],["Sai Ua Sausage Shop","サイウア(ソーセージ)屋"],["Bo Sang Umbrella Workshop","ボーサーンの傘工房"],["Mae Rim Resort","メーリムのリゾート"],["Hill-View Café","山が見えるカフェ"],["Pai Riverside Homestay","パーイ川のホームステイ"],["Kwan Phayao Fish Restaurant","パヤオ湖の魚料理店"],["Lake Cruise","湖の遊覧船"],["Mountain Tea Plantation","山の茶畑"],["Nang Lae Pineapple Farm","ナーンレーのパイナップル畑"],["Golden Triangle Resort","ゴールデントライアングルのリゾート"],
- ["Muak Lek Dairy Farm","ムアックレックの牧場"],["Fresh-Milk Steakhouse","牧場ステーキ店"],["Cement Plant","セメント工場"],["Paet Rio Chicken Farm","ペートリウ養鶏場"],["Bang Khla Floating Market","バーンクラー水上マーケット"],["Car Assembly Plant","自動車組立工場"],["Nong Mon Bamboo Sticky Rice","ノーンモンのカオラーム屋"],["Ang Sila Oyster Farm","アーンシラーの牡蠣養殖場"],["Laem Chabang Deep-Sea Port","レムチャバン深海港"],["Beachfront Seafood","ビーチのシーフード店"],["Koh Larn Ferry","ラン島行きフェリー"],["Pattaya Beach Hotel","パタヤのビーチホテル"],["Rayong Fish Sauce Shop","ラヨーンの魚醤店"],["Rayong Durian Orchard","ラヨーンのドリアン園"],["Koh Samet Speedboat","サメット島行きボート"],["Map Ta Phut Petrochemical Estate","マプタプット石油化学団地"],["Crab Fried Noodles","カニ炒め麺の店"],["Mangosteen Orchard","マンゴスチン園"],["Gem Cutting Shop","宝石研磨店"],["Trat Golden Pineapple Farm","トラートの黄金パイナップル畑"],["Koh Chang Resort","チャーン島のリゾート"],["Red Pork Rice Shop","カオムーデーン屋"],["Nakhon Chai Si Pomelo Orchard","ナコーンチャイシーの文旦園"],["Don Wai Floating Market","ドンワイ水上マーケット"],["River Kwai Restaurant","クウェー川のレストラン"],["River Kwai Raft House","クウェー川の水上コテージ"],["Bo Phloi Sapphire Mine","ボープローイの宝石鉱山"],["Dragon Jar Pottery","竜の水がめ工房"],["Damnoen Saduak Floating Market","ダムヌンサドゥアク水上マーケット"],["Khanom Mo Kaeng Shop","カノムモーケーン屋"],["Rose Apple Orchard","ローズアップル園"],["Ban Laem Salt Fields","バーンレムの塩田"],["Hua Hin Seafood","ホアヒンのシーフード店"],["Pranburi Pineapple Farm","プラーンブリーのパイナップル畑"],["Hua Hin Seaside Resort","ホアヒンの海辺リゾート"]];
+ ["Muak Lek Dairy Farm","ムアックレックの牧場"],["Fresh-Milk Steakhouse","牧場ステーキ店"],["Cement Plant","セメント工場"],["Paet Rio Chicken Farm","ペートリウ養鶏場"],["Bang Khla Floating Market","バーンクラー水上マーケット"],["Car Assembly Plant","自動車組立工場"],["Nong Mon Bamboo Sticky Rice","ノーンモンのカオラーム屋"],["Ang Sila Oyster Farm","アーンシラーの牡蠣養殖場"],["Laem Chabang Deep-Sea Port","レムチャバン深海港"],["Beachfront Seafood","ビーチのシーフード店"],["Koh Larn Ferry","ラン島行きフェリー"],["Pattaya Beach Hotel","パタヤのビーチホテル"],["Rayong Fish Sauce Shop","ラヨーンの魚醤店"],["Rayong Durian Orchard","ラヨーンのドリアン園"],["Koh Samet Speedboat","サメット島行きボート"],["Map Ta Phut Petrochemical Estate","マプタプット石油化学団地"],["Crab Fried Noodles","カニ炒め麺の店"],["Mangosteen Orchard","マンゴスチン園"],["Gem Cutting Shop","宝石研磨店"],["Trat Golden Pineapple Farm","トラートの黄金パイナップル畑"],["Koh Chang Resort","チャーン島のリゾート"],["Red Pork Rice Shop","カオムーデーン屋"],["Nakhon Chai Si Pomelo Orchard","ナコーンチャイシーの文旦園"],["Don Wai Floating Market","ドンワイ水上マーケット"],["River Kwai Restaurant","クウェー川のレストラン"],["River Kwai Raft House","クウェー川の水上コテージ"],["Bo Phloi Sapphire Mine","ボープローイの宝石鉱山"],["Dragon Jar Pottery","竜の水がめ工房"],["Damnoen Saduak Floating Market","ダムヌンサドゥアク水上マーケット"],["Khanom Mo Kaeng Shop","カノムモーケーン屋"],["Rose Apple Orchard","ローズアップル園"],["Ban Laem Salt Fields","バーンレムの塩田"],["Hua Hin Seafood","ホアヒンのシーフード店"],["Pranburi Pineapple Farm","プラーンブリーのパイナップル畑"],["Hua Hin Seaside Resort","ホアヒンの海辺リゾート"],["Coral Snorkel Shop","サンゴのシュノーケル店"],["White Sand Beach Bungalows","白砂ビーチのバンガロー"],["Bang Bao Seafood","バンバオの海鮮料理店"],["Sai Kaew Beach Bar","サイケーオビーチのバー"],["Ao Prao Resort","アオプラオのリゾート"]];
 const ITEM_TR={
   exp:{n:["Express Train","急行列車"],when:["Before rolling","サイコロの前"],eff:["Roll 2 dice","サイコロ2個で進む"]},
   sexp:{n:["Special Express","特急列車"],when:["Before rolling","サイコロの前"],eff:["Roll 3 dice","サイコロ3個で進む"]},
@@ -1918,7 +1920,8 @@ Object.assign(TR,{"ตำส้มตำรัวๆ": ["Som Tam Smash", "ソム
 Object.assign(TR,{"ครกส้มตำ":["Som tam mortar","ソムタムのうす"]});
 Object.assign(TR,{"ลองมินิเกม": ["Try minigames", "ミニゲームで遊ぶ"], "ฝึกเล่นมินิเกมทีละเกม ไม่มีผลกับเกม": ["Practise each minigame — doesn't affect any game", "ミニゲームを1つずつ練習(ゲームには影響なし)"], "ฝึกเล่น ไม่มีผลกับเกม": ["Practice — no effect on the game", "練習モード(ゲームには影響なし)"], "ฝึกเล่น": ["Practice", "練習"]});
 Object.assign(TR,{"แก้วชาเย็น":["Iced tea cup","アイスティーのカップ"]});
-const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
+Object.assign(TR,{"อยู่บนเกาะ ต้องนั่งเรือกลับฝั่ง": ["You're on an island — take the boat back", "島にいる。船で戻ろう"], "เรือไป{st}": ["Boat to {st}", "{st}行きの船"], "บิน": ["Fly", "飛行機"], "ท่าเรือ": ["Pier", "船着き場"], "สนามบิน": ["Airport", "空港"], "ท่าเรือ{st}": ["{st} pier", "{st}の船着き場"], "นั่งเรือไป{st}?": ["Take the boat to {st}?", "{st}へ船で行く?"], "ค่าเรือ {m} · ทอยเต๋าก่อนออกเรือ ถ้าได้ {n} คลื่นแรง เรือไม่ออก (ไม่เสียค่าเรือ)": ["Fare {m} · Roll before sailing: {n} means rough seas, no sailing (no fare charged)", "運賃{m}・出航前にサイコロ。{n}なら波が高く欠航(運賃なし)"], "ช่วงมรสุม (มิ.ย.–ก.ย.) คลื่นแรงกว่าปกติ": ["Monsoon season (Jun–Sep): rougher seas", "モンスーンの時期(6〜9月)は波が高い"], "ขึ้นเรือ": ["Board", "乗船"], "คลื่นแรง!": ["Rough seas!", "波が高い!"], "ทอยได้ {d} เรือไม่ออก รอเทิร์นหน้า": ["Rolled {d} — no sailing. Wait for next turn", "{d}が出て欠航。次のターンまで待とう"], "{p} รอเรือที่{st} คลื่นแรง เรือไม่ออก": ["{p} waited at {st} — rough seas, no boat", "{p}は{st}で足止め。波が高く欠航"], "{p} นั่งเรือจาก{st}ไป{st2} ค่าเรือ {m}": ["{p} took the boat from {st} to {st2} for {m}", "{p}は{st}から{st2}へ船で移動(運賃{m})"], "บินไปสนามบินไหนก็ได้ในตาเดียว แต่บินแล้วจบตา": ["Fly to any airport in one go — your turn ends after the flight", "どの空港へも一気に飛べる。ただし飛んだらターン終了"], "ค่าตั๋ว {m}": ["Ticket {m}", "航空券{m}"], "สนามบิน{st}": ["{st} Airport", "{st}空港"], "จะบินไปไหน?": ["Where to?", "どこへ飛ぶ?"], "{p} บินจาก{st}ไป{st2} ค่าตั๋ว {m}": ["{p} flew from {st} to {st2} for {m}", "{p}は{st}から{st2}へ飛んだ(航空券{m})"], "{p} นั่งเรือไป{st}": ["{p} takes the boat to {st}", "{p}は船で{st}へ"], "{p} บินไป{st}": ["{p} flies to {st}", "{p}は{st}へ飛ぶ"], "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา": ["Islands are reachable only by boat. ⚓ Roll at the pier: 1 = rough seas, no sailing (1–2 in the Jun–Sep monsoon) · ✈ Fly from any airport to any other — pricey, and your turn ends", "島へは船でのみ行ける。⚓船着き場でサイコロ、1なら欠航(6〜9月のモンスーンは1〜2)・✈空港からどの空港へも飛べる。高く、ターン終了"]});
+const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
 const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
@@ -1973,10 +1976,13 @@ chain("road",["SRB","l1","l2","LOP"]);
 chain("road",["SRB","v1","v2","CCO"]);
 chain("road",["CCO","i1","i2","i3","i4","i5","i6","CTI"]);
 chain("road",["KRI","k3","k4","PBI"]);
+// เกาะ: ไปได้ทางเรือเท่านั้น
+Object.assign(NODES,{KCG:{x:148,y:777,t:"st"},SMT:{x:114,y:690,t:"st"}});
+EDGES.push(["TRT","KCG","sea"],["RYG","SMT","sea"]);
 [["DNC","f1"],["f1","PHR"],["PHR","f2"],["f2","PYO"]].forEach(e=>EDGES.push([e[0],e[1],"future"]));
-const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย",SRB:"สระบุรี",CCO:"ฉะเชิงเทรา",CBI:"ชลบุรี",PTY:"พัทยา",RYG:"ระยอง",CTI:"จันทบุรี",TRT:"ตราด",NPT:"นครปฐม",KRI:"กาญจนบุรี",RBR:"ราชบุรี",PBI:"เพชรบุรี",HHN:"หัวหิน"};
-const LABEL_R=new Set(["SKT","PAI","PYO","CRI","PHR","NAN","SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","RBR","PBI","HHN"]);
-const EAST=new Set(["CCO","CBI","PTY","RYG","CTI","TRT"]), WEST=new Set(["KRI","RBR","PBI","HHN"]);
+const NAME={BKK:"กรุงเทพฯ",AYT:"อยุธยา",LOP:"ลพบุรี",NSW:"นครสวรรค์",PSL:"พิษณุโลก",SKT:"สุโขทัย",UTD:"อุตรดิตถ์",DNC:"เด่นชัย",PHR:"แพร่",NAN:"น่าน",LPG:"ลำปาง",LPN:"ลำพูน",CMI:"เชียงใหม่",PAI:"ปาย",PYO:"พะเยา",CRI:"เชียงราย",SRB:"สระบุรี",CCO:"ฉะเชิงเทรา",CBI:"ชลบุรี",PTY:"พัทยา",RYG:"ระยอง",CTI:"จันทบุรี",TRT:"ตราด",NPT:"นครปฐม",KRI:"กาญจนบุรี",RBR:"ราชบุรี",PBI:"เพชรบุรี",HHN:"หัวหิน",KCG:"เกาะช้าง",SMT:"เกาะเสม็ด"};
+const LABEL_R=new Set(["SMT","SKT","PAI","PYO","CRI","PHR","NAN","SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","RBR","PBI","HHN"]);
+const EAST=new Set(["CCO","CBI","PTY","RYG","CTI","TRT","KCG","SMT"]), WEST=new Set(["KRI","RBR","PBI","HHN"]);
 const CLASSIC=["BKK","AYT","LOP","NSW","PSL","SKT","UTD","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"];
 const regionOf=s=>NORTH.has(s)?"ภาคเหนือ":EAST.has(s)?"ภาคตะวันออก":WEST.has(s)?"ภาคตะวันตก":"ภาคกลาง";
 const NORTH=new Set(["UTD","DNC","PHR","NAN","LPG","LPN","CMI","PAI","PYO","CRI"]);
@@ -1994,7 +2000,9 @@ const PROPS=[["BKK","ร้านข้าวมันไก่",FOOD,10,3],["BK
  ["KRI","ร้านอาหารริมแม่น้ำแคว",FOOD,10,3],["KRI","แพพักริมแม่น้ำแคว",TOUR,30,7],["KRI","เหมืองพลอยบ่อพลอย",IND,40,5],
  ["RBR","โรงงานโอ่งมังกร",IND,25,4],["RBR","ตลาดน้ำดำเนินสะดวก",TOUR,30,6],
  ["PBI","ร้านขนมหม้อแกง",FOOD,8,3],["PBI","สวนชมพู่เพชรสายรุ้ง",AGRI,15,5],["PBI","นาเกลือบ้านแหลม",AGRI,10,4],
- ["HHN","ร้านซีฟู้ดหัวหิน",FOOD,15,5],["HHN","สวนสับปะรดปราณบุรี",AGRI,15,5],["HHN","รีสอร์ตริมทะเลหัวหิน",TOUR,70,11]]
+ ["HHN","ร้านซีฟู้ดหัวหิน",FOOD,15,5],["HHN","สวนสับปะรดปราณบุรี",AGRI,15,5],["HHN","รีสอร์ตริมทะเลหัวหิน",TOUR,70,11],
+ ["KCG","ร้านดำน้ำดูปะการัง",TOUR,35,9],["KCG","บังกะโลหาดทรายขาว",TOUR,25,7],["KCG","ร้านซีฟู้ดบ้านสลักเพชร",FOOD,10,4],
+ ["SMT","บาร์ริมหาดทรายแก้ว",FOOD,15,5],["SMT","รีสอร์ตอ่าวพร้าว",TOUR,70,13]]
   .map(([s,n,t,price,profit],id)=>({id,s,n,t,price,profit}));
 const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
 const ITEMS={
@@ -2016,17 +2024,25 @@ const SQ_COL={b:"var(--plus)",r:"var(--minus)",y:"var(--card)",g:"var(--bus)"};
 const SQ_SYM={b:"+",r:"−",y:"?",g:""};
 
 // ================= GRAPH =================
-function adjacency(newRail){
+function adjacency(newRail,sea){
   const a={}; for(const k in NODES) a[k]=[];
-  for(const [x,y,k] of EDGES){ if(k==="future"&&!newRail) continue; a[x].push(y); a[y].push(x); }
+  for(const [x,y,k] of EDGES){ if(k==="future"&&!newRail) continue; if(k==="sea"&&!sea) continue; a[x].push(y); a[y].push(x); }
   return a;
 }
 function bfs(from,newRail){
-  const a=adjacency(newRail), d={[from]:0}, q=[from];
+  const a=adjacency(newRail,true), d={[from]:0}, q=[from];
   while(q.length){ const u=q.shift(); for(const v of a[u]) if(d[v]===undefined){d[v]=d[u]+1;q.push(v);} }
   return d;
 }
 const D0=bfs("BKK",false);
+// เรือและเครื่องบิน
+const ISLANDS=new Set(["KCG","SMT"]);
+const FERRY={TRT:"KCG",KCG:"TRT",RYG:"SMT",SMT:"RYG"};
+const AIRPORTS=["BKK","PSL","CMI","CRI","TRT","HHN"];
+const BOAT_FARE=2;
+const rainy=()=>S&&S.month>=2&&S.month<=5;   // มิ.ย.–ก.ย. มรสุม
+const waveMax=()=>rainy()?2:1;
+const flyFare=(a,b)=>5+Math.ceil((bfs(a,false)[b]||0)*0.7);
 const REWARD={}; for(const s in NAME) if(s!=="DNC") REWARD[s]=s==="BKK"?20:5+D0[s];
 
 // ================= STATE =================
@@ -2098,7 +2114,8 @@ function buildBoard(){
   let h=`<rect x="0" y="0" width="210" height="236" fill="var(--field-n)"/><rect x="0" y="236" width="210" height="560" fill="var(--field-c)"/><path d="M104 487H210V796H104z" fill="var(--field-e)"/><path d="M0 588H104V796H0z" fill="var(--field-w)"/>`;
   h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">${T("ภาคตะวันออก")} ▶</text><text x="6" y="704" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ${T("ภาคตะวันตก")}</text>`;
   h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ${T("ภาคเหนือ")}</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ${T("ภาคกลาง")}</text>`;
-  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":k==="road"?"road":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
+  for(const id of ISLANDS){const n=NODES[id];h+=`<ellipse cx="${n.x}" cy="${n.y}" rx="12" ry="10" fill="var(--sea)"/>`;}
+  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];if(k==="sea"){h+=`<line class="sea" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;continue;}h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":k==="road"?"road":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
   h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
   h+=`<text class="barrier" x="${86+DX}" y="161" text-anchor="middle" font-size="3.4" font-weight="600" fill="#C8361E" font-family="Mitr">${T("รางใหม่ เปิด เม.ย. ปีที่ 2")}</text>`;
   for(const [id,n] of Object.entries(NODES)){
@@ -2108,6 +2125,8 @@ function buildBoard(){
       else h+=`<text class="stn-num" x="${n.x}" y="${n.y+1.8}" text-anchor="middle">${PROPS_AT(id).length}</text>`;
       const r=LABEL_R.has(id), tx=r?n.x+9:n.x-9, nm=stN(id), avail=r?207-tx:tx-1.5, est=LANG==="th"?0:nm.length*(LANG==="ja"?6:3.15);
       h+=`<text class="stn-name" x="${tx}" y="${n.y+1}" text-anchor="${r?"start":"end"}"${est>avail?` textLength="${avail.toFixed(1)}" lengthAdjust="spacingAndGlyphs"`:""}>${esc(nm)}</text>`;
+      if(FERRY[id]&&!ISLANDS.has(id)) h+=`<text x="${n.x+(LABEL_R.has(id)?-6.4:6.4)}" y="${n.y+8.4}" text-anchor="middle" font-size="4.4" aria-label="${esc(T("ท่าเรือ"))}">⚓</text>`;
+      if(AIRPORTS.includes(id)) h+=`<text x="${n.x+(LABEL_R.has(id)?6.4:-6.4)}" y="${n.y+8.6}" text-anchor="middle" font-size="4.6" fill="#2F6FDE" aria-label="${esc(T("สนามบิน"))}">✈</text>`;
       if(TEMPLES.has(id)) h+=`<g transform="translate(${n.x+(LABEL_R.has(id)?-6.2:6.2)},${n.y-6})" aria-label="${esc(T("วัด: แก้คำสาปได้"))}"><path d="M0 -3.2L1.6 0H-1.6Z M-2.4 0H2.4V2.2H-2.4Z" fill="#D9A400" stroke="#7A5A00" stroke-width=".3"/></g>`;
       h+=`<circle class="stn-hit" data-stn="${id}" cx="${n.x}" cy="${n.y}" r="8"/>`;
     } else {
@@ -2206,7 +2225,11 @@ function renderPanel(){
   else if(UI.mode==="choose"){
     const usable=p.cards.some(k=>canUse(k));
     prompt=T(S.tf.locked?"หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง":hasCurse(i,"nocard")?"คำสาปขี้ลืม: ใช้การ์ดไม่ได้":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย"));
-    actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>${T("ใช้การ์ด")}</button><button class="btn primary" id="aRoll">${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`;
+    const isl=ISLANDS.has(p.node);
+    if(isl) prompt=T("อยู่บนเกาะ ต้องนั่งเรือกลับฝั่ง");
+    actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>${T("ใช้การ์ด")}</button>`
+      +((FERRY[p.node]||AIRPORTS.includes(p.node))?`<div class="travel-row">${FERRY[p.node]?`<button class="btn travel" id="aBoat">⛴ ${T("เรือไป{st}",{st:FERRY[p.node]})}</button>`:""}${AIRPORTS.includes(p.node)?`<button class="btn travel" id="aFly">✈ ${T("บิน")}</button>`:""}</div>`:"")
+      +(isl?"":`<button class="btn primary" id="aRoll">${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`);
   } else if(UI.mode==="pick"){
     prompt=T("ได้ {n} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง",{n:UI.steps});
     actions=`<div class="picks">${[...UI.opts.keys()].map(id=>`<button class="pick" data-pick="${id}">${labelOf(id)}${id===S.dest?`<small>${T("จุดหมาย")}</small>`:""}</button>`).join("")}</div>`;
@@ -2224,7 +2247,7 @@ function renderPanel(){
   </section>
   <section class="card"><div class="label">${T("อันดับ · แตะเพื่อดูกิจการ")}</div><div class="board-list">${rows}</div></section>
   <section class="card"><div class="label">${T("ข่าวล่าสุด")}</div><div class="log">${S.log.slice(0,5).map(t=>`<div>${esc(logText(t))}</div>`).join("")}</div></section>`;
-  if(isMyTurn()&&UI.mode==="choose"){ $("aRoll").onclick=onRoll; const c=$("aCard"); if(c) c.onclick=onCard; }
+  if(isMyTurn()&&UI.mode==="choose"){ const r=$("aRoll"); if(r) r.onclick=onRoll; const c=$("aCard"); if(c) c.onclick=onCard; const bt=$("aBoat"); if(bt) bt.onclick=onBoat; const fl=$("aFly"); if(fl) fl.onclick=onFly; }
   document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>onPick(b.dataset.pick));
   document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
 }
@@ -2268,6 +2291,7 @@ function canUse(k){
   if(k==="pass") return !!curseOf(S.turn);
   if(k==="viral") return PROPS.some(p=>S.owners[p.id]===S.turn);
   if(k==="plane") return S.year>=2;
+  if(["exp","sexp","drive"].includes(k)&&ISLANDS.has(cur().node)) return false;
   return true;
 }
 async function onCard(){
@@ -2311,6 +2335,54 @@ async function useCard(k){
   }
   return "cancel";
 }
+async function onBoat(){
+  if(UI.busy||!isMyTurn()||UI.mode!=="choose") return;
+  const p=cur(), to=FERRY[p.node]; if(!to) return;
+  const w=waveMax();
+  const ok=await modal({eyebrow:T("ท่าเรือ{st}",{st:p.node}),title:T("นั่งเรือไป{st}?",{st:to}),html:`<p>${T("ค่าเรือ {m} · ทอยเต๋าก่อนออกเรือ ถ้าได้ {n} คลื่นแรง เรือไม่ออก (ไม่เสียค่าเรือ)",{m:BOAT_FARE,n:w>1?"1–2":"1"})}</p>${rainy()?`<p class="note">${T("ช่วงมรสุม (มิ.ย.–ก.ย.) คลื่นแรงกว่าปกติ")}</p>`:""}`,buttons:[{label:T("ยกเลิก"),value:false},{label:T("ขึ้นเรือ"),value:true,primary:true,disabled:p.money<BOAT_FARE&&!ISLANDS.has(p.node)}]});
+  if(!ok) return;
+  UI.busy=true; UI.mode="moving"; await takeBoat(); UI.busy=false; endTurn();
+}
+async function takeBoat(){
+  const p=cur(), from=p.node, to=FERRY[from];
+  const d=(await rollAndShow(1))[0];
+  if(d<=waveMax()){
+    log("{p} รอเรือที่{st} คลื่นแรง เรือไม่ออก",{p:p.name,st:from}); commit(); render();
+    await info(T("คลื่นแรง!"),T("ทอยได้ {d} เรือไม่ออก รอเทิร์นหน้า",{d}),T("ท่าเรือ{st}",{st:from}));
+    return;
+  }
+  p.money-=BOAT_FARE; log("{p} นั่งเรือจาก{st}ไป{st2} ค่าเรือ {m}",{p:p.name,st:from,st2:to,m:BOAT_FARE});
+  await teleport(to,to===S.dest);
+}
+async function onFly(){
+  if(UI.busy||!isMyTurn()||UI.mode!=="choose") return;
+  const p=cur(); if(!AIRPORTS.includes(p.node)) return;
+  const html=`<p>${T("บินไปสนามบินไหนก็ได้ในตาเดียว แต่บินแล้วจบตา")}</p><p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b></p><div class="stack">${AIRPORTS.filter(a=>a!==p.node).map(a=>{const f=flyFare(p.node,a);return `<button class="mode-btn" data-val="${a}" ${p.money<f?"disabled":""}><b>✈ ${stN(a)}${a===S.dest?` · ${T("จุดหมาย")}`:""}</b><span>${T("ค่าตั๋ว {m}",{m:f})}</span></button>`;}).join("")}</div>`;
+  const to=await modal({eyebrow:T("สนามบิน{st}",{st:p.node}),title:T("จะบินไปไหน?"),html,buttons:[{label:T("ยกเลิก"),value:null}]});
+  if(!to||!AIRPORTS.includes(to)||p.money<flyFare(p.node,to)) return;
+  UI.busy=true; UI.mode="moving"; await takeFlight(to); UI.busy=false; endTurn();
+}
+async function takeFlight(to){
+  const p=cur(), from=p.node, f=flyFare(from,to);
+  p.money-=f; log("{p} บินจาก{st}ไป{st2} ค่าตั๋ว {m}",{p:p.name,st:from,st2:to,m:f});
+  await teleport(to,to===S.dest);
+}
+// บอท: นั่งเรือ/บิน ถ้าช่วยให้ใกล้จุดหมายขึ้นมาก
+async function botTravel(){
+  const p=cur(), d=bfs(S.dest,S.newRail), here=d[p.node]??99;
+  const to=FERRY[p.node];
+  if(to&&(ISLANDS.has(p.node)||((d[to]??99)<here&&p.money>=BOAT_FARE))){
+    await brief({eyebrow:T("ท่าเรือ{st}",{st:p.node}),title:T("{p} นั่งเรือไป{st}",{p:esc(p.name),st:to}),html:""},1200);
+    await takeBoat(); return true;
+  }
+  if(AIRPORTS.includes(p.node)&&p.flew!==S.dest){
+    let best=null,bd=here;
+    for(const a of AIRPORTS){ if(a===p.node) continue; const v=d[a]??99, f=flyFare(p.node,a); if(v+10<=bd&&p.money>=f+25&&f<=REWARD[S.dest]+5){bd=v;best=a;} }
+    if(best) p.flew=S.dest;
+    if(best){ await brief({eyebrow:T("สนามบิน{st}",{st:p.node}),title:T("{p} บินไป{st}",{p:esc(p.name),st:best}),html:""},1200); await takeFlight(best); return true; }
+  }
+  return false;
+}
 async function onRoll(){
   if(UI.busy||!isMyTurn()||UI.mode!=="choose") return; UI.busy=true;
   let steps;
@@ -2335,6 +2407,7 @@ function endpoints(start,steps){
 }
 function goMove(steps){
   UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(cur().node,steps);
+  if(!UI.opts.size){ UI.mode="idle"; return endTurn(); }
   if(S.songkran&&!S.tf.locked) log("สงกรานต์รถติด แต้มเดิน −1",{});
   render();
   const first=[...UI.opts.keys()][0]; if(first) focusNode(first);
@@ -2888,6 +2961,8 @@ async function botTurn(){
     S.stage="choose"; commit();
   }
   render(); await sleep(400);
+  const planeOK=!S.tf.cardUsed&&p.cards.includes("plane")&&canUse("plane")&&(bfs(S.dest,S.newRail)[p.node]??99)>6;
+  if(!planeOK&&await botTravel()){ UI.busy=false; return endTurn(); }
   const r=S.tf.cardUsed?null:await botUseCard();
   if(r==="moved"){ UI.busy=false; return endTurn(); }
   let steps;
@@ -2900,6 +2975,7 @@ async function botTurn(){
     if(S.songkran) steps=Math.max(1,steps-1);
   }
   UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(p.node,steps);
+  if(!UI.opts.size){ UI.busy=false; return endTurn(); }
   render(); const pick=botPickDest(UI.opts); focusNode(pick); await sleep(800);
   UI.busy=false;
   return onPick(pick,true);
@@ -3013,7 +3089,7 @@ async function showGameOver(){
 
 // ================= CARD ART & FACES =================
 const ART={map:{}};
-const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN"];
+const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN","KCG","SMT"];
 const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane"];
 const pad2=n=>String(n).padStart(2,"0");
 const ARTID={prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
@@ -3513,7 +3589,7 @@ function sfx(name){
   try{ SOUNDS[name](c.currentTime+.01); }catch(e){}
 }
 // เสียงตามบันทึกเหตุการณ์ ใช้ทั้งเครื่องที่เล่นและเครื่องเพื่อน (ออนไลน์) ให้ได้ยินเหมือนกัน
-const LOG_SFX=[[/คนแรก/,"arrive"],[/ชนะมินิเกม|ชนะคำท้า/,"correct"],[/แพ้มินิเกม/,"wrong"],[/โดนสาป|ขโมย|หลงป่า|กระเป๋ารั่ว/,"ghost"],[/ใบ้หวย|เรียกทรัพย์|ทำบุญ/,"coins"],[/งานบุญ/,"card"],[/บินไป/,"use"],[/ผีโผล่|ผีออกเดิน/,"pop"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
+const LOG_SFX=[[/คนแรก/,"arrive"],[/ชนะมินิเกม|ชนะคำท้า/,"correct"],[/แพ้มินิเกม/,"wrong"],[/โดนสาป|ขโมย|หลงป่า|กระเป๋ารั่ว/,"ghost"],[/ใบ้หวย|เรียกทรัพย์|ทำบุญ/,"coins"],[/งานบุญ/,"card"],[/บินไป|บินจาก|นั่งเรือ/,"use"],[/คลื่นแรง/,"wrong"],[/ผีโผล่|ผีออกเดิน/,"pop"],[/ตอบควิซถูก|ตอบถูก/,"correct"],[/ตอบควิซผิด|ไม่ทัน/,"wrong"],[/^ผี/,"ghost"],[/ไม่ถูก|เสีย|ติดลบ|ค่าซ่อม|จ่าย 2/,"lose"],
   [/ปิดงบปีที่/,"coins"],[/ถูกลอตเตอรี่|โบนัส|ได้ .*ล้าน|ดังในโซเชียล|รับ .*ล้าน/,"coin"],[/ซื้อ/,"buy"],[/ใช้|ขับเอง|เหมาเครื่องบิน|ส่งม็อบ/,"use"],
   [/ผี/,"ghost"],[/ได้การ์ด/,"card"],[/จุดหมายใหม่/,"dest"],[/สงกรานต์|ปีใหม่|ตรุษจีน|ฤดู|ลอยกระทง|น้ำท่วม|ฝุ่น|รางใหม่|เดือนปิดงบ/,"event"]];
 let sfxQ=Promise.resolve();
