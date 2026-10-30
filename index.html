@@ -98,6 +98,7 @@ svg.newrail .barrier{display:none}
 .btn{min-height:48px;padding:0 16px;border-radius:12px;font-family:var(--font-d);font-weight:500;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1;background:var(--surface-2);border:1px solid var(--line)}
 .btn.primary{background:var(--rail);border-color:var(--rail);color:#fff}
 .btn.gold{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.shop-row b{display:flex!important;width:100%;justify-content:space-between;gap:8px}.shop-pr{color:#B07A00;white-space:nowrap}.shop-row.sell .shop-pr{color:#2E9A4E}
 .btn.travel{border-color:#3E9BE0;color:#2F6FDE;background:var(--surface);flex:1}.travel-row{display:flex;gap:8px;flex-basis:100%;order:-1}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .dice{display:flex;gap:8px;justify-content:center;margin-top:10px}
@@ -1921,7 +1922,8 @@ Object.assign(TR,{"ครกส้มตำ":["Som tam mortar","ソムタムの�
 Object.assign(TR,{"ลองมินิเกม": ["Try minigames", "ミニゲームで遊ぶ"], "ฝึกเล่นมินิเกมทีละเกม ไม่มีผลกับเกม": ["Practise each minigame — doesn't affect any game", "ミニゲームを1つずつ練習(ゲームには影響なし)"], "ฝึกเล่น ไม่มีผลกับเกม": ["Practice — no effect on the game", "練習モード(ゲームには影響なし)"], "ฝึกเล่น": ["Practice", "練習"]});
 Object.assign(TR,{"แก้วชาเย็น":["Iced tea cup","アイスティーのカップ"]});
 Object.assign(TR,{"อยู่บนเกาะ ต้องนั่งเรือกลับฝั่ง": ["You're on an island — take the boat back", "島にいる。船で戻ろう"], "เรือไป{st}": ["Boat to {st}", "{st}行きの船"], "บิน": ["Fly", "飛行機"], "ท่าเรือ": ["Pier", "船着き場"], "สนามบิน": ["Airport", "空港"], "ท่าเรือ{st}": ["{st} pier", "{st}の船着き場"], "นั่งเรือไป{st}?": ["Take the boat to {st}?", "{st}へ船で行く?"], "ค่าเรือ {m} · ทอยเต๋าก่อนออกเรือ ถ้าได้ {n} คลื่นแรง เรือไม่ออก (ไม่เสียค่าเรือ)": ["Fare {m} · Roll before sailing: {n} means rough seas, no sailing (no fare charged)", "運賃{m}・出航前にサイコロ。{n}なら波が高く欠航(運賃なし)"], "ช่วงมรสุม (มิ.ย.–ก.ย.) คลื่นแรงกว่าปกติ": ["Monsoon season (Jun–Sep): rougher seas", "モンスーンの時期(6〜9月)は波が高い"], "ขึ้นเรือ": ["Board", "乗船"], "คลื่นแรง!": ["Rough seas!", "波が高い!"], "ทอยได้ {d} เรือไม่ออก รอเทิร์นหน้า": ["Rolled {d} — no sailing. Wait for next turn", "{d}が出て欠航。次のターンまで待とう"], "{p} รอเรือที่{st} คลื่นแรง เรือไม่ออก": ["{p} waited at {st} — rough seas, no boat", "{p}は{st}で足止め。波が高く欠航"], "{p} นั่งเรือจาก{st}ไป{st2} ค่าเรือ {m}": ["{p} took the boat from {st} to {st2} for {m}", "{p}は{st}から{st2}へ船で移動(運賃{m})"], "บินไปสนามบินไหนก็ได้ในตาเดียว แต่บินแล้วจบตา": ["Fly to any airport in one go — your turn ends after the flight", "どの空港へも一気に飛べる。ただし飛んだらターン終了"], "ค่าตั๋ว {m}": ["Ticket {m}", "航空券{m}"], "สนามบิน{st}": ["{st} Airport", "{st}空港"], "จะบินไปไหน?": ["Where to?", "どこへ飛ぶ?"], "{p} บินจาก{st}ไป{st2} ค่าตั๋ว {m}": ["{p} flew from {st} to {st2} for {m}", "{p}は{st}から{st2}へ飛んだ(航空券{m})"], "{p} นั่งเรือไป{st}": ["{p} takes the boat to {st}", "{p}は船で{st}へ"], "{p} บินไป{st}": ["{p} flies to {st}", "{p}は{st}へ飛ぶ"], "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา": ["Islands are reachable only by boat. ⚓ Roll at the pier: 1 = rough seas, no sailing (1–2 in the Jun–Sep monsoon) · ✈ Fly from any airport to any other — pricey, and your turn ends", "島へは船でのみ行ける。⚓船着き場でサイコロ、1なら欠航(6〜9月のモンスーンは1〜2)・✈空港からどの空港へも飛べる。高く、ターン終了"]});
-const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ สุดสายแต้มเกินเด้งกลับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
+Object.assign(TR,{"ร้านขายการ์ด": ["Card Shop", "カードショップ"], "ร้านขายการ์ด{st}": ["{st} Card Shop", "{st}のカードショップ"], "{p} ซื้อการ์ด": ["{p} bought cards", "{p}がカードを購入"], "ขายคืนครึ่งราคา": ["Sell back for half price", "半額で売却"], "ยังไม่มีการ์ดให้ขาย": ["No cards to sell yet", "売れるカードがない"], "การ์ดในมือ {n}/5": ["Hand {n}/5", "手札 {n}/5"], "ซื้อ": ["Buy", "買う"], "ขาย": ["Sell", "売る"], "มือเต็ม ขายการ์ดก่อนถึงจะซื้อได้": ["Hand full — sell a card first to buy", "手札がいっぱい。先に売ろう"], "ออกจากร้าน": ["Leave shop", "店を出る"], "{p} ซื้อการ์ด{it} {m}": ["{p} bought {it} for {m}", "{p}が{it}を{m}で購入"], "{p} ขายการ์ด{it} {m}": ["{p} sold {it} for {m}", "{p}が{it}を{m}で売却"], "สถานีที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา": ["Stations with a Card Shop (yellow shop icon) let you buy cards or sell them back for half price", "カードショップのある駅(黄色い店のアイコン)ではカードを買ったり、半額で売ったりできる"]});
+const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ สุดสายแต้มเกินเด้งกลับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "สถานีที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
 const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
@@ -2018,6 +2020,10 @@ const ITEMS={
   insure:{n:"ประกันภัย",when:"เก็บไว้",eff:"ไม่ต้องจ่ายช่องแดงหรืออีเวนต์ 1 ครั้ง",count:1},
   plane:{n:"เหมาเครื่องบิน",when:"ใช้แทนการทอย · ปีที่ 2",eff:"ย้ายไปจุดหมายทันที",count:1}
 };
+// ร้านขายการ์ด: ราคาซื้อ (ขายคืนได้ครึ่งราคา)
+const SHOPS=new Set(["BKK","NSW","CMI","CRI","PTY","HHN","KCG"]);
+const CARD_PRICE={exp:4,sexp:8,home:6,drive:10,mob:5,amulet:6,pass:6,lotto:2,viral:10,insure:5,plane:30};
+const sellPrice=k=>Math.floor(CARD_PRICE[k]/2);
 const MONTHS=["เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.","ม.ค.","ก.พ.","มี.ค."];
 const PCOL=[["แดง","#D93B3B"],["น้ำเงิน","#2F6FDE"],["เขียว","#2E9A4E"],["เหลือง","#E3A900"]];
 const SQ_COL={b:"var(--plus)",r:"var(--minus)",y:"var(--card)",g:"var(--bus)"};
@@ -2127,6 +2133,7 @@ function buildBoard(){
       h+=`<text class="stn-name" x="${tx}" y="${n.y+1}" text-anchor="${r?"start":"end"}"${est>avail?` textLength="${avail.toFixed(1)}" lengthAdjust="spacingAndGlyphs"`:""}>${esc(nm)}</text>`;
       if(FERRY[id]&&!ISLANDS.has(id)) h+=`<text x="${n.x+(LABEL_R.has(id)?-6.4:6.4)}" y="${n.y+8.4}" text-anchor="middle" font-size="4.4" aria-label="${esc(T("ท่าเรือ"))}">⚓</text>`;
       if(AIRPORTS.includes(id)) h+=`<text x="${n.x+(LABEL_R.has(id)?6.4:-6.4)}" y="${n.y+8.6}" text-anchor="middle" font-size="4.6" fill="#2F6FDE" aria-label="${esc(T("สนามบิน"))}">✈</text>`;
+      if(SHOPS.has(id)) h+=`<g transform="translate(${n.x+(LABEL_R.has(id)?6:-6)},${n.y-8})" aria-label="${esc(T("ร้านขายการ์ด"))}"><rect x="-2.6" y="-2" width="5.2" height="4" rx=".6" fill="#FFC21A" stroke="#7A5A00" stroke-width=".35"/><path d="M-2.6 -.6H2.6" stroke="#7A5A00" stroke-width=".35"/><rect x="-1" y=".3" width="2" height="1.7" fill="#7A5A00"/></g>`;
       if(TEMPLES.has(id)) h+=`<g transform="translate(${n.x+(LABEL_R.has(id)?-6.2:6.2)},${n.y-6})" aria-label="${esc(T("วัด: แก้คำสาปได้"))}"><path d="M0 -3.2L1.6 0H-1.6Z M-2.4 0H2.4V2.2H-2.4Z" fill="#D9A400" stroke="#7A5A00" stroke-width=".3"/></g>`;
       h+=`<circle class="stn-hit" data-stn="${id}" cx="${n.x}" cy="${n.y}" r="8"/>`;
     } else {
@@ -2464,7 +2471,38 @@ async function resolveSquare(id,arrived){
       commit(); render();
     }
     await buySheet(id);
+    await cardShop(id);
     await templeCheck(i,id);
+  }
+}
+async function cardShop(s){
+  if(!SHOPS.has(s)) return;
+  const i=S.turn,p=cur();
+  const pool=Object.keys(CARD_PRICE).filter(k=>k!=="plane"||S.year>=2);
+  const stock=shuffle(pool.slice()).slice(0,4);
+  if(isBotTurn()){
+    const bought=[];
+    for(const k of ["drive","amulet","exp"]){
+      if(stock.includes(k)&&p.cards.length<5&&p.money>=CARD_PRICE[k]+30&&!p.cards.includes(k)){ p.money-=CARD_PRICE[k]; p.cards.push(k); bought.push(k); log("{p} ซื้อการ์ด{it} {m}",{p:p.name,it:k,m:CARD_PRICE[k]}); }
+    }
+    if(bought.length){ commit(); render(); await brief({eyebrow:T("ร้านขายการ์ด{st}",{st:s}),title:T("{p} ซื้อการ์ด",{p:esc(p.name)}),html:`<p>${bought.map(itemN).join(", ")}</p>`},1500); }
+    return;
+  }
+  let shown=false;
+  while(true){
+    const full=p.cards.length>=5;
+    const buy=stock.map(k=>`<button class="mode-btn shop-row" data-val="b_${k}" ${(full||p.money<CARD_PRICE[k])?"disabled":""}><b>${itemN(k)} <span class="shop-pr">${money(CARD_PRICE[k])}</span></b><span>${itemF(k,"eff")} · ${itemF(k,"when")}</span></button>`).join("");
+    const uniq=[...new Set(p.cards)];
+    const sell=uniq.length?uniq.map(k=>`<button class="mode-btn shop-row sell" data-val="s_${k}"><b>${itemN(k)}${p.cards.filter(c=>c===k).length>1?` ×${p.cards.filter(c=>c===k).length}`:""} <span class="shop-pr">+${money(sellPrice(k))}</span></b><span>${T("ขายคืนครึ่งราคา")}</span></button>`).join(""):`<p class="note">${T("ยังไม่มีการ์ดให้ขาย")}</p>`;
+    const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b> · ${T("การ์ดในมือ {n}/5",{n:p.cards.length})}</p><div class="label">${T("ซื้อ")}</div><div class="stack">${buy}</div>${full?`<p class="note">${T("มือเต็ม ขายการ์ดก่อนถึงจะซื้อได้")}</p>`:""}<div class="label" style="margin-top:12px">${T("ขาย")}</div><div class="stack">${sell}</div>`;
+    const mp=modal({eyebrow:T("ร้านขายการ์ด{st}",{st:s}),title:T("ร้านขายการ์ด"),html,buttons:[{label:T("ออกจากร้าน"),value:"done"}]});
+    if(shown) $("modal").classList.add("again"); shown=true;
+    const v=await mp;
+    if(!v||v==="done") break;
+    const k=String(v).slice(2);
+    if(v[0]==="b"){ if(p.cards.length>=5||p.money<CARD_PRICE[k]) continue; p.money-=CARD_PRICE[k]; p.cards.push(k); log("{p} ซื้อการ์ด{it} {m}",{p:p.name,it:k,m:CARD_PRICE[k]}); sfx("card"); }
+    else { const ix=p.cards.indexOf(k); if(ix<0) continue; p.cards.splice(ix,1); S.discard.push(k); p.money+=sellPrice(k); log("{p} ขายการ์ด{it} {m}",{p:p.name,it:k,m:sellPrice(k)}); sfx("coin"); }
+    commit(); render();
   }
 }
 async function buySheet(s){
