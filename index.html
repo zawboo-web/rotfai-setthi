@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="เกมกระดานรถไฟสายเหนือ เล่นกับเพื่อนออนไลน์หรือกับบอท">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}html,body{height:100%}</style>
-<title>รถไฟเศรษฐีไทย</title>
+<title>ตุ๊กตุ๊กเศรษฐีไทย</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mali:wght@500;600;700&display=swap">
@@ -14,7 +14,7 @@
 :root{
   --bg:#E7ECE4; --surface:#FFFFFF; --surface-2:#F3F6F1; --ink:#17232B; --muted:#5A6A6E; --line:#CBD4CC;
   --rail:#1F4E9C; --accent:#F2B705; --accent-ink:#2B2100; --bus:#9AA29A; --new:#E2711D;
-  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --sea:#B9DDF2; --field-ne:#F4E4D8; --lbl-ne:#B0705E; --field-s:#DCEFE7; --lbl-s:#3E8C78; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
+  --plus:#2F6FDE; --minus:#D94335; --card:#E0A800; --field-n:#DFEBD8; --field-c:#EFEADB; --field-e:#DCEAF0; --sea:#B9DDF2; --hwy:#E3CB93; --field-ne:#F4E4D8; --lbl-ne:#B0705E; --field-s:#DCEFE7; --lbl-s:#3E8C78; --field-w:#E9E3EF; --lbl-e:#4E86A0; --lbl-w:#8670A0;
   --shadow:0 10px 30px rgba(20,35,40,.18);
   --font-d:'Mitr','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Maru Gothic ProN','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
   --font-b:'IBM Plex Sans Thai','Sukhumvit Set',Thonburi,'Noto Sans Thai','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
@@ -22,12 +22,12 @@
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --hwy:#5E4E2C; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0F171B; --surface:#18232A; --surface-2:#1E2B32; --ink:#E6EDE9; --muted:#97A6A4; --line:#2C3A41;
   --rail:#6F9BEB; --accent:#F2B705; --accent-ink:#2B2100; --bus:#5D6964; --new:#F08A3C;
-  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
+  --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --hwy:#5E4E2C; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
 
 html,body{height:100%}
@@ -63,8 +63,8 @@ button:focus-visible,input:focus-visible,[data-node]:focus-visible{outline:3px s
 .stn-ring{fill:var(--surface);stroke:var(--ink);stroke-width:1.3}
 .stn-num{font-family:var(--font-d);font-weight:600;font-size:5px;fill:var(--rail)}
 .stn-name{font-family:var(--font-d);font-weight:500;font-size:6px;fill:var(--ink)}
-.rail{stroke:var(--rail);stroke-width:2.8}
-.bus{stroke:var(--bus);stroke-width:1.2;stroke-dasharray:.6 1.7;stroke-linecap:round}
+.hwy{stroke:var(--hwy);stroke-width:4.6;stroke-linecap:round}.rail{stroke:var(--rail);stroke-width:1.5;stroke-dasharray:1.6 .7}
+.bus{stroke:var(--bus);stroke-width:1.5;stroke-dasharray:2.2 1.2;stroke-linecap:round}
 .road{stroke:#C9A15A;stroke-width:1.9;stroke-linecap:round;opacity:.9}
 .sea{stroke:#3E9BE0;stroke-width:1.6;stroke-dasharray:2.4 1.6;stroke-linecap:round}
 .fut{stroke:var(--new);stroke-width:2.3;stroke-dasharray:3 2;opacity:.75}
@@ -312,7 +312,7 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
 
 <div id="app">
   <header class="top">
-    <div class="brand">รถไฟเศรษฐีไทย</div>
+    <div class="brand">ตุ๊กตุ๊กเศรษฐีไทย</div>
     <span class="chip" id="chipMonth"><b>เม.ย.</b> ปีที่ 1</span>
     <span class="chip dest" id="chipDest">จุดหมาย <b>—</b></span>
     <button class="iconbtn" id="bgmBtn" aria-label="เพลงประกอบ" aria-pressed="true"></button>
@@ -365,8 +365,8 @@ function setLang(l){
   try{ buildBoard(); sizeBoard(); if(S) render(); }catch(e){}
 }
 function applyStaticLang(){
-  document.documentElement.lang=LANG; document.title=T("รถไฟเศรษฐีไทย");
-  const br=document.querySelector(".brand"); if(br) br.textContent=T("รถไฟเศรษฐีไทย");
+  document.documentElement.lang=LANG; document.title=T("ตุ๊กตุ๊กเศรษฐีไทย");
+  const br=document.querySelector(".brand"); if(br) br.textContent=T("ตุ๊กตุ๊กเศรษฐีไทย");
   $("menuBtn").setAttribute("aria-label",T("เมนู")); $("zin").setAttribute("aria-label",T("ซูมเข้า")); $("zout").setAttribute("aria-label",T("ซูมออก"));
   try{ bgmIcon(); }catch(e){}
 }
@@ -377,9 +377,9 @@ const STN_TR={BKK:["Bangkok","バンコク"],AYT:["Ayutthaya","アユタヤ"],LO
 const PROP_TR=[["Chicken Rice Stall","カオマンガイ屋"],["Weekend Market Stall","週末マーケットの屋台"],["Cargo Port","貨物港"],["Roti Sai Mai Shop","ロティサイマイ屋"],["Grilled River Prawns","川エビ焼き屋"],["Island City Boat Tour","島めぐりボートツアー"],["Industrial Estate","工業団地"],["Sunflower Fields","ひまわり畑"],["Monkey Town Souvenirs","サルの町みやげ店"],["Rice Mill","精米所"],["Pak Nam Pho Mochi Shop","パークナームポーの餅屋"],["Chao Phraya River Port","チャオプラヤー川の港"],["Dangling-Legs Noodle Shop","足ぶらクイッティアオ屋"],["Dried Banana Factory","干しバナナ工場"],["Sukhothai Noodle Shop","スコータイ麺の店"],["Old City Bike Tour","古都サイクリングツアー"],["Lap Lae Durian Orchard","ラップレーのドリアン園"],["Langsat Orchard","ランサット園"],["Indigo Cloth Factory","藍染め布工場"],["Khanom Jeen Nam Ngiao","カノムチン・ナムニャオ屋"],["Old Town Homestay","古い町のホームステイ"],["Mountain Coffee Shop","山のコーヒー店"],["Golden Orange Orchard","金色みかん園"],["Rooster Bowl Factory","ニワトリ柄どんぶり工場"],["Horse Carriage Tours","観光馬車"],["Longan Orchard","ロンガン園"],["Brocade Silk Weaving","錦織シルク工房"],["Khao Soi Shop","カオソーイ屋"],["Sai Ua Sausage Shop","サイウア(ソーセージ)屋"],["Bo Sang Umbrella Workshop","ボーサーンの傘工房"],["Mae Rim Resort","メーリムのリゾート"],["Hill-View Café","山が見えるカフェ"],["Pai Riverside Homestay","パーイ川のホームステイ"],["Kwan Phayao Fish Restaurant","パヤオ湖の魚料理店"],["Lake Cruise","湖の遊覧船"],["Mountain Tea Plantation","山の茶畑"],["Nang Lae Pineapple Farm","ナーンレーのパイナップル畑"],["Golden Triangle Resort","ゴールデントライアングルのリゾート"],
  ["Muak Lek Dairy Farm","ムアックレックの牧場"],["Fresh-Milk Steakhouse","牧場ステーキ店"],["Cement Plant","セメント工場"],["Paet Rio Chicken Farm","ペートリウ養鶏場"],["Bang Khla Floating Market","バーンクラー水上マーケット"],["Car Assembly Plant","自動車組立工場"],["Nong Mon Bamboo Sticky Rice","ノーンモンのカオラーム屋"],["Ang Sila Oyster Farm","アーンシラーの牡蠣養殖場"],["Laem Chabang Deep-Sea Port","レムチャバン深海港"],["Beachfront Seafood","ビーチのシーフード店"],["Koh Larn Ferry","ラン島行きフェリー"],["Pattaya Beach Hotel","パタヤのビーチホテル"],["Rayong Fish Sauce Shop","ラヨーンの魚醤店"],["Rayong Durian Orchard","ラヨーンのドリアン園"],["Koh Samet Speedboat","サメット島行きボート"],["Map Ta Phut Petrochemical Estate","マプタプット石油化学団地"],["Crab Fried Noodles","カニ炒め麺の店"],["Mangosteen Orchard","マンゴスチン園"],["Gem Cutting Shop","宝石研磨店"],["Trat Golden Pineapple Farm","トラートの黄金パイナップル畑"],["Koh Chang Resort","チャーン島のリゾート"],["Red Pork Rice Shop","カオムーデーン屋"],["Nakhon Chai Si Pomelo Orchard","ナコーンチャイシーの文旦園"],["Don Wai Floating Market","ドンワイ水上マーケット"],["River Kwai Restaurant","クウェー川のレストラン"],["River Kwai Raft House","クウェー川の水上コテージ"],["Bo Phloi Sapphire Mine","ボープローイの宝石鉱山"],["Dragon Jar Pottery","竜の水がめ工房"],["Damnoen Saduak Floating Market","ダムヌンサドゥアク水上マーケット"],["Khanom Mo Kaeng Shop","カノムモーケーン屋"],["Rose Apple Orchard","ローズアップル園"],["Ban Laem Salt Fields","バーンレムの塩田"],["Hua Hin Seafood","ホアヒンのシーフード店"],["Pranburi Pineapple Farm","プラーンブリーのパイナップル畑"],["Hua Hin Seaside Resort","ホアヒンの海辺リゾート"],["Coral Snorkel Shop","サンゴのシュノーケル店"],["White Sand Beach Bungalows","白砂ビーチのバンガロー"],["Bang Bao Seafood","バンバオの海鮮料理店"],["Sai Kaew Beach Bar","サイケーオビーチのバー"],["Ao Prao Resort","アオプラオのリゾート"],["Khao Yai Vineyard", "カオヤイのぶどう園"],["Khao Yai Resort", "カオヤイのリゾート"],["Pak Chong Sweet Corn Stall", "パークチョンのスイートコーン屋"],["Korat Fried Noodle Shop", "コラート焼きビーフン屋"],["Pak Thong Chai Silk Mill", "パクトンチャイの絹織物工場"],["Suranari Industrial Estate", "スラナリー工業団地"],["Khao Suan Kwang Grilled Chicken", "カオスアンクワーンの焼き鳥屋"],["Sugar Mill", "製糖工場"],["Phu Wiang Dinosaur Museum", "プーウィアン恐竜博物館"],["Naem Nueang Restaurant", "ネームヌアン屋"],["Udon Night Bazaar", "ウドーンのナイトバザール"],["Red Lotus Lake Boat Tour", "赤い蓮の湖ボートツアー"],["Tha Sadet Mekong Market", "メコン川沿いのターサデット市場"],["Mekong River Fish Restaurant", "メコン川の魚料理店"],["Phu Ruea Highland Vegetable Farm", "プールアの高原野菜畑"],["Phu Kradueng Campground", "プークラドゥンのキャンプ場"],["Buriram Race Circuit", "ブリーラムのサーキット"],["Jasmine Rice Mill", "ジャスミン米の精米所"],["Ta Klang Elephant Village", "タークラーンの象の村"],["Surin Silk Weaving House", "スリンの絹織物工房"],["Krayasat Sweets Shop", "カヤサート(お菓子)屋"],["Ubon Moo Yor Shop", "ウボンのムーヨー屋"],["Candle Sculpture Workshop", "ろうそく彫刻工房"],["Khong Chiam River Cruise", "コーンチアムのリバークルーズ"],["Indochina Market", "インドシナ市場"],["Border Trade Depot", "国境交易所"],["Mekong Riverside Café", "メコン川沿いのカフェ"],["Mekong View Hotel", "メコンビューのホテル"],["Phon Yang Kham Beef Farm", "ポンヤーンカムの肉牛牧場"],["Indigo Dye Workshop", "藍染め工房"],["Thung Kula Jasmine Rice Fields", "トゥンクラーのジャスミン米の田んぼ"],["Roi Et Larb Shop", "ローイエットのラープ屋"],["Thap Sakae Coconut Grove", "タップサケーのココナッツ園"],["Sun-Dried Squid Stall", "一夜干しイカの店"],["Robusta Coffee Farm", "ロブスタコーヒー農園"],["Lady Finger Banana Orchard", "レディフィンガーバナナ園"],["Thung Wua Laen Beach Resort", "トゥンウアレーンビーチのリゾート"],["Raksawarin Hot Springs", "ラクサワリン温泉"],["Ranong Fishing Port", "ラノーン漁港"],["Surat Oyster Farm", "スラートの牡蠣養殖場"],["Oil Palm Plantation", "アブラヤシ農園"],["Chaiya Salted Egg Shop", "チャイヤーの塩卵の店"],["Khanom Jeen Kaeng Tai Pla", "カノムチン・ゲーンタイプラー屋"],["Nielloware Workshop", "ニエロ細工の工房"],["Khiriwong Mangosteen Orchard", "キーリーウォンのマンゴスチン園"],["Thale Noi Boat Tour", "タレーノーイのボートツアー"],["Sangyod Rice Fields", "サンヨート米の田んぼ"],["Kim Yong Market", "キムヨン市場"],["Hat Yai Fried Chicken", "ハートヤイのフライドチキン屋"],["Rubber Factory", "ゴム工場"],["Samila Seafood Restaurant", "サミラーの海鮮料理店"],["Samila Beach Hotel", "サミラービーチのホテル"],["Railay Rock Climbing Tours", "ライレイのロッククライミングツアー"],["Krabi Seafood Restaurant", "クラビの海鮮料理店"],["Phang Nga Bay Canoe Tours", "パンガー湾のカヌーツアー"],["Phang Nga Rubber Plantation", "パンガーのゴム園"],["Patong Beach Hotel", "パトンビーチのホテル"],["Phuket Hokkien Noodle Shop", "プーケットのホッケン麺の店"],["Phuket Old Town Café", "プーケット旧市街のカフェ"],["Trang Roast Pork Shop", "トランのローストポーク屋"],["Trang Rubber Plantation", "トランのゴム園"],["Chaweng Beach Resort", "チャウエンビーチのリゾート"],["Samui Coconut Plantation", "サムイ島のココナッツ園"],["Maya Bay Snorkel Tours", "マヤ湾のシュノーケルツアー"],["Loh Dalum Beach Bar", "ロダラムビーチのバー"],["Lanta Beach Bungalows", "ランタ島のビーチバンガロー"],["Lanta Old Town Restaurant", "ランタ旧市街のレストラン"]];
 const ITEM_TR={
-  exp:{n:["Express Train","急行列車"],when:["Before rolling","サイコロの前"],eff:["Roll 2 dice","サイコロ2個で進む"]},
-  sexp:{n:["Special Express","特急列車"],when:["Before rolling","サイコロの前"],eff:["Roll 3 dice","サイコロ3個で進む"]},
-  hsr:{n:["High-Speed Train","高速鉄道"],when:["Before rolling","サイコロの前"],eff:["Roll 5 dice","サイコロ5個で進む"]},
+  exp:{n:["Express Train","急行列車"],when:["Before rolling · on a railway","サイコロの前・線路上で"],eff:["Park the tuk-tuk and ride the train: roll 2 dice, railway only","トゥクトゥクを停めて列車へ:サイコロ2個、線路のみ進む"]},
+  sexp:{n:["Special Express","特急列車"],when:["Before rolling · on a railway","サイコロの前・線路上で"],eff:["Ride the special express: roll 3 dice, railway only","特急に乗る:サイコロ3個、線路のみ進む"]},
+  hsr:{n:["High-Speed Train","高速鉄道"],when:["Before rolling · on a railway","サイコロの前・線路上で"],eff:["Ride the high-speed train: roll 5 dice, railway only","高速鉄道に乗る:サイコロ5個、線路のみ進む"]},
   home:{n:["Ticket Home","帰宅きっぷ"],when:["Instead of rolling","サイコロの代わり"],eff:["Go straight to Bangkok","すぐバンコクへ移動"]},
   drive:{n:["Drive Yourself","自分で運転"],when:["Instead of rolling","サイコロの代わり"],eff:["Choose to move 1–6 spaces","1〜6マス好きなだけ進む"]},
   mob:{n:["Road Protest","道路デモ"],when:["Before rolling","サイコロの前"],eff:["One player can't move next turn","1人を次のターン足止め"]},
@@ -687,7 +687,7 @@ Object.assign(TR,{
 "a card space",
 "カードマス"
 ],
-"ทางรถทัวร์": [
+"ถนนชนบท": [
 "the bus route",
 "バス路線"
 ],
@@ -923,7 +923,7 @@ Object.assign(TR,{
 "Buy {m}",
 "{m}で買う"
 ],
-"สถานี{st}": [
+"แวะ{st}": [
 "{st} station",
 "{st}駅"
 ],
@@ -1439,7 +1439,7 @@ Object.assign(TR,{
 "Game over",
 "ゲーム終了"
 ],
-"{p} คือเศรษฐีรถไฟ!": [
+"{p} คือเศรษฐีตุ๊กตุ๊ก!": [
 "{p} is the Railway Tycoon!",
 "{p}が鉄道王に!"
 ],
@@ -1559,7 +1559,7 @@ Object.assign(TR,{
 "Available",
 "空き"
 ],
-"สถานี": [
+"จุดแวะ": [
 "Station",
 "駅"
 ],
@@ -1599,11 +1599,11 @@ Object.assign(TR,{
 "Upload generated art for the cards",
 "生成した画像をカードにアップロード"
 ],
-"เหนือ · กลาง · ตะวันออก · ตะวันตก": [
+"ทั่วไทย 6 ภาค": [
 "North · Central · East · West",
 "北部・中部・東部・西部"
 ],
-"รถไฟเศรษฐีไทย": [
+"ตุ๊กตุ๊กเศรษฐีไทย": [
 "Thai Railway Tycoon",
 "タイ鉄道王"
 ],
@@ -1663,11 +1663,11 @@ Object.assign(TR,{
 "Map",
 "マップ"
 ],
-"ทุกภาค · 27 สถานี": [
+"ทั่วไทย · 57 จุดแวะ": [
 "All regions · 27 stations",
 "全地域・27駅"
 ],
-"สายเหนือ · 15 สถานี": [
+"เฉพาะภาคเหนือ · 15 จุดแวะ": [
 "Northern line · 15 stations",
 "北線・15駅"
 ],
@@ -1683,7 +1683,7 @@ Object.assign(TR,{
 "On",
 "オン"
 ],
-"ผีจะท้าตอบควิซก่อนแกล้ง และบางสถานีมีควิซโบนัส": [
+"ผีจะท้าตอบควิซก่อนแกล้ง และบางจุดแวะมีควิซโบนัส": [
 "Ghosts challenge you to a quiz before causing trouble, and some stations have bonus quizzes",
 "おばけはいたずら前にクイズで挑戦。駅のボーナスクイズもあります"
 ],
@@ -1931,7 +1931,7 @@ Object.assign(TR,{
 "The ghost causes trouble every turn and turns giant after 3 turns. Pass another player to hand it on",
 "おばけは毎ターンいたずら。3ターンで巨大化。他の人とすれ違うと移せる"
 ],
-"หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2": [
+"หยุดที่จุดแวะซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งจุดแวะกำไร ×2": [
 "Stop at stations to buy businesses. In March every business pays profit; own a whole station for ×2",
 "駅で物件を購入。3月の決算で利益、駅を独占すると ×2"
 ],
@@ -1957,17 +1957,18 @@ Object.assign(TR,{
 ]
 });
 Object.assign(TR,{"เต๋าเน่า": ["Rotten Dice", "くさったサイコロ"], "ทอยได้แค่ 1–3 แต้ม": ["You can only roll 1–3", "サイコロは1〜3しか出ない"], "ของแพง": ["Price Hike", "値上がり"], "ซื้อกิจการแพงขึ้น 50%": ["Businesses cost 50% more", "物件が50%高くなる"], "กระเป๋ารั่ว": ["Leaky Wallet", "財布に穴"], "เสียเงิน 1 ล้านทุกต้นเทิร์น": ["Lose ฿1M at the start of each turn", "毎ターン開始時に1百万失う"], "ดวงตก": ["Bad Luck", "運気ダウン"], "ช่องน้ำเงินได้ครึ่งเดียว ช่องแดงเสียสองเท่า": ["Blue spaces pay half, red spaces cost double", "青マスは半分、赤マスは2倍"], "ขี้ลืม": ["Forgetful", "うっかり"], "ใช้การ์ดไม่ได้": ["You can't use cards", "カードが使えない"], "หลงป่า": ["Lost in the Woods", "森で迷子"], "เดินได้แค่ 1 ช่อง": ["Move only 1 space", "1マスしか進めない"], "ผีปอบ": ["Phi Pop", "ピーポープ"], "ขโมยเงิน 5 ล้าน": ["Steals ฿5M", "5百万を盗む"], "ผีกระสือ": ["Krasue", "ガスー"], "ขโมยการ์ดไป 1 ใบ": ["Steals 1 card", "カードを1枚盗む"], "ผีเจ้าที่": ["Land Spirit", "土地神"], "สาปสุ่ม 1 อย่าง 3 เทิร์น": ["A random curse for 3 turns", "ランダムな呪いを3ターン"], "ผีกองกอย": ["Kong Koi", "コンコーイ"], "พาหลงป่า เทิร์นหน้าเดินได้แค่ 1 ช่อง": ["Leads you astray: move only 1 space next turn", "森で迷わせる:次のターンは1マスだけ"], "นางตะเคียน": ["Nang Takhian", "ナーンタキアン"], "ใบ้หวย ได้การ์ดลอตเตอรี่ที่ถูกแน่": ["Lottery tip: get a Lottery card that's sure to win", "宝くじの予言:必ず当たる宝くじカード"], "กุมารทอง": ["Kuman Thong", "クマーントーン"], "เรียกทรัพย์ ได้ 3 ล้านต่อกิจการ (อย่างน้อย 5 ล้าน)": ["Brings wealth: ฿3M per business you own (at least ฿5M)", "金運:物件1件につき3百万(最低5百万)"], "ผีตาโขน": ["Phi Ta Khon", "ピーターコーン"], "ชวนเข้างานบุญ ได้การ์ดไอเทม 2 ใบ": ["Festival invite: draw 2 item cards", "お祭りに招待:アイテムカード2枚"], "ผีกระหัง": ["Krahang", "グラハン"], "พาบินไปลงจังหวัดสุ่ม": ["Flies you to a random province", "ランダムな県へ飛ばす"], "ผีร้าย": ["Bad ghost", "悪いおばけ"], "ผีใจดี": ["Kind ghost", "やさしいおばけ"], "ผีเอาแน่ไม่ได้": ["Unpredictable", "気まぐれおばけ"], "ผีลึกลับ": ["Mystery ghost", "なぞのおばけ"], "ไม่รู้ว่าเป็นผีอะไร อาจดีหรือร้ายก็ได้ เจอแล้วถึงจะรู้": ["No one knows what it is — good or bad. You'll find out when you meet it", "正体不明。良いか悪いかは会ってのお楽しみ"], "ผีเดินได้": ["Wandering ghost", "歩くおばけ"], "ผีอยู่กับที่": ["Stays in place", "動かないおばけ"], "{p} ใช้เครื่องรางกันคำสาป": ["{p} blocked the curse with an amulet", "{p}はお守りで呪いを防いだ"], "เครื่องรางคุ้มครอง!": ["Amulet protects!", "お守りが守った!"], "{p} อยู่ไกล{st}ที่สุด แต่เครื่องรางกันคำสาปไว้ได้": ["{p} was farthest from {st}, but the amulet blocked the curse", "{p}は{st}から一番遠かったが、お守りが呪いを防いだ"], "{p} อยู่ไกลสุด โดนสาป: {t}": ["{p} was farthest and got cursed: {t}", "{p}は一番遠くて呪われた:{t}"], "คำสาป": ["Curse", "呪い"], "{p} โดนสาป!": ["{p} is cursed!", "{p}が呪われた!"], "อยู่ไกล{st}ที่สุด ({n} ช่อง)": ["Farthest from {st} ({n} spaces)", "{st}から一番遠い({n}マス)"], "3 เทิร์น · แก้ได้ที่จังหวัดที่มีวัด": ["3 turns · cure it at a temple province", "3ターン・お寺のある県で解ける"], "{p} หายจากคำสาปแล้ว": ["{p}'s curse wore off", "{p}の呪いが解けた"], "วัดประจำ{st}": ["Temple of {st}", "{st}のお寺"], "ทำบุญแก้คำสาป?": ["Make merit to lift the curse?", "お参りして呪いを解く?"], "จ่าย {m} เพื่อแก้คำสาป{t}": ["Pay {m} to lift {t}", "{m}払って「{t}」を解く"], "ไม่เป็นไร": ["No thanks", "やめておく"], "ทำบุญ {m}": ["Make merit {m}", "お参り {m}"], "{p} ทำบุญแก้คำสาปที่{st}": ["{p} lifted the curse at {st}", "{p}は{st}でお参りして呪いを解いた"], "{p} ทำบุญแก้คำสาป": ["{p} makes merit to lift the curse", "{p}がお参りして呪いを解いた"], "ผีออกเดินเพ่นพ่าน {n} ตัว": ["{n} ghosts wandered around", "おばけが{n}体うろついた"], "เจอ{g}!": ["Met {g}!", "{g}に遭遇!"], "{p} ตอบถูก {t}หนีไปแล้ว": ["{p} answered right — {t} fled", "{p}が正解!{t}は逃げた"], "มีเครื่องราง ใช้ไล่ผีตัวนี้ไหม": ["You have an amulet. Use it to drive this ghost away?", "お守りがあります。使っておばけを追い払う?"], "ใช้เครื่องราง": ["Use amulet", "お守りを使う"], "{p} ใช้เครื่องรางไล่{t}": ["{p} drove off {t} with an amulet", "{p}はお守りで{t}を追い払った"], "{t}ขโมยเงิน{p} {m}": ["{t} stole {m} from {p}", "{t}が{p}から{m}を盗んだ"], "{t}ขโมยการ์ด{it}ของ{p}": ["{t} stole {p}'s {it}", "{t}が{p}の{it}を盗んだ"], "{t}หาการ์ดของ{p}ไม่เจอ": ["{t} found no cards on {p}", "{t}は{p}のカードを見つけられなかった"], "{p} โดนสาป: {t2}": ["{p} got cursed: {t2}", "{p}が呪われた:{t2}"], "{t}พา{p}หลงป่า": ["{t} led {p} astray", "{t}が{p}を森で迷わせた"], "{t}ใบ้หวยให้{p}": ["{t} gave {p} a lottery tip", "{t}が{p}に宝くじの番号を教えた"], "{t}เรียกทรัพย์ให้{p} {m}": ["{t} brought {p} {m}", "{t}が{p}に{m}を呼び込んだ"], "{p} ได้การ์ดจากงานบุญ {n} ใบ": ["{p} got {n} cards at the festival", "{p}はお祭りでカードを{n}枚もらった"], "{t}พา{p}บินไป{st}": ["{t} flew {p} to {st}", "{t}が{p}を{st}へ飛ばした"], "สาป: {t} {n}": ["Cursed: {t} {n}", "呪い:{t} {n}"], "ลอตเตอรี่ใบนี้ถูกแน่ (นางตะเคียนใบ้ให้)": ["This ticket is sure to win (tip from Nang Takhian)", "この宝くじは必ず当たる(ナーンタキアンのお告げ)"], "คำสาปขี้ลืม: ใช้การ์ดไม่ได้": ["Forgetful curse: no cards", "うっかりの呪い:カードが使えない"], "หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง": ["Lost in the woods: move 1 space this turn", "森で迷子:このターンは1マス"], "{p} กระเป๋ารั่ว เสีย {m}": ["{p}'s wallet leaked {m}", "{p}の財布から{m}がこぼれた"], "ยันต์ย้ายคำสาป": ["Curse Charm", "呪い移しのお札"], "ส่งคำสาปของคุณไปให้คนอื่น": ["Pass your curse to another player", "自分の呪いを他の人へ移す"], "เครื่องราง": ["Lucky Amulet", "お守り"], "กันผีร้ายหรือคำสาป 1 ครั้ง": ["Blocks one bad ghost or curse", "悪いおばけか呪いを1回防ぐ"], "ส่งคำสาปให้ใคร": ["Pass the curse to whom?", "誰に呪いを移す?"], "{p} ย้ายคำสาปไปให้{q}": ["{p} passed the curse to {q}", "{p}が呪いを{q}に移した"], "วัด: แก้คำสาปได้": ["Temple: lift curses here", "お寺:呪いを解ける"], "ผีโผล่ใหม่บนแผนที่": ["New ghosts appeared on the map", "マップに新しいおばけが出た"], "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด": ["First to the destination wins the prize; whoever is farthest is cursed for 3 turns (cure it at a temple)", "目的地に一番乗りで賞金。一番遠い人は3ターン呪われる(お寺で解ける)"], "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายตอบควิซถูกหนีได้": ["New ghosts appear each month. Pass a ghost's space to meet it; some ghosts wander. Answer a quiz to escape bad ones", "毎月おばけが現れる。おばけのマスを通ると遭遇。歩くおばけもいる。悪いおばけはクイズに正解すれば逃げられる"]});
-Object.assign(TR,{"ตำส้มตำรัวๆ": ["Som Tam Smash", "ソムタム連打"], "แตะครกรัวๆ ให้ได้ {g} ครั้งใน 5 วินาที": ["Tap the mortar {g} times in 5 seconds", "5秒でうすを{g}回たたこう"], "ชงชาเย็นให้พอดีขีด": ["Perfect Thai Iced Tea", "タイティーをぴったりに"], "กดค้างเพื่อเทชา ปล่อยให้ตรงขีดแดง ล้นหรือขาดเกินไปถือว่าแพ้": ["Hold to pour, release on the red line. Too much or too little loses", "長押しでお茶をそそぎ、赤い線で離そう。多すぎ・少なすぎは負け"], "ตบยุง": ["Mosquito Swat", "蚊たたき"], "ยุงจะบินโผล่มา แตะตบให้ได้ {g} ตัวใน 8 วินาที": ["Mosquitoes pop up — swat {g} in 8 seconds", "出てくる蚊を8秒で{g}匹たたこう"], "สงกรานต์สาดน้ำ": ["Songkran Splash", "ソンクラーン水かけ"], "สาดน้ำใส่เพื่อนที่โผล่ตามหน้าต่าง ได้ {g} แต้มใน 9 วินาที ห้ามสาดคุณยาย (−2)": ["Splash friends in the windows — {g} points in 9 seconds. Don't splash Grandma (−2)", "窓から出る友だちに水をかけて9秒で{g}点。おばあちゃんはダメ(−2)"], "{p} เล่นมินิเกม": ["{p} plays a minigame", "{p}がミニゲームに挑戦"], "ผ่าน!": ["Passed!", "クリア!"], "ไม่ผ่าน": ["Failed", "失敗"], "มินิเกม: {g}": ["Minigame: {g}", "ミニゲーム:{g}"], "เริ่ม!": ["Start!", "スタート!"], "{p} ชนะมินิเกม{g}": ["{p} won the minigame {g}", "{p}がミニゲーム「{g}」をクリア"], "{p} แพ้มินิเกม{g}": ["{p} lost the minigame {g}", "{p}はミニゲーム「{g}」に失敗"], "ตำ!": ["Pound!", "たたく!"], "ตำได้ {n} ครั้ง (เป้า {g})": ["{n} pounds (goal {g})", "{n}回(目標{g})"], "กดค้างเพื่อเท": ["Hold to pour", "長押しでそそぐ"], "ชาล้นแก้ว!": ["The tea overflowed!", "お茶があふれた!"], "ห่างจากขีด {n}%": ["{n}% off the line", "線から{n}%ずれた"], "ไม่ได้เทชาเลย": ["You didn't pour any tea", "お茶をそそがなかった"], "ยุง": ["Mosquito", "蚊"], "ตบยุงได้ {n} ตัว (เป้า {g})": ["{n} mosquitoes (goal {g})", "{n}匹(目標{g})"], "คุณยาย": ["Grandma", "おばあちゃん"], "ได้ {n} แต้ม (เป้า {g})": ["{n} points (goal {g})", "{n}点(目標{g})"], "ผีท้าประลอง!": ["The ghost challenges you!", "おばけの挑戦!"], "ชนะคำท้า ผีจะหนีไปไม่แกล้ง": ["Win the challenge and the ghost runs away", "勝てばおばけは逃げていく"], "ผีท้าประลอง": ["Ghost challenge", "おばけの挑戦"], "ผีจะ: {x} · ชนะรอดตัว": ["Ghost will: {x} · win to escape", "おばけの効果:{x}・勝てば回避"], "{p} ชนะคำท้า {t}หนีไปแล้ว": ["{p} won — {t} fled", "{p}の勝ち!{t}は逃げた"], "โบนัสประจำสถานี{st}": ["{st} station bonus", "{st}駅ボーナス"], "ผ่านได้ {m} · ไม่ผ่านเสีย {m2}": ["Pass: +{m} · Fail: −{m2}", "成功で{m}・失敗で{m2}の損"], "{p} ได้โบนัส {m}": ["{p} won a bonus of {m}", "{p}がボーナス{m}獲得"], "ความท้าทาย": ["Challenges", "チャレンジ"], "ผสม": ["Mixed", "ミックス"], "มินิเกม": ["Minigames", "ミニゲーム"], "ผีร้ายท้าประลองก่อนแกล้ง และบางสถานีมีโบนัส · ผสม = สุ่มควิซหรือมินิเกม": ["Bad ghosts challenge you before causing trouble, and some stations give bonuses · Mixed = random quiz or minigame", "悪いおばけはいたずら前に挑戦してくる。駅ボーナスもあり・ミックス=クイズかミニゲームをランダム"], "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้": ["New ghosts appear each month. Pass a ghost's space to meet it; some wander. Beat a quiz or minigame to escape bad ones", "毎月おばけが現れる。おばけのマスを通ると遭遇。歩くおばけもいる。クイズかミニゲームに勝てば悪いおばけから逃げられる"]});
+Object.assign(TR,{"ตำส้มตำรัวๆ": ["Som Tam Smash", "ソムタム連打"], "แตะครกรัวๆ ให้ได้ {g} ครั้งใน 5 วินาที": ["Tap the mortar {g} times in 5 seconds", "5秒でうすを{g}回たたこう"], "ชงชาเย็นให้พอดีขีด": ["Perfect Thai Iced Tea", "タイティーをぴったりに"], "กดค้างเพื่อเทชา ปล่อยให้ตรงขีดแดง ล้นหรือขาดเกินไปถือว่าแพ้": ["Hold to pour, release on the red line. Too much or too little loses", "長押しでお茶をそそぎ、赤い線で離そう。多すぎ・少なすぎは負け"], "ตบยุง": ["Mosquito Swat", "蚊たたき"], "ยุงจะบินโผล่มา แตะตบให้ได้ {g} ตัวใน 8 วินาที": ["Mosquitoes pop up — swat {g} in 8 seconds", "出てくる蚊を8秒で{g}匹たたこう"], "สงกรานต์สาดน้ำ": ["Songkran Splash", "ソンクラーン水かけ"], "สาดน้ำใส่เพื่อนที่โผล่ตามหน้าต่าง ได้ {g} แต้มใน 9 วินาที ห้ามสาดคุณยาย (−2)": ["Splash friends in the windows — {g} points in 9 seconds. Don't splash Grandma (−2)", "窓から出る友だちに水をかけて9秒で{g}点。おばあちゃんはダメ(−2)"], "{p} เล่นมินิเกม": ["{p} plays a minigame", "{p}がミニゲームに挑戦"], "ผ่าน!": ["Passed!", "クリア!"], "ไม่ผ่าน": ["Failed", "失敗"], "มินิเกม: {g}": ["Minigame: {g}", "ミニゲーム:{g}"], "เริ่ม!": ["Start!", "スタート!"], "{p} ชนะมินิเกม{g}": ["{p} won the minigame {g}", "{p}がミニゲーム「{g}」をクリア"], "{p} แพ้มินิเกม{g}": ["{p} lost the minigame {g}", "{p}はミニゲーム「{g}」に失敗"], "ตำ!": ["Pound!", "たたく!"], "ตำได้ {n} ครั้ง (เป้า {g})": ["{n} pounds (goal {g})", "{n}回(目標{g})"], "กดค้างเพื่อเท": ["Hold to pour", "長押しでそそぐ"], "ชาล้นแก้ว!": ["The tea overflowed!", "お茶があふれた!"], "ห่างจากขีด {n}%": ["{n}% off the line", "線から{n}%ずれた"], "ไม่ได้เทชาเลย": ["You didn't pour any tea", "お茶をそそがなかった"], "ยุง": ["Mosquito", "蚊"], "ตบยุงได้ {n} ตัว (เป้า {g})": ["{n} mosquitoes (goal {g})", "{n}匹(目標{g})"], "คุณยาย": ["Grandma", "おばあちゃん"], "ได้ {n} แต้ม (เป้า {g})": ["{n} points (goal {g})", "{n}点(目標{g})"], "ผีท้าประลอง!": ["The ghost challenges you!", "おばけの挑戦!"], "ชนะคำท้า ผีจะหนีไปไม่แกล้ง": ["Win the challenge and the ghost runs away", "勝てばおばけは逃げていく"], "ผีท้าประลอง": ["Ghost challenge", "おばけの挑戦"], "ผีจะ: {x} · ชนะรอดตัว": ["Ghost will: {x} · win to escape", "おばけの効果:{x}・勝てば回避"], "{p} ชนะคำท้า {t}หนีไปแล้ว": ["{p} won — {t} fled", "{p}の勝ち!{t}は逃げた"], "โบนัสประจำ{st}": ["{st} station bonus", "{st}駅ボーナス"], "ผ่านได้ {m} · ไม่ผ่านเสีย {m2}": ["Pass: +{m} · Fail: −{m2}", "成功で{m}・失敗で{m2}の損"], "{p} ได้โบนัส {m}": ["{p} won a bonus of {m}", "{p}がボーナス{m}獲得"], "ความท้าทาย": ["Challenges", "チャレンジ"], "ผสม": ["Mixed", "ミックス"], "มินิเกม": ["Minigames", "ミニゲーム"], "ผีร้ายท้าประลองก่อนแกล้ง และบางจุดแวะมีโบนัส · ผสม = สุ่มควิซหรือมินิเกม": ["Bad ghosts challenge you before causing trouble, and some stations give bonuses · Mixed = random quiz or minigame", "悪いおばけはいたずら前に挑戦してくる。駅ボーナスもあり・ミックス=クイズかミニゲームをランダム"], "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้": ["New ghosts appear each month. Pass a ghost's space to meet it; some wander. Beat a quiz or minigame to escape bad ones", "毎月おばけが現れる。おばけのマスを通ると遭遇。歩くおばけもいる。クイズかミニゲームに勝てば悪いおばけから逃げられる"]});
 Object.assign(TR,{"ครกส้มตำ":["Som tam mortar","ソムタムのうす"]});
 Object.assign(TR,{"ลองมินิเกม": ["Try minigames", "ミニゲームで遊ぶ"], "ฝึกเล่นมินิเกมทีละเกม ไม่มีผลกับเกม": ["Practise each minigame — doesn't affect any game", "ミニゲームを1つずつ練習(ゲームには影響なし)"], "ฝึกเล่น ไม่มีผลกับเกม": ["Practice — no effect on the game", "練習モード(ゲームには影響なし)"], "ฝึกเล่น": ["Practice", "練習"]});
 Object.assign(TR,{"แก้วชาเย็น":["Iced tea cup","アイスティーのカップ"]});
 Object.assign(TR,{"อยู่บนเกาะ ต้องนั่งเรือกลับฝั่ง": ["You're on an island — take the boat back", "島にいる。船で戻ろう"], "เรือไป{st}": ["Boat to {st}", "{st}行きの船"], "บิน": ["Fly", "飛行機"], "ท่าเรือ": ["Pier", "船着き場"], "สนามบิน": ["Airport", "空港"], "ท่าเรือ{st}": ["{st} pier", "{st}の船着き場"], "นั่งเรือไป{st}?": ["Take the boat to {st}?", "{st}へ船で行く?"], "ค่าเรือ {m} · ทอยเต๋าก่อนออกเรือ ถ้าได้ {n} คลื่นแรง เรือไม่ออก (ไม่เสียค่าเรือ)": ["Fare {m} · Roll before sailing: {n} means rough seas, no sailing (no fare charged)", "運賃{m}・出航前にサイコロ。{n}なら波が高く欠航(運賃なし)"], "ช่วงมรสุม (มิ.ย.–ก.ย.) คลื่นแรงกว่าปกติ": ["Monsoon season (Jun–Sep): rougher seas", "モンスーンの時期(6〜9月)は波が高い"], "ขึ้นเรือ": ["Board", "乗船"], "คลื่นแรง!": ["Rough seas!", "波が高い!"], "ทอยได้ {d} เรือไม่ออก รอเทิร์นหน้า": ["Rolled {d} — no sailing. Wait for next turn", "{d}が出て欠航。次のターンまで待とう"], "{p} รอเรือที่{st} คลื่นแรง เรือไม่ออก": ["{p} waited at {st} — rough seas, no boat", "{p}は{st}で足止め。波が高く欠航"], "{p} นั่งเรือจาก{st}ไป{st2} ค่าเรือ {m}": ["{p} took the boat from {st} to {st2} for {m}", "{p}は{st}から{st2}へ船で移動(運賃{m})"], "บินไปสนามบินไหนก็ได้ในตาเดียว แต่บินแล้วจบตา": ["Fly to any airport in one go — your turn ends after the flight", "どの空港へも一気に飛べる。ただし飛んだらターン終了"], "ค่าตั๋ว {m}": ["Ticket {m}", "航空券{m}"], "สนามบิน{st}": ["{st} Airport", "{st}空港"], "จะบินไปไหน?": ["Where to?", "どこへ飛ぶ?"], "{p} บินจาก{st}ไป{st2} ค่าตั๋ว {m}": ["{p} flew from {st} to {st2} for {m}", "{p}は{st}から{st2}へ飛んだ(航空券{m})"], "{p} นั่งเรือไป{st}": ["{p} takes the boat to {st}", "{p}は船で{st}へ"], "{p} บินไป{st}": ["{p} flies to {st}", "{p}は{st}へ飛ぶ"], "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา": ["Islands are reachable only by boat. ⚓ Roll at the pier: 1 = rough seas, no sailing (1–2 in the Jun–Sep monsoon) · ✈ Fly from any airport to any other — pricey, and your turn ends", "島へは船でのみ行ける。⚓船着き場でサイコロ、1なら欠航(6〜9月のモンスーンは1〜2)・✈空港からどの空港へも飛べる。高く、ターン終了"]});
-Object.assign(TR,{"ร้านขายการ์ด": ["Card Shop", "カードショップ"], "ร้านขายการ์ด{st}": ["{st} Card Shop", "{st}のカードショップ"], "{p} ซื้อการ์ด": ["{p} bought cards", "{p}がカードを購入"], "ขายคืนครึ่งราคา": ["Sell back for half price", "半額で売却"], "ยังไม่มีการ์ดให้ขาย": ["No cards to sell yet", "売れるカードがない"], "การ์ดในมือ {n}/5": ["Hand {n}/5", "手札 {n}/5"], "ซื้อ": ["Buy", "買う"], "ขาย": ["Sell", "売る"], "มือเต็ม ขายการ์ดก่อนถึงจะซื้อได้": ["Hand full — sell a card first to buy", "手札がいっぱい。先に売ろう"], "ออกจากร้าน": ["Leave shop", "店を出る"], "{p} ซื้อการ์ด{it} {m}": ["{p} bought {it} for {m}", "{p}が{it}を{m}で購入"], "{p} ขายการ์ด{it} {m}": ["{p} sold {it} for {m}", "{p}が{it}を{m}で売却"], "สถานีที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา": ["Stations with a Card Shop (yellow shop icon) let you buy cards or sell them back for half price", "カードショップのある駅(黄色い店のアイコン)ではカードを買ったり、半額で売ったりできる"]});
-Object.assign(TR,{"ของดีหายาก": ["Rare Treasure", "レアなお宝"], "ของดีประจำ{st}": ["Treasure of {st}", "{st}のお宝"], "เจอของหายาก!": ["A rare treasure!", "レアなお宝発見!"], "มีชิ้นเดียวในเกม ใครถึงก่อนได้ก่อน": ["Only one in the game — first come, first served", "ゲームに1つだけ。早い者勝ち"], "มีชิ้นเดียวในเกม · มูลค่า {m} นับรวมทรัพย์สิน": ["One of a kind · worth {m}, counts toward assets", "1点もの・価値{m}(総資産に加算)"], "ไม่ซื้อ": ["Pass", "買わない"], "{p} ได้ของหายาก{t} {m}": ["{p} got the treasure {t} for {m}", "{p}がお宝「{t}」を{m}で入手"], "{p} ได้{t}!": ["{p} got {t}!", "{p}が{t}を入手!"], "ของหายาก:": ["Treasures:", "お宝:"], "ยังไม่มีเจ้าของ ({m})": ["Unclaimed ({m})", "持ち主なし({m})"], "{t}ได้กลิ่นทุเรียนของ{p} หนีไปแล้ว": ["{t} smelled {p}'s durian and fled", "{t}は{p}のドリアンのにおいで逃げた"], "ผีหนีกลิ่นทุเรียน!": ["The ghost flees the durian!", "おばけがドリアンから逃げた!"], "ทุเรียนหลงลับแลกลิ่นแรงจนผีไม่กล้าเข้าใกล้": ["The Long Lap Lae durian smells so strong no ghost dares come near", "ロンラップレードリアンのにおいが強すぎて、おばけは近寄れない"], "✦ บางสถานีมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน": ["✦ Some stations hold a one-of-a-kind treasure. First to stop there may buy it — each has a special power and counts toward assets", "✦ 一部の駅には1点もののお宝がある。最初に止まった人が買える。特殊能力があり総資産に加算"], "ทุเรียนหลงลับแลลูกแรกของปี": ["First Long Lap Lae Durian of the Year", "その年最初のロンラップレードリアン"], "กลิ่นแรงจนผีร้ายไม่กล้าเข้าใกล้ เจอผีร้ายแล้วผีหนีไปเอง": ["So pungent that bad ghosts flee on sight", "においが強烈で、悪いおばけは逃げていく"], "ร่มบ่อสร้างลายทองคำ": ["Gold-Painted Bo Sang Umbrella", "金描きのボーサーン傘"], "ช่องแดงเสียเงินครึ่งเดียว": ["Red spaces cost only half", "赤マスの損が半分"], "ผ้าไหมยกดอกทองคำ": ["Golden Brocade Silk", "金の錦織シルク"], "ปิดงบทุกปีรับเพิ่ม 5 ล้าน": ["+5M at every year-end", "毎年の決算で+5百万"], "ชามตราไก่ใบแรก": ["The First Rooster Bowl", "最初のニワトリ柄どんぶり"], "หยุดช่องการ์ดจั่ว 2 ใบ": ["Draw 2 on card spaces", "カードマスで2枚引く"], "สังคโลกโบราณ": ["Ancient Sangkhalok Celadon", "古代サンカローク焼き"], "ซื้อกิจการลด 10%": ["Businesses cost 10% less", "物件が10%引き"], "โอ่งมังกรยักษ์": ["Giant Dragon Jar", "巨大な竜の水がめ"], "ช่องน้ำเงินได้เพิ่ม 3 ล้าน": ["+3M on blue spaces", "青マスで+3百万"], "ไพลินเม็ดงาม": ["Flawless Chanthaburi Sapphire", "極上のチャンタブリーサファイア"], "ของสะสมมูลค่าสูงสุดในเกม": ["The most valuable collectible in the game", "ゲームで最も高価なコレクション"], "ไข่มุกทะเลตะวันออก": ["Eastern Sea Pearl", "東の海の真珠"], "นั่งเรือฟรี ไม่ติดคลื่น": ["Free boat rides, never stopped by waves", "船が無料、波で欠航しない"]});
+Object.assign(TR,{"ร้านขายการ์ด": ["Card Shop", "カードショップ"], "ร้านขายการ์ด{st}": ["{st} Card Shop", "{st}のカードショップ"], "{p} ซื้อการ์ด": ["{p} bought cards", "{p}がカードを購入"], "ขายคืนครึ่งราคา": ["Sell back for half price", "半額で売却"], "ยังไม่มีการ์ดให้ขาย": ["No cards to sell yet", "売れるカードがない"], "การ์ดในมือ {n}/5": ["Hand {n}/5", "手札 {n}/5"], "ซื้อ": ["Buy", "買う"], "ขาย": ["Sell", "売る"], "มือเต็ม ขายการ์ดก่อนถึงจะซื้อได้": ["Hand full — sell a card first to buy", "手札がいっぱい。先に売ろう"], "ออกจากร้าน": ["Leave shop", "店を出る"], "{p} ซื้อการ์ด{it} {m}": ["{p} bought {it} for {m}", "{p}が{it}を{m}で購入"], "{p} ขายการ์ด{it} {m}": ["{p} sold {it} for {m}", "{p}が{it}を{m}で売却"], "จุดแวะที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา": ["Stations with a Card Shop (yellow shop icon) let you buy cards or sell them back for half price", "カードショップのある駅(黄色い店のアイコン)ではカードを買ったり、半額で売ったりできる"]});
+Object.assign(TR,{"ของดีหายาก": ["Rare Treasure", "レアなお宝"], "ของดีประจำ{st}": ["Treasure of {st}", "{st}のお宝"], "เจอของหายาก!": ["A rare treasure!", "レアなお宝発見!"], "มีชิ้นเดียวในเกม ใครถึงก่อนได้ก่อน": ["Only one in the game — first come, first served", "ゲームに1つだけ。早い者勝ち"], "มีชิ้นเดียวในเกม · มูลค่า {m} นับรวมทรัพย์สิน": ["One of a kind · worth {m}, counts toward assets", "1点もの・価値{m}(総資産に加算)"], "ไม่ซื้อ": ["Pass", "買わない"], "{p} ได้ของหายาก{t} {m}": ["{p} got the treasure {t} for {m}", "{p}がお宝「{t}」を{m}で入手"], "{p} ได้{t}!": ["{p} got {t}!", "{p}が{t}を入手!"], "ของหายาก:": ["Treasures:", "お宝:"], "ยังไม่มีเจ้าของ ({m})": ["Unclaimed ({m})", "持ち主なし({m})"], "{t}ได้กลิ่นทุเรียนของ{p} หนีไปแล้ว": ["{t} smelled {p}'s durian and fled", "{t}は{p}のドリアンのにおいで逃げた"], "ผีหนีกลิ่นทุเรียน!": ["The ghost flees the durian!", "おばけがドリアンから逃げた!"], "ทุเรียนหลงลับแลกลิ่นแรงจนผีไม่กล้าเข้าใกล้": ["The Long Lap Lae durian smells so strong no ghost dares come near", "ロンラップレードリアンのにおいが強すぎて、おばけは近寄れない"], "✦ บางจุดแวะมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน": ["✦ Some stations hold a one-of-a-kind treasure. First to stop there may buy it — each has a special power and counts toward assets", "✦ 一部の駅には1点もののお宝がある。最初に止まった人が買える。特殊能力があり総資産に加算"], "ทุเรียนหลงลับแลลูกแรกของปี": ["First Long Lap Lae Durian of the Year", "その年最初のロンラップレードリアン"], "กลิ่นแรงจนผีร้ายไม่กล้าเข้าใกล้ เจอผีร้ายแล้วผีหนีไปเอง": ["So pungent that bad ghosts flee on sight", "においが強烈で、悪いおばけは逃げていく"], "ร่มบ่อสร้างลายทองคำ": ["Gold-Painted Bo Sang Umbrella", "金描きのボーサーン傘"], "ช่องแดงเสียเงินครึ่งเดียว": ["Red spaces cost only half", "赤マスの損が半分"], "ผ้าไหมยกดอกทองคำ": ["Golden Brocade Silk", "金の錦織シルク"], "ปิดงบทุกปีรับเพิ่ม 5 ล้าน": ["+5M at every year-end", "毎年の決算で+5百万"], "ชามตราไก่ใบแรก": ["The First Rooster Bowl", "最初のニワトリ柄どんぶり"], "หยุดช่องการ์ดจั่ว 2 ใบ": ["Draw 2 on card spaces", "カードマスで2枚引く"], "สังคโลกโบราณ": ["Ancient Sangkhalok Celadon", "古代サンカローク焼き"], "ซื้อกิจการลด 10%": ["Businesses cost 10% less", "物件が10%引き"], "โอ่งมังกรยักษ์": ["Giant Dragon Jar", "巨大な竜の水がめ"], "ช่องน้ำเงินได้เพิ่ม 3 ล้าน": ["+3M on blue spaces", "青マスで+3百万"], "ไพลินเม็ดงาม": ["Flawless Chanthaburi Sapphire", "極上のチャンタブリーサファイア"], "ของสะสมมูลค่าสูงสุดในเกม": ["The most valuable collectible in the game", "ゲームで最も高価なコレクション"], "ไข่มุกทะเลตะวันออก": ["Eastern Sea Pearl", "東の海の真珠"], "นั่งเรือฟรี ไม่ติดคลื่น": ["Free boat rides, never stopped by waves", "船が無料、波で欠航しない"]});
 Object.assign(TR,{"ภาคตะวันออกเฉียงเหนือ": ["Northeast (Isan)", "東北部(イサーン)"], "ฟอสซิลไดโนเสาร์ภูเวียง": ["Phu Wiang Dinosaur Fossil", "プーウィアンの恐竜化石"], "ปิดงบ กิจการท่องเที่ยวของคุณได้เพิ่มแห่งละ 2 ล้าน": ["Year-end: +2M for each of your tourism businesses", "決算で観光物件1つにつき+2百万"], "แคนไม้ไผ่ทองคำ": ["Golden Bamboo Khaen", "金の竹笙(ケーン)"], "ทุกต้นเดือนรับ 1 ล้าน": ["+1M at the start of every month", "毎月の始めに+1百万"]});
 Object.assign(TR,{"บุญบั้งไฟ": ["Rocket Festival", "ロケット祭り"], "แห่เทียนพรรษา": ["Candle Festival", "ろうそく祭り"], "จุดบั้งไฟขอฝน เจ้าของกิจการเกษตรและท่องเที่ยวในภาคอีสานรับ 3 ล้านต่อแห่ง": ["Rockets are fired to call the rain. Owners of Isan farming and tourism businesses get 3M each", "雨乞いのロケットが打ち上がる。イサーンの農業・観光物件の持ち主は1つにつき3百万"], "เจ้าของกิจการที่อุบลราชธานีและกิจการท่องเที่ยวในภาคอีสานรับ 4 ล้านต่อแห่ง": ["Owners of businesses in Ubon Ratchathani and Isan tourism businesses get 4M each", "ウボンラーチャターニーの物件とイサーンの観光物件の持ち主は1つにつき4百万"], "บุญบั้งไฟ กิจการเกษตรและท่องเที่ยวในอีสานรับ 3 ล้านต่อแห่ง": ["Rocket Festival: Isan farming and tourism businesses get 3M each", "ロケット祭り:イサーンの農業・観光物件に1つにつき3百万"], "แห่เทียนพรรษา กิจการอุบลฯ และท่องเที่ยวอีสานรับ 4 ล้านต่อแห่ง": ["Candle Festival: Ubon and Isan tourism businesses get 4M each", "ろうそく祭り:ウボンとイサーンの観光物件に1つにつき4百万"], "เกษตรและท่องเที่ยวในอีสาน +3/แห่ง": ["Isan farming & tourism +3 each", "イサーンの農業・観光 +3/件"], "กิจการอุบลฯ และท่องเที่ยวอีสาน +4/แห่ง": ["Ubon & Isan tourism +4 each", "ウボンとイサーンの観光 +4/件"]});
 Object.assign(TR,{"ภาคใต้": ["South", "南部"], "ช่วงมรสุมของทะเลนี้ ({t}) คลื่นแรงกว่าปกติ": ["Monsoon season on this sea ({t}): rougher waves", "この海のモンスーンの時期({t})は波が高い"], "มิ.ย.–ก.ย.": ["Jun–Sep", "6〜9月"], "พ.ย.–ม.ค.": ["Nov–Jan", "11〜1月"], "พ.ค.–ต.ค.": ["May–Oct", "5〜10月"], "หนังตะลุงชุดครู": ["Master Shadow Puppet Set", "名人の影絵人形セット"], "ต้นปี (เม.ย.) ได้การ์ดไอเทมฟรี 1 ใบ": ["Get a free item card every April", "毎年4月にアイテムカードを1枚もらえる"], "เรือหัวโทงทองคำ": ["Golden Long-tail Boat", "金のロングテールボート"], "ทอยเต๋าได้ 6 รับ 3 ล้าน": ["Roll a 6 to get 3M", "6が出たら3百万"], "{p} ทอยได้ 6 เรือหัวโทงทองคำนำโชค รับ {m}": ["{p} rolled a 6 — the golden long-tail brings luck: +{m}", "{p}は6を出した!金のロングテールボートの幸運で{m}"], "เทศกาลกินเจภูเก็ต": ["Phuket Vegetarian Festival", "プーケットのベジタリアン祭り"], "เจ้าของกิจการที่ภูเก็ตและร้านอาหารในภาคใต้รับ 3 ล้านต่อแห่ง": ["Owners of Phuket businesses and southern restaurants get 3M each", "プーケットの物件と南部の飲食物件の持ち主は1つにつき3百万"], "เทศกาลกินเจภูเก็ต กิจการภูเก็ตและร้านอาหารภาคใต้รับ 3 ล้านต่อแห่ง": ["Phuket Vegetarian Festival: Phuket businesses and southern restaurants get 3M each", "プーケットのベジタリアン祭り:プーケットの物件と南部の飲食物件に1つにつき3百万"], "กิจการภูเก็ตและร้านอาหารภาคใต้ +3/แห่ง": ["Phuket & southern food +3 each", "プーケットと南部の飲食 +3/件"]});
-const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ สุดสายแต้มเกินเด้งกลับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "สถานีที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา", "✦ บางสถานีมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน", "หยุดที่สถานีซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งสถานีกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
+Object.assign(TR,{"ตุ๊กตุ๊กเศรษฐีไทย": ["Tuk-Tuk Tycoon Thailand", "トゥクトゥク長者タイ"], "{p} คือเศรษฐีตุ๊กตุ๊ก!": ["{p} is the Tuk-Tuk Tycoon!", "{p}がトゥクトゥク長者!"], "แวะ{st}": ["Stop: {st}", "{st}に立ち寄り"], "โบนัสประจำ{st}": ["{st} bonus", "{st}ボーナス"], "จุดแวะ": ["Stop", "立ち寄り先"], "เฉพาะภาคเหนือ · 15 จุดแวะ": ["North only · 15 stops", "北部のみ・15か所"], "ทั่วไทย · 57 จุดแวะ": ["All Thailand · 57 stops", "タイ全土・57か所"], "ถนนชนบท": ["Country road", "田舎道"], "ทั่วไทย 6 ภาค": ["All 6 regions", "タイ全6地方"], "ขับตุ๊กตุ๊กได้ทุกเส้นทาง · การ์ดรถไฟ (รถด่วน รถด่วนพิเศษ รถไฟความเร็วสูง) ใช้ได้เมื่ออยู่บนทางรถไฟ ทอยเต๋าได้หลายลูกแต่เดินได้เฉพาะทางรถไฟ": ["Your tuk-tuk can drive on every route · Train cards (Express, Special Express, High-Speed) work when you're on a railway: roll more dice, but move along railway lines only", "トゥクトゥクはどの道も走れる・列車カード(急行・特急・高速鉄道)は線路上で使える。サイコロが増えるが線路だけを進む"], "นั่งรถไฟอยู่: ทอยแล้วเดินได้เฉพาะทางรถไฟ": ["On the train: after rolling you move along railway only", "列車に乗車中:線路だけを進む"], "{p} จอดตุ๊กตุ๊กขึ้น{it}": ["{p} parked the tuk-tuk and boarded the {it}", "{p}はトゥクトゥクを停めて{it}に乗った"], "ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ": ["Before rolling · on a railway", "サイコロの前・線路上で"]});
+const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ สุดสายแต้มเกินเด้งกลับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "จุดแวะที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา", "✦ บางจุดแวะมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน", "ขับตุ๊กตุ๊กได้ทุกเส้นทาง · การ์ดรถไฟ (รถด่วน รถด่วนพิเศษ รถไฟความเร็วสูง) ใช้ได้เมื่ออยู่บนทางรถไฟ ทอยเต๋าได้หลายลูกแต่เดินได้เฉพาะทางรถไฟ", "หยุดที่จุดแวะซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งจุดแวะกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
 const MAIN = [["BKK","st"],["m1","b"],["m2","y"],["AYT","st"],["m4","r"],["m5","b"],["LOP","st"],["m7","y"],["m8","b"],["m9","r"],["NSW","st"],["m11","b"],["m12","y"],["m13","r"],["PSL","st"],["m15","b"],["m16","r"],["UTD","st"],["m18","y"],["m19","b"],["DNC","jn"],["m21","r"],["m22","b"],["LPG","st"],["m24","y"],["m25","r"],["LPN","st"],["m27","b"],["CMI","st"]];
@@ -2099,9 +2100,9 @@ const PROPS=[["BKK","ร้านข้าวมันไก่",FOOD,10,3],["BK
   .map(([s,n,t,price,profit],id)=>({id,s,n,t,price,profit}));
 const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
 const ITEMS={
-  exp:{n:"รถด่วน",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 2 ลูก",count:4},
-  sexp:{n:"รถด่วนพิเศษ",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 3 ลูก",count:2},
-  hsr:{n:"รถไฟความเร็วสูง",when:"ใช้ก่อนทอย",eff:"ทอยเต๋า 5 ลูก",count:1},
+  exp:{n:"รถด่วน",when:"ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ",eff:"จอดตุ๊กตุ๊กขึ้นรถไฟ ทอยเต๋า 2 ลูก เดินได้เฉพาะทางรถไฟ",count:4},
+  sexp:{n:"รถด่วนพิเศษ",when:"ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ",eff:"ขึ้นรถด่วนพิเศษ ทอยเต๋า 3 ลูก เดินได้เฉพาะทางรถไฟ",count:2},
+  hsr:{n:"รถไฟความเร็วสูง",when:"ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ",eff:"ขึ้นรถไฟความเร็วสูง ทอยเต๋า 5 ลูก เดินได้เฉพาะทางรถไฟ",count:1},
   home:{n:"ตั๋วกลับบ้าน",when:"ใช้แทนการทอย",eff:"ย้ายไปกรุงเทพฯ ทันที",count:2},
   drive:{n:"ขับเองกำหนดเอง",when:"ใช้แทนการทอย",eff:"เลือกเดิน 1–6 ช่อง",count:2},
   mob:{n:"ม็อบปิดถนน",when:"ใช้ก่อนทอย",eff:"ผู้เล่น 1 คนห้ามเดินเทิร์นหน้า",count:2},
@@ -2141,9 +2142,9 @@ const SQ_COL={b:"var(--plus)",r:"var(--minus)",y:"var(--card)",g:"var(--bus)"};
 const SQ_SYM={b:"+",r:"−",y:"?",g:""};
 
 // ================= GRAPH =================
-function adjacency(newRail,sea){
+function adjacency(newRail,sea,railOnly){
   const a={}; for(const k in NODES) a[k]=[];
-  for(const [x,y,k] of EDGES){ if(k==="future"&&!newRail) continue; if(k==="sea"&&!sea) continue; a[x].push(y); a[y].push(x); }
+  for(const [x,y,k] of EDGES){ if(k==="future"&&!newRail) continue; if(k==="sea"&&!sea) continue; if(railOnly&&k!=="rail"&&k!=="future") continue; a[x].push(y); a[y].push(x); }
   return a;
 }
 function bfs(from,newRail){
@@ -2236,7 +2237,7 @@ function buildBoard(){
   h+=`<text x="204" y="497" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-e)" font-family="Mitr">${T("ภาคตะวันออก")} ▶</text><text x="6" y="704" font-size="4.6" font-weight="600" fill="var(--lbl-w)" font-family="Mitr">◀ ${T("ภาคตะวันตก")}</text>`;
   h+=`<text x="6" y="231" font-size="4.6" font-weight="600" fill="#6E9A64" font-family="Mitr">▲ ${T("ภาคเหนือ")}</text><text x="6" y="808" font-size="4.6" font-weight="600" fill="var(--lbl-s)" font-family="Mitr">▼ ${T("ภาคใต้")}</text><text x="394" y="206" text-anchor="end" font-size="4.6" font-weight="600" fill="var(--lbl-ne)" font-family="Mitr">${T("ภาคตะวันออกเฉียงเหนือ")} ▶</text><text x="6" y="245" font-size="4.6" font-weight="600" fill="#A98C4E" font-family="Mitr">▼ ${T("ภาคกลาง")}</text>`;
   for(const id of ISLANDS){const n=NODES[id];h+=`<ellipse cx="${n.x}" cy="${n.y}" rx="12" ry="10" fill="var(--sea)"/>`;}
-  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];if(k==="sea"){h+=`<line class="sea" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;continue;}h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":k==="road"?"road":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
+  for(const [a,b,k] of EDGES){const A=NODES[a],B=NODES[b];if(k==="sea"){h+=`<line class="sea" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;continue;}if(k==="rail"||k==="future") h+=`<line class="hwy${k==="future"?" fut-hwy":""}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`; h+=`<line class="${k==="rail"?"rail":k==="bus"?"bus":k==="road"?"road":"fut"}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
   h+=`<g class="barrier" transform="translate(${70+DX},170)"><rect x="-1.6" y="-5" width="3.2" height="10" fill="#fff" stroke="#C8361E" stroke-width=".6"/><path d="M-1.6 -3l3.2 -2M-1.6 0l3.2 -2M-1.6 3l3.2 -2M-1.6 5.8l3.2 -2" stroke="#C8361E" stroke-width=".9"/></g>`;
   h+=`<text class="barrier" x="${86+DX}" y="161" text-anchor="middle" font-size="3.4" font-weight="600" fill="#C8361E" font-family="Mitr">${T("รางใหม่ เปิด เม.ย. ปีที่ 2")}</text>`;
   for(const [id,n] of Object.entries(NODES)){
@@ -2336,7 +2337,7 @@ async function animateMove(lm){
 
 // ================= PANEL =================
 function dieHTML(v){const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[v]||[];return `<div class="die" aria-label="${T("ลูกเต๋า")} ${v}">${[...Array(9)].map((_,i)=>`<i class="${on.includes(i)?"on":""}"></i>`).join("")}</div>`;}
-function tokSVG(c,s=34){return `<svg class="tokbig" width="${s}" height="${s}" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="${c}"/><rect x="8" y="11" width="18" height="10" rx="3" fill="#fff"/><rect x="10.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="15.5" y="13" width="4" height="3.5" rx="1" fill="${c}"/><rect x="20.5" y="13" width="3.5" height="3.5" rx="1" fill="${c}"/><circle cx="12" cy="23.5" r="1.8" fill="#fff"/><circle cx="22" cy="23.5" r="1.8" fill="#fff"/></svg>`;}
+function tokSVG(c,s=34){return `<svg class="tokbig" width="${s}" height="${s}" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="${c}"/><path d="M7.5 12.5Q7.5 8.5 11.5 8.5H21Q25.5 8.5 26.5 12.5Z" fill="#fff"/><path d="M9 12.5V17M18.5 12.5V17M25.5 12.5L26.8 16.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/><path d="M7.5 17H20.5V21.5H7.5Z" fill="#fff"/><path d="M20.5 16.5H26.8L28.3 21.5H20.5Z" fill="#fff"/><path d="M9.5 18.2H14.5V20H9.5Z" fill="${c}" opacity=".5"/><circle cx="11.5" cy="22.8" r="2.4" fill="#fff" stroke="${c}" stroke-width="1"/><circle cx="25.5" cy="22.8" r="2.4" fill="#fff" stroke="${c}" stroke-width="1"/></svg>`;}
 function renderTop(){
   $("chipMonth").innerHTML=`<b>${monthN(S.month)}</b> ${T("ปี<span class=\"yl\">ที่</span> {y}/{ys}",{y:S.year,ys:S.years})}`;
   $("chipDest").innerHTML=S.dest?`<span class="lbl">${T("จุดหมาย")} </span><b>${stN(S.dest)}</b> ${money(REWARD[S.dest])}`:T("จุดหมาย")+" —";
@@ -2352,12 +2353,12 @@ function renderPanel(){
   else if(!isMyTurn()){ prompt=T("รอ{p}เล่นอยู่… ทุกอย่างจะอัปเดตบนจอคุณเอง",{p:esc(p.name)}); }
   else if(UI.mode==="choose"){
     const usable=p.cards.some(k=>canUse(k));
-    prompt=T(S.tf.locked?"หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง":hasCurse(i,"nocard")?"คำสาปขี้ลืม: ใช้การ์ดไม่ได้":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย"));
+    prompt=T(S.tf.rail?"นั่งรถไฟอยู่: ทอยแล้วเดินได้เฉพาะทางรถไฟ":S.tf.locked?"หลงป่า: เทิร์นนี้เดินได้ 1 ช่อง":hasCurse(i,"nocard")?"คำสาปขี้ลืม: ใช้การ์ดไม่ได้":(S.tf.cardUsed?"ใช้การ์ดแล้ว ทอยเต๋าได้เลย":"ใช้การ์ดได้ 1 ใบก่อนทอย หรือทอยเต๋าเลย"));
     const isl=ISLANDS.has(p.node);
     if(isl) prompt=T("อยู่บนเกาะ ต้องนั่งเรือกลับฝั่ง");
     actions=`<button class="btn" id="aCard" ${(!usable||S.tf.cardUsed)?"disabled":""}>${T("ใช้การ์ด")}</button>`
       +((FERRY[p.node]||AIRPORTS.includes(p.node))?`<div class="travel-row">${(FERRY[p.node]||[]).map(to=>`<button class="btn travel" data-boat="${to}">⛴ ${T("เรือไป{st}",{st:to})}</button>`).join("")}${AIRPORTS.includes(p.node)?`<button class="btn travel" id="aFly">✈ ${T("บิน")}</button>`:""}</div>`:"")
-      +(isl?"":`<button class="btn primary" id="aRoll">${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`);
+      +(isl?"":`<button class="btn primary" id="aRoll">${S.tf.rail?"🚆 ":""}${S.tf.locked?T("เดิน 1 ช่อง"):T(S.tf.nDice>1?"ทอยเต๋า {n} ลูก":"ทอยเต๋า",{n:S.tf.nDice})}</button>`);
   } else if(UI.mode==="pick"){
     prompt=T("ได้ {n} แต้ม แตะช่องสีเหลืองบนแผนที่ หรือเลือกด้านล่าง",{n:UI.steps});
     actions=`<div class="picks">${[...UI.opts.keys()].map(id=>`<button class="pick" data-pick="${id}">${labelOf(id)}${id===S.dest?`<small>${T("จุดหมาย")}</small>`:""}</button>`).join("")}</div>`;
@@ -2379,7 +2380,7 @@ function renderPanel(){
   document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>onPick(b.dataset.pick));
   document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
 }
-function labelOf(id){ if(NAME[id]) return stN(id); const t=NODES[id].t; return T({b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ทางรถทัวร์"}[t]); }
+function labelOf(id){ if(NAME[id]) return stN(id); const t=NODES[id].t; return T({b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ถนนชนบท"}[t]); }
 function render(){ if(!S) return; renderTop(); renderBoard(); renderPanel(); try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
 function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;$("toasts").appendChild(el);setTimeout(()=>el.remove(),3600);while($("toasts").children.length>3)$("toasts").firstChild.remove();}
 
@@ -2420,6 +2421,7 @@ function canUse(k){
   if(k==="viral") return PROPS.some(p=>S.owners[p.id]===S.turn);
   if(k==="plane") return S.year>=2;
   if(["exp","sexp","hsr","drive"].includes(k)&&ISLANDS.has(cur().node)) return false;
+  if(TRAIN_CARDS.includes(k)&&!onRail(cur().node)) return false;
   return true;
 }
 async function onCard(){
@@ -2447,9 +2449,9 @@ async function teleport(to,arrived){
 async function useCard(k){
   const i=S.turn,p=cur();
   switch(k){
-    case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); return "ok";
-    case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); return "ok";
-    case "hsr": S.tf.nDice=5; log("{p} ใช้{it}",{p:p.name,it:"hsr"}); return "ok";
+    case "exp": S.tf.nDice=2; S.tf.rail=true; log("{p} จอดตุ๊กตุ๊กขึ้น{it}",{p:p.name,it:"exp"}); return "ok";
+    case "sexp": S.tf.nDice=3; S.tf.rail=true; log("{p} จอดตุ๊กตุ๊กขึ้น{it}",{p:p.name,it:"sexp"}); return "ok";
+    case "hsr": S.tf.nDice=5; S.tf.rail=true; log("{p} จอดตุ๊กตุ๊กขึ้น{it}",{p:p.name,it:"hsr"}); return "ok";
     case "drive":{
       const v=await modal({title:itemN("drive"),html:T("เลือกจำนวนช่องที่จะเดิน"),buttons:[1,2,3,4,5,6].map(n=>({label:String(n),value:n})).concat([{label:T("ยกเลิก"),value:null}])});
       if(!v) return "cancel"; log("{p} ขับเอง {n} ช่อง",{p:p.name,n:v}); return v; }
@@ -2525,8 +2527,10 @@ async function onRoll(){
   UI.busy=false;
   goMove(steps);
 }
-function endpoints(start,steps){
-  const a=adjacency(S.newRail), res=new Map();
+const onRail=node=>adjacency(S.newRail,false,true)[node].length>0;
+const TRAIN_CARDS=["exp","sexp","hsr"];
+function endpoints(start,steps,railOnly){
+  const a=adjacency(S.newRail,false,railOnly), res=new Map();
   (function dfs(node,prev,path,left){
     if(left===0){ if(!res.has(node)) res.set(node,path.slice()); return; }
     let nx=a[node].filter(n=>n!==prev); if(!nx.length) nx=a[node];
@@ -2535,7 +2539,7 @@ function endpoints(start,steps){
   return res;
 }
 function goMove(steps){
-  UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(cur().node,steps);
+  UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(cur().node,steps,S.tf.rail);
   if(!UI.opts.size){ UI.mode="idle"; return endTurn(); }
   if(S.songkran&&!S.tf.locked) log("สงกรานต์รถติด แต้มเดิน −1",{});
   render();
@@ -2590,7 +2594,7 @@ async function resolveSquare(id,arrived){
   else if(t==="st"){
     if(S.quiz&&Math.random()<0.35){
       const r=S.year>=2?12:8;
-      const ok=await challenge(id,T("โบนัสประจำสถานี{st}",{st:id}),T("ผ่านได้ {m} · ไม่ผ่านเสีย {m2}",{m:r,m2:2}));
+      const ok=await challenge(id,T("โบนัสประจำ{st}",{st:id}),T("ผ่านได้ {m} · ไม่ผ่านเสีย {m2}",{m:r,m2:2}));
       if(ok){p.money+=r;log("{p} ได้โบนัส {m}",{p:p.name,m:r});} else {p.money-=2;}
       commit(); render();
     }
@@ -2654,7 +2658,7 @@ async function buySheet(s){
     const free=props.filter(q=>S.owners[q.id]===undefined);
     if(!free.length) break;
     const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b>${props.length>1?" · "+T("ปัดซ้ายขวาดูการ์ด"):""}</p><div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}${S.owners[q.id]!==undefined?`<div style="min-height:40px;display:grid;place-items:center">${ownerTag(S.owners[q.id])}</div>`:`<button class="btn primary" data-val="${q.id}" ${p.money<priceOf(q,i)?"disabled":""}>${T("ซื้อ {m}",{m:priceOf(q,i)})}</button>`}</div>`).join("")}</div>`;
-    const mp=modal({eyebrow:T("สถานี{st}",{st:s}),title:T("ซื้อกิจการ"),html,buttons:[{label:T("เสร็จ"),value:"done"}]});
+    const mp=modal({eyebrow:T("แวะ{st}",{st:s}),title:T("ซื้อกิจการ"),html,buttons:[{label:T("เสร็จ"),value:"done"}]});
     if(shown) $("modal").classList.add("again"); shown=true;
     const v=await mp;
     if(v==="done"||v===undefined) break;
@@ -3138,7 +3142,7 @@ async function botBuy(s){
     const pr=priceOf(q,i); if(p.money<pr) continue;
     if(completes||(!late&&p.money-pr>=reserve)){ p.money-=pr; S.owners[q.id]=i; bought.push(q); log("{p} ซื้อ{pr} {m}",{p:p.name,pr:q.id,m:pr}); }
   }
-  if(bought.length){ commit(); render(); await brief({eyebrow:T("สถานี{st}",{st:s}),title:T("{p} ซื้อกิจการ",{p:esc(p.name)}),html:`<div class="gc-row" style="justify-content:${bought.length===1?"center":"flex-start"}">${bought.map(q=>`<div class="gc-col">${propCard(q)}</div>`).join("")}</div>`},1900); }
+  if(bought.length){ commit(); render(); await brief({eyebrow:T("แวะ{st}",{st:s}),title:T("{p} ซื้อกิจการ",{p:esc(p.name)}),html:`<div class="gc-row" style="justify-content:${bought.length===1?"center":"flex-start"}">${bought.map(q=>`<div class="gc-col">${propCard(q)}</div>`).join("")}</div>`},1900); }
 }
 const q_curse=j=>!!curseOf(j);
 async function botUseCard(){
@@ -3161,9 +3165,9 @@ async function botUseCard(){
     case "plane": log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); return "moved";
     case "drive": log("{p} ขับเอง {n} ช่อง",{p:p.name,n:arg}); commit(); return arg;
     case "pass": S.players[arg].curse=p.curse; p.curse=null; log("{p} ย้ายคำสาปไปให้{q}",{p:p.name,q:S.players[arg].name}); break;
-    case "sexp": S.tf.nDice=3; log("{p} ใช้{it}",{p:p.name,it:"sexp"}); break;
-    case "hsr": S.tf.nDice=5; log("{p} ใช้{it}",{p:p.name,it:"hsr"}); break;
-    case "exp": S.tf.nDice=2; log("{p} ใช้{it}",{p:p.name,it:"exp"}); break;
+    case "sexp": S.tf.nDice=3; S.tf.rail=true; log("{p} จอดตุ๊กตุ๊กขึ้น{it}",{p:p.name,it:"sexp"}); break;
+    case "hsr": S.tf.nDice=5; S.tf.rail=true; log("{p} จอดตุ๊กตุ๊กขึ้น{it}",{p:p.name,it:"hsr"}); break;
+    case "exp": S.tf.nDice=2; S.tf.rail=true; log("{p} จอดตุ๊กตุ๊กขึ้น{it}",{p:p.name,it:"exp"}); break;
     case "mob": S.skip[arg]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[arg].name}); break;
     case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); break; }
     case "lotto":{ const r=p.lucky?6:rnd(6); p.lucky=false; if(r===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});} break; }
@@ -3195,7 +3199,7 @@ async function botTurn(){
     steps=vals.reduce((a,b)=>a+b,0);
     if(S.songkran) steps=Math.max(1,steps-1);
   }
-  UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(p.node,steps);
+  UI.mode="pick"; UI.steps=steps; UI.opts=endpoints(p.node,steps,S.tf.rail);
   if(!UI.opts.size){ UI.busy=false; return endTurn(); }
   render(); const pick=botPickDest(UI.opts); focusNode(pick); await sleep(800);
   UI.busy=false;
@@ -3309,7 +3313,7 @@ async function showGameOver(){
   ON.shownOver=true; sfx("over"); try{ musUpdate(); }catch(e){}
   const rank=S.players.map((p,k)=>({k,a:assets(k)})).sort((a,b)=>b.a-a.a);
   const html=`<table class="rep"><tr><th>${T("อันดับ")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${money(r.a)}</td></tr>`).join("")}</table>`;
-  await modal({eyebrow:T("จบเกม"),title:T("{p} คือเศรษฐีรถไฟ!",{p:esc(S.players[rank[0].k].name)}),html,buttons:[{label:T("กลับหน้าแรก"),value:1,primary:true}]});
+  await modal({eyebrow:T("จบเกม"),title:T("{p} คือเศรษฐีตุ๊กตุ๊ก!",{p:esc(S.players[rank[0].k].name)}),html,buttons:[{label:T("กลับหน้าแรก"),value:1,primary:true}]});
   leaveOnline(); home();
 }
 
@@ -3327,7 +3331,7 @@ const gcVars=c=>`--c:${c[0]};--cl:${c[1]};--cl2:${c[2]}`;
 function gcArt(id){const a=ART.map[id];return a&&a.url?`<img src="${esc(a.url)}" alt="" loading="lazy">`:`<span class="gc-ph">${T("ภาพ")} ${id}</span>`;}
 function propCard(p){
   const all=PROPS_AT(p.s);
-  return `<div class="gc" style="${gcVars(GC_TYPE[p.t])}"><div class="gc-top"><span class="gc-pill">${T("สถานี{st}",{st:p.s})}</span><span class="gc-dark">${typeN(p.t)}</span></div><div class="gc-art">${gcArt(ARTID.prop(p))}</div><div class="gc-name">${propN(p)}</div><div class="gc-stats"><div class="gc-stat"><span class="gc-coin">${p.price}</span><span><small>${T("ราคาซื้อ")}</small><b>${T("ล้านบาท")}</b></span></div><div class="gc-stat"><span class="gc-coin" style="background:#7BE0A0">+${p.profit}</span><span><small>${T("กำไรต่อปี")}</small><b>${T("ล้านบาท")}</b></span></div></div><div class="gc-foot">${all.map(q=>{const o=S.owners[q.id];return `<span class="gc-dot" style="${o!==undefined?`background:${S.players[o].color}`:""}"></span>`;}).join("")}<span>${T("ครบ {n} แห่ง = ผูกขาด ×2",{n:all.length})}</span></div></div>`;
+  return `<div class="gc" style="${gcVars(GC_TYPE[p.t])}"><div class="gc-top"><span class="gc-pill">${T("แวะ{st}",{st:p.s})}</span><span class="gc-dark">${typeN(p.t)}</span></div><div class="gc-art">${gcArt(ARTID.prop(p))}</div><div class="gc-name">${propN(p)}</div><div class="gc-stats"><div class="gc-stat"><span class="gc-coin">${p.price}</span><span><small>${T("ราคาซื้อ")}</small><b>${T("ล้านบาท")}</b></span></div><div class="gc-stat"><span class="gc-coin" style="background:#7BE0A0">+${p.profit}</span><span><small>${T("กำไรต่อปี")}</small><b>${T("ล้านบาท")}</b></span></div></div><div class="gc-foot">${all.map(q=>{const o=S.owners[q.id];return `<span class="gc-dot" style="${o!==undefined?`background:${S.players[o].color}`:""}"></span>`;}).join("")}<span>${T("ครบ {n} แห่ง = ผูกขาด ×2",{n:all.length})}</span></div></div>`;
 }
 function destCard(s){
   return `<div class="gc" style="${gcVars(GC_KIND.dest)}"><div class="gc-top"><span class="gc-pill">${T("จุดหมาย")}</span><span class="gc-dark">${T(regionOf(s))}</span></div><div class="gc-art">${gcArt(ARTID.dest(s))}</div><div class="gc-name big">${stN(s)}</div><div class="gc-panel" style="flex-direction:row;align-items:center;gap:10px"><span class="gc-coin lg">${REWARD[s]}</span><span><span class="gc-sub">${T("คนแรกที่ไปถึงได้รับ")}</span><span style="font-family:var(--font-d);font-size:18px">${money(REWARD[s])}</span></span></div></div>`;
@@ -3408,7 +3412,7 @@ async function showStation(s){
   if(modalResolve||UI.mode==="pick"||UI.busy) return;
   const props=PROPS_AT(s);
   const html=s==="DNC"?T("ชุมทาง ไม่มีกิจการ หยุดแล้วจั่วการ์ดไอเทม"):`<p>${T("รางวัลถ้าเป็นจุดหมาย {m}",{m:REWARD[s]})}</p>${TRE_AT(s)?`<p>✦ ${T("ของหายาก:")} <b>${treN(TRE_AT(s))}</b> · ${treOwner(TRE_AT(s))===undefined?T("ยังไม่มีเจ้าของ ({m})",{m:TREASURES[TRE_AT(s)].val}):esc(S.players[treOwner(TRE_AT(s))].name)}</p>`:""}<div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}<div style="min-height:28px;display:grid;place-items:center">${ownerTag(S.owners[q.id])||`<span class="pm">${T("ยังว่าง")}</span>`}</div></div>`).join("")}</div>`;
-  await modal({eyebrow:T("สถานี"),title:stN(s),html});
+  await modal({eyebrow:T("จุดแวะ"),title:stN(s),html});
 }
 
 // ================= HOME / LOCAL SETUP =================
@@ -3425,7 +3429,7 @@ async function home(){
     <button class="mode-btn" data-val="mini"><b>${T("ลองมินิเกม")}</b><span>${T("ฝึกเล่นมินิเกมทีละเกม ไม่มีผลกับเกม")}</span></button>
     <button class="mode-btn" data-val="art"><b>${T("ภาพการ์ด")}</b><span>${T("อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ")}</span></button>
   </div>`;
-  const v=await modal({eyebrow:T("เหนือ · กลาง · ตะวันออก · ตะวันตก")+" · v0.4",title:T("รถไฟเศรษฐีไทย"),html,buttons:[{label:"♪ "+T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"}]});
+  const v=await modal({eyebrow:T("ทั่วไทย 6 ภาค")+" · v0.5",title:T("ตุ๊กตุ๊กเศรษฐีไทย"),html,buttons:[{label:"♪ "+T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"}]});
   if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return home(); }
   if(v==="bgm"){ bgmToggle(); return home(); }
   if(v==="sfx"){ sfxToggle(); return home(); }
@@ -3454,8 +3458,8 @@ async function setupLocal(){
     const html=`<div class="field"><div class="label">${T("จำนวนผู้เล่น")}</div><div class="seg">${[2,3,4].map(v=>`<button data-val="n${v}" aria-pressed="${v===n}">${T("{n} คน",{n:v})}</button>`).join("")}</div></div>
       <div class="field"><div class="label">${T("ชื่อบริษัท")}</div><div class="names">${names.slice(0,n).map((v,k)=>`<label><span class="dot" style="background:${PCOL[k][1]};width:16px;height:16px"></span><input id="nm${k}" value="${esc(v)}" maxlength="18" aria-label="${T("ชื่อผู้เล่น")} ${k+1}">${k===0?`<span class="pm" style="min-width:64px;text-align:center">${T("คุณ")}</span>`:`<button class="btn" style="flex:none;min-height:42px;padding:0 10px;font-size:14px;min-width:64px" data-val="b${k}" aria-pressed="${bots[k]}">${T(bots[k]?"บอท":"คน")}</button>`}</label>`).join("")}</div><p class="note" style="margin-top:6px">${T("แตะปุ่มด้านขวาเพื่อสลับ คน / บอท")}</p></div>
       <div class="field"><div class="label">${T("ความยาวเกม")}</div><div class="seg"><button data-val="y1" aria-pressed="${years===1}">${T("1 ปี · ราว 45 นาที")}</button><button data-val="y2" aria-pressed="${years===2}">${T("2 ปี · มีรางใหม่")}</button></div></div>
-      <div class="field"><div class="label">${T("แผนที่")}</div><div class="seg"><button data-val="mp_all" aria-pressed="${map==="all"}">${T("ทุกภาค · 27 สถานี")}</button><button data-val="mp_north" aria-pressed="${map==="north"}">${T("สายเหนือ · 15 สถานี")}</button></div><p class="note" style="margin-top:6px">${T("สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า")}</p></div>
-      <div class="field"><div class="label">${T("ความท้าทาย")}</div><div class="seg">${[["mix","ผสม"],["quiz","ควิซ"],["mini","มินิเกม"],["off","@off"]].map(([k,l])=>`<button data-val="ch_${k}" aria-pressed="${(quizOn?chal:"off")===k}">${T(l)}</button>`).join("")}</div><p class="note" style="margin-top:6px">${T("ผีร้ายท้าประลองก่อนแกล้ง และบางสถานีมีโบนัส · ผสม = สุ่มควิซหรือมินิเกม")}</p></div>
+      <div class="field"><div class="label">${T("แผนที่")}</div><div class="seg"><button data-val="mp_all" aria-pressed="${map==="all"}">${T("ทั่วไทย · 57 จุดแวะ")}</button><button data-val="mp_north" aria-pressed="${map==="north"}">${T("เฉพาะภาคเหนือ · 15 จุดแวะ")}</button></div><p class="note" style="margin-top:6px">${T("สายเหนือ: จุดหมายจะสุ่มแค่ในสายเหนือเดิม เกมสั้นกว่า")}</p></div>
+      <div class="field"><div class="label">${T("ความท้าทาย")}</div><div class="seg">${[["mix","ผสม"],["quiz","ควิซ"],["mini","มินิเกม"],["off","@off"]].map(([k,l])=>`<button data-val="ch_${k}" aria-pressed="${(quizOn?chal:"off")===k}">${T(l)}</button>`).join("")}</div><p class="note" style="margin-top:6px">${T("ผีร้ายท้าประลองก่อนแกล้ง และบางจุดแวะมีโบนัส · ผสม = สุ่มควิซหรือมินิเกม")}</p></div>
       ${quizOn&&chal!=="mini"?`<div class="field"><div class="label">${T("เวลาตอบควิซ")}</div><div class="seg">${[5,10,15,0].map(t=>`<button data-val="qt${t}" aria-pressed="${qTime===t}">${t?T("{n} วิ",{n:t}):T("ไม่จับเวลา")}</button>`).join("")}</div></div>`:""}`;
     const v=await modal({eyebrow:T("เล่นเครื่องเดียว"),title:T("ตั้งค่าเกม"),html,buttons:[{label:T("กลับ"),value:"back"},{label:T("เริ่มเกม"),value:"start",primary:true}]});
     for(let k=0;k<n;k++){const el=$("nm"+k); if(el&&el.value.trim()) names[k]=el.value.trim();}
