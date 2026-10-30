@@ -379,6 +379,14 @@ const PROP_TR=[["Chicken Rice Stall","カオマンガイ屋"],["Weekend Market S
 const ITEM_TR={
   exp:{n:["Express Train","急行列車"],when:["Before rolling · on a railway","サイコロの前・線路上で"],eff:["Park the tuk-tuk and ride the train: roll 2 dice, railway only","トゥクトゥクを停めて列車へ:サイコロ2個、線路のみ進む"]},
   sexp:{n:["Special Express","特急列車"],when:["Before rolling · on a railway","サイコロの前・線路上で"],eff:["Ride the special express: roll 3 dice, railway only","特急に乗る:サイコロ3個、線路のみ進む"]},
+  steal:{n:["Card Thief", "カード泥棒"],when:["Before rolling", "サイコロの前"],eff:["Steal a random card from a player", "選んだ人からカードを1枚ランダムに盗む"]},
+  hex:{n:["Witch Doctor's Hex", "呪術師の呪い"],when:["Before rolling", "サイコロの前"],eff:["Send a bad ghost to wait for a player at the start of their turn", "悪いおばけを送り、相手のターン開始時に待ち伏せさせる"]},
+  tax:{n:["Tax Inspector", "税務署がやってきた"],when:["Before rolling", "サイコロの前"],eff:["The richest other player pays 15% of their cash in tax", "自分以外で総資産が一番多い人が現金の15%を納税"]},
+  swap:{n:["Seat Swap", "席替え"],when:["Instead of rolling", "サイコロの代わり"],eff:["Swap places with a player", "選んだ人と位置を入れ替える"]},
+  loan:{n:["Quick Loan", "即日ローン"],when:["Before rolling", "サイコロの前"],eff:["Get 30M now — repay 36M at the March year-end", "今すぐ30百万。3月の決算で36百万を返済"]},
+  conv:{n:["24-Hour Store", "24時間コンビニ"],when:["Before rolling", "サイコロの前"],eff:["Draw 2 item cards", "アイテムカードを2枚引く"]},
+  bargain:{n:["Haggle", "値切り"],when:["Before rolling", "サイコロの前"],eff:["Businesses cost half price this turn", "このターン物件が半額"]},
+  takeover:{n:["Takeover", "買収"],when:["Before rolling", "サイコロの前"],eff:["Buy one of another player's businesses for double its price, paid to the owner", "他人の物件を1つ、価格の2倍を持ち主に払って買い取る"]},
   hsr:{n:["High-Speed Train","高速鉄道"],when:["Before rolling · on a railway","サイコロの前・線路上で"],eff:["Ride the high-speed train: roll 5 dice, railway only","高速鉄道に乗る:サイコロ5個、線路のみ進む"]},
   home:{n:["Ticket Home","帰宅きっぷ"],when:["Instead of rolling","サイコロの代わり"],eff:["Go straight to Bangkok","すぐバンコクへ移動"]},
   drive:{n:["Drive Yourself","自分で運転"],when:["Instead of rolling","サイコロの代わり"],eff:["Choose to move 1–6 spaces","1〜6マス好きなだけ進む"]},
@@ -1968,6 +1976,7 @@ Object.assign(TR,{"ภาคตะวันออกเฉียงเหนื�
 Object.assign(TR,{"บุญบั้งไฟ": ["Rocket Festival", "ロケット祭り"], "แห่เทียนพรรษา": ["Candle Festival", "ろうそく祭り"], "จุดบั้งไฟขอฝน เจ้าของกิจการเกษตรและท่องเที่ยวในภาคอีสานรับ 3 ล้านต่อแห่ง": ["Rockets are fired to call the rain. Owners of Isan farming and tourism businesses get 3M each", "雨乞いのロケットが打ち上がる。イサーンの農業・観光物件の持ち主は1つにつき3百万"], "เจ้าของกิจการที่อุบลราชธานีและกิจการท่องเที่ยวในภาคอีสานรับ 4 ล้านต่อแห่ง": ["Owners of businesses in Ubon Ratchathani and Isan tourism businesses get 4M each", "ウボンラーチャターニーの物件とイサーンの観光物件の持ち主は1つにつき4百万"], "บุญบั้งไฟ กิจการเกษตรและท่องเที่ยวในอีสานรับ 3 ล้านต่อแห่ง": ["Rocket Festival: Isan farming and tourism businesses get 3M each", "ロケット祭り:イサーンの農業・観光物件に1つにつき3百万"], "แห่เทียนพรรษา กิจการอุบลฯ และท่องเที่ยวอีสานรับ 4 ล้านต่อแห่ง": ["Candle Festival: Ubon and Isan tourism businesses get 4M each", "ろうそく祭り:ウボンとイサーンの観光物件に1つにつき4百万"], "เกษตรและท่องเที่ยวในอีสาน +3/แห่ง": ["Isan farming & tourism +3 each", "イサーンの農業・観光 +3/件"], "กิจการอุบลฯ และท่องเที่ยวอีสาน +4/แห่ง": ["Ubon & Isan tourism +4 each", "ウボンとイサーンの観光 +4/件"]});
 Object.assign(TR,{"ภาคใต้": ["South", "南部"], "ช่วงมรสุมของทะเลนี้ ({t}) คลื่นแรงกว่าปกติ": ["Monsoon season on this sea ({t}): rougher waves", "この海のモンスーンの時期({t})は波が高い"], "มิ.ย.–ก.ย.": ["Jun–Sep", "6〜9月"], "พ.ย.–ม.ค.": ["Nov–Jan", "11〜1月"], "พ.ค.–ต.ค.": ["May–Oct", "5〜10月"], "หนังตะลุงชุดครู": ["Master Shadow Puppet Set", "名人の影絵人形セット"], "ต้นปี (เม.ย.) ได้การ์ดไอเทมฟรี 1 ใบ": ["Get a free item card every April", "毎年4月にアイテムカードを1枚もらえる"], "เรือหัวโทงทองคำ": ["Golden Long-tail Boat", "金のロングテールボート"], "ทอยเต๋าได้ 6 รับ 3 ล้าน": ["Roll a 6 to get 3M", "6が出たら3百万"], "{p} ทอยได้ 6 เรือหัวโทงทองคำนำโชค รับ {m}": ["{p} rolled a 6 — the golden long-tail brings luck: +{m}", "{p}は6を出した!金のロングテールボートの幸運で{m}"], "เทศกาลกินเจภูเก็ต": ["Phuket Vegetarian Festival", "プーケットのベジタリアン祭り"], "เจ้าของกิจการที่ภูเก็ตและร้านอาหารในภาคใต้รับ 3 ล้านต่อแห่ง": ["Owners of Phuket businesses and southern restaurants get 3M each", "プーケットの物件と南部の飲食物件の持ち主は1つにつき3百万"], "เทศกาลกินเจภูเก็ต กิจการภูเก็ตและร้านอาหารภาคใต้รับ 3 ล้านต่อแห่ง": ["Phuket Vegetarian Festival: Phuket businesses and southern restaurants get 3M each", "プーケットのベジタリアン祭り:プーケットの物件と南部の飲食物件に1つにつき3百万"], "กิจการภูเก็ตและร้านอาหารภาคใต้ +3/แห่ง": ["Phuket & southern food +3 each", "プーケットと南部の飲食 +3/件"]});
 Object.assign(TR,{"ตุ๊กตุ๊กเศรษฐีไทย": ["Tuk-Tuk Tycoon Thailand", "トゥクトゥク長者タイ"], "{p} คือเศรษฐีตุ๊กตุ๊ก!": ["{p} is the Tuk-Tuk Tycoon!", "{p}がトゥクトゥク長者!"], "แวะ{st}": ["Stop: {st}", "{st}に立ち寄り"], "โบนัสประจำ{st}": ["{st} bonus", "{st}ボーナス"], "จุดแวะ": ["Stop", "立ち寄り先"], "เฉพาะภาคเหนือ · 15 จุดแวะ": ["North only · 15 stops", "北部のみ・15か所"], "ทั่วไทย · 57 จุดแวะ": ["All Thailand · 57 stops", "タイ全土・57か所"], "ถนนชนบท": ["Country road", "田舎道"], "ทั่วไทย 6 ภาค": ["All 6 regions", "タイ全6地方"], "ขับตุ๊กตุ๊กได้ทุกเส้นทาง · การ์ดรถไฟ (รถด่วน รถด่วนพิเศษ รถไฟความเร็วสูง) ใช้ได้เมื่ออยู่บนทางรถไฟ ทอยเต๋าได้หลายลูกแต่เดินได้เฉพาะทางรถไฟ": ["Your tuk-tuk can drive on every route · Train cards (Express, Special Express, High-Speed) work when you're on a railway: roll more dice, but move along railway lines only", "トゥクトゥクはどの道も走れる・列車カード(急行・特急・高速鉄道)は線路上で使える。サイコロが増えるが線路だけを進む"], "นั่งรถไฟอยู่: ทอยแล้วเดินได้เฉพาะทางรถไฟ": ["On the train: after rolling you move along railway only", "列車に乗車中:線路だけを進む"], "{p} จอดตุ๊กตุ๊กขึ้น{it}": ["{p} parked the tuk-tuk and boarded the {it}", "{p}はトゥクトゥクを停めて{it}に乗った"], "ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ": ["Before rolling · on a railway", "サイコロの前・線路上で"]});
+Object.assign(TR,{"ขโมยสำเร็จ!": ["Got it!", "盗んだ!"], "มือเต็ม การ์ดใบนี้ถูกทิ้งไป": ["Your hand is full — this card was discarded", "手札がいっぱいなので、このカードは捨てられた"], "{p} ขโมยการ์ดจาก{q} 1 ใบ": ["{p} stole a card from {q}", "{p}が{q}からカードを1枚盗んだ"], "{p} เสก{t}ไปดักรอ{q}": ["{p} sent {t} to lie in wait for {q}", "{p}は{t}を{q}のもとへ送った"], "สรรพากรเก็บภาษี{q} {m}": ["The tax office collected {m} from {q}", "税務署が{q}から{m}を徴収"], "{q} ต้องจ่ายภาษี": ["{q} must pay tax", "{q}は納税しなければならない"], "{p} แลกที่นั่งกับ{q}": ["{p} swapped places with {q}", "{p}が{q}と位置を交換"], "{p} กู้เงินด่วน {m}": ["{p} took a quick loan of {m}", "{p}が即日ローンで{m}を借りた"], "{p} แวะร้านสะดวกซื้อ ได้การ์ด {n} ใบ": ["{p} stopped at a 24-hour store and got {n} cards", "{p}はコンビニでカードを{n}枚手に入れた"], "ได้การ์ดใหม่": ["New cards", "新しいカード"], "{p} เตรียมต่อราคา เทิร์นนี้ซื้อกิจการครึ่งราคา": ["{p} is ready to haggle — half-price businesses this turn", "{p}は値切る気満々。このターン物件が半額"], "{p} เทคโอเวอร์{pr}จาก{q} จ่าย {m}": ["{p} took over {pr} from {q} for {m}", "{p}が{q}から{pr}を{m}で買収"], "{p} เทคโอเวอร์สำเร็จ": ["{p}'s takeover succeeded", "{p}の買収成功"], "ขโมยการ์ดของใคร": ["Steal from whom?", "誰から盗む?"], "การ์ด {n} ใบ": ["{n} cards", "カード{n}枚"], "ส่งผีไปดักรอใคร": ["Send the ghost to whom?", "誰におばけを送る?"], "ผีร้ายจะไปรอที่ตำแหน่งของเขา เจอตอนต้นเทิร์นถัดไป": ["A bad ghost will wait at their spot and meet them at the start of their next turn", "悪いおばけが相手の位置で待ち、次のターン開始時に出会う"], "แลกที่นั่งกับใคร": ["Swap places with whom?", "誰と位置を交換する?"], "{p} คืนเงินกู้ {m}": ["{p} repaid the loan of {m}", "{p}がローン{m}を返済"], "หนี้เงินกู้ {m} (คืนตอนปิดงบ)": ["Loan owed: {m} (repaid at year-end)", "ローン残高 {m}(決算で返済)"]});
 const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ สุดสายแต้มเกินเด้งกลับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "จุดแวะที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา", "✦ บางจุดแวะมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน", "ขับตุ๊กตุ๊กได้ทุกเส้นทาง · การ์ดรถไฟ (รถด่วน รถด่วนพิเศษ รถไฟความเร็วสูง) ใช้ได้เมื่ออยู่บนทางรถไฟ ทอยเต๋าได้หลายลูกแต่เดินได้เฉพาะทางรถไฟ", "หยุดที่จุดแวะซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งจุดแวะกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
@@ -2102,6 +2111,14 @@ const PROPS_AT=s=>PROPS.filter(p=>p.s===s);
 const ITEMS={
   exp:{n:"รถด่วน",when:"ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ",eff:"จอดตุ๊กตุ๊กขึ้นรถไฟ ทอยเต๋า 2 ลูก เดินได้เฉพาะทางรถไฟ",count:4},
   sexp:{n:"รถด่วนพิเศษ",when:"ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ",eff:"ขึ้นรถด่วนพิเศษ ทอยเต๋า 3 ลูก เดินได้เฉพาะทางรถไฟ",count:2},
+  steal:{n:"มือดีขโมยการ์ด",when:"ใช้ก่อนทอย",eff:"ขโมยการ์ดสุ่ม 1 ใบจากผู้เล่นที่เลือก",count:2},
+  hex:{n:"หมอผีเสกผี",when:"ใช้ก่อนทอย",eff:"ส่งผีร้ายไปดักรอผู้เล่นที่เลือก เจอตอนต้นเทิร์นของเขา",count:2},
+  tax:{n:"สรรพากรมาเยือน",when:"ใช้ก่อนทอย",eff:"ผู้เล่นที่ทรัพย์สินมากที่สุด (ไม่รวมคุณ) จ่ายภาษี 15% ของเงินสด",count:1},
+  swap:{n:"แลกที่นั่ง",when:"ใช้แทนการทอย",eff:"สลับตำแหน่งกับผู้เล่นที่เลือก",count:2},
+  loan:{n:"เงินกู้ด่วน",when:"ใช้ก่อนทอย",eff:"รับ 30 ล้านทันที ปิดงบ มี.ค. ต้องคืน 36 ล้าน",count:2},
+  conv:{n:"ร้านสะดวกซื้อ 24 ชม.",when:"ใช้ก่อนทอย",eff:"จั่วการ์ดไอเทม 2 ใบ",count:2},
+  bargain:{n:"ต่อราคา",when:"ใช้ก่อนทอย",eff:"เทิร์นนี้ซื้อกิจการลดครึ่งราคา",count:2},
+  takeover:{n:"เทคโอเวอร์",when:"ใช้ก่อนทอย",eff:"ซื้อกิจการของคนอื่น 1 แห่ง จ่ายเจ้าของ 2 เท่าของราคา",count:1},
   hsr:{n:"รถไฟความเร็วสูง",when:"ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ",eff:"ขึ้นรถไฟความเร็วสูง ทอยเต๋า 5 ลูก เดินได้เฉพาะทางรถไฟ",count:1},
   home:{n:"ตั๋วกลับบ้าน",when:"ใช้แทนการทอย",eff:"ย้ายไปกรุงเทพฯ ทันที",count:2},
   drive:{n:"ขับเองกำหนดเอง",when:"ใช้แทนการทอย",eff:"เลือกเดิน 1–6 ช่อง",count:2},
@@ -2115,7 +2132,7 @@ const ITEMS={
 };
 // ร้านขายการ์ด: ราคาซื้อ (ขายคืนได้ครึ่งราคา)
 const SHOPS=new Set(["BKK","NSW","CMI","CRI","PTY","HHN","KCG","KRT","UBN","HYI","PKT"]);
-const CARD_PRICE={exp:4,sexp:8,hsr:15,home:6,drive:10,mob:5,amulet:6,pass:6,lotto:2,viral:10,insure:5,plane:30};
+const CARD_PRICE={steal:8,hex:8,tax:10,swap:8,loan:3,conv:5,bargain:8,takeover:15,exp:4,sexp:8,hsr:15,home:6,drive:10,mob:5,amulet:6,pass:6,lotto:2,viral:10,insure:5,plane:30};
 const sellPrice=k=>Math.floor(CARD_PRICE[k]/2);
 // ของดีหายาก: แต่ละอย่างมีชิ้นเดียว ใครหยุดที่สถานีนั้นก่อนซื้อได้ · นับรวมในทรัพย์สิน และมีพลังพิเศษ
 const TREASURES={
@@ -2185,7 +2202,7 @@ const isMyTurn=()=>MODE==="local"||(S&&S.turn===mySeat());
 const amHost=()=>MODE==="local"||(S&&S.hostUid===ON.me);
 const botNow=()=>!!(S&&S.phase==="play"&&S.players[S.turn]&&S.players[S.turn].bot);
 const isBotTurn=()=>botNow()&&amHost();
-const assets=i=>S.players[i].money+PROPS.filter(p=>S.owners[p.id]===i).reduce((t,p)=>t+p.price,0)+treOf(i).reduce((t,k)=>t+TREASURES[k].val,0);
+const assets=i=>S.players[i].money-(S.players[i].loan||0)+PROPS.filter(p=>S.owners[p.id]===i).reduce((t,p)=>t+p.price,0)+treOf(i).reduce((t,k)=>t+TREASURES[k].val,0);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function log(t,a){S.log.unshift(a?[t,a]:t); S.log=S.log.slice(0,8); S.logN=(S.logN||0)+1; sfxLog(t);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
@@ -2211,6 +2228,7 @@ function drawItem(i){
   if(!S.deck.length) return null;
   const c=S.deck.pop(); p.cards.push(c); return c;
 }
+function takeOut(i,k){const c=S.players[i].cards,ix=c.indexOf(k);if(ix>=0)c.splice(ix,1);}
 function discardCard(i,k){const p=S.players[i];const ix=p.cards.indexOf(k);if(ix>=0){p.cards.splice(ix,1);S.discard.push(k);}}
 
 // save (local) or sync (online)
@@ -2414,12 +2432,14 @@ function choosePlayer(title,exclude,html=""){
 
 // ================= ACTIONS =================
 function canUse(k){
-  if(S.tf.locked&&["exp","sexp","hsr","home","drive","plane"].includes(k)) return false;
+  if(S.tf.locked&&["exp","sexp","hsr","home","drive","plane","swap"].includes(k)) return false;
   if(k==="amulet"||k==="insure") return false;
   if(hasCurse(S.turn,"nocard")) return false;
   if(k==="pass") return !!curseOf(S.turn);
   if(k==="viral") return PROPS.some(p=>S.owners[p.id]===S.turn);
   if(k==="plane") return S.year>=2;
+  if(k==="steal") return S.players.some((q,j)=>j!==S.turn&&q.cards.length);
+  if(k==="takeover") return takeoverList().length>0;
   if(["exp","sexp","hsr","drive"].includes(k)&&ISLANDS.has(cur().node)) return false;
   if(TRAIN_CARDS.includes(k)&&!onRail(cur().node)) return false;
   return true;
@@ -2446,6 +2466,36 @@ async function teleport(to,arrived){
   ON.seenMove=S.lastMove.id; p.node=to; commit(); render(); focusNode(to); await sleep(300);
   await resolveSquare(to,arrived);
 }
+const BAD_GHOSTS=()=>Object.keys(GHOSTS).filter(g=>GHOSTS[g].kind==="bad");
+function richestOther(i){ let b=-1,ba=-1e9; S.players.forEach((q,j)=>{ if(j===i) return; const a=assets(j); if(a>ba){ba=a;b=j;} }); return b; }
+function takeoverList(){ const i=S.turn,p=cur(); return PROPS.filter(q=>S.owners[q.id]!==undefined&&S.owners[q.id]!==i&&p.money>=q.price*2); }
+// ผลการ์ดลูกเล่น ใช้ร่วมกันทั้งคนและบอท · คืน "moved" ถ้าย้ายตำแหน่ง
+async function doTrick(k,arg){
+  const i=S.turn,p=cur(),secret=MODE==="online"||p.bot;
+  switch(k){
+    case "steal":{ const q=S.players[arg]; if(!q.cards.length) return; const c=q.cards.splice(Math.floor(Math.random()*q.cards.length),1)[0];
+      if(p.cards.length<5) p.cards.push(c); else S.discard.push(c);
+      log("{p} ขโมยการ์ดจาก{q} 1 ใบ",{p:p.name,q:q.name}); commit(); render();
+      if(!p.bot&&(MODE==="local"||i===mySeat())) await say({eyebrow:T("ขโมยสำเร็จ!"),title:itemN(c),html:wrapCard(itemCard(c))+(p.cards.length>=5&&!p.cards.includes(c)?`<p>${T("มือเต็ม การ์ดใบนี้ถูกทิ้งไป")}</p>`:"")});
+      return; }
+    case "hex":{ const q=S.players[arg], g=BAD_GHOSTS()[Math.floor(Math.random()*BAD_GHOSTS().length)];
+      S.ghosts=(S.ghosts||[]).filter(x=>x.node!==q.node);
+      S.ghosts.push({id:"g"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),k:g,node:q.node,hidden:false});
+      log("{p} เสก{t}ไปดักรอ{q}",{p:p.name,t:GHOSTS[g].n,q:q.name}); commit(); render(); return; }
+    case "tax":{ const j=richestOther(i); if(j<0) return; const q=S.players[j], t=Math.max(0,Math.round(q.money*0.15));
+      q.money-=t; log("สรรพากรเก็บภาษี{q} {m}",{q:q.name,m:t}); commit(); render();
+      await say({eyebrow:itemN("tax"),title:T("{q} ต้องจ่ายภาษี",{q:esc(q.name)}),html:`<div class="big-num" style="text-align:center;color:#C8361E">−${money(t)}</div>`},1600); return; }
+    case "swap":{ const q=S.players[arg], mine=p.node, theirs=q.node; q.node=mine; log("{p} แลกที่นั่งกับ{q}",{p:p.name,q:q.name});
+      await teleport(theirs,theirs===S.dest); return "moved"; }
+    case "loan": p.money+=30; p.loan=(p.loan||0)+36; log("{p} กู้เงินด่วน {m}",{p:p.name,m:30}); commit(); render(); return;
+    case "conv":{ const a=drawItem(i), b=drawItem(i); log("{p} แวะร้านสะดวกซื้อ ได้การ์ด {n} ใบ",{p:p.name,n:(a?1:0)+(b?1:0)}); commit(); render();
+      if(!secret&&(a||b)) await say({eyebrow:itemN("conv"),title:T("ได้การ์ดใหม่"),html:`<div class="gc-row">${[a,b].filter(Boolean).map(c=>`<div class="gc-col">${itemCard(c)}</div>`).join("")}</div>`}); return; }
+    case "bargain": S.tf.disc=true; log("{p} เตรียมต่อราคา เทิร์นนี้ซื้อกิจการครึ่งราคา",{p:p.name}); commit(); render(); return;
+    case "takeover":{ const q=PROPS[arg], o=S.owners[q.id], pr=q.price*2; p.money-=pr; S.players[o].money+=pr; S.owners[q.id]=i;
+      log("{p} เทคโอเวอร์{pr}จาก{q} จ่าย {m}",{p:p.name,pr:q.id,q:S.players[o].name,m:pr}); commit(); render();
+      await say({eyebrow:itemN("takeover"),title:T("{p} เทคโอเวอร์สำเร็จ",{p:esc(p.name)}),html:wrapCard(propCard(q))},1800); return; }
+  }
+}
 async function useCard(k){
   const i=S.turn,p=cur();
   switch(k){
@@ -2455,8 +2505,16 @@ async function useCard(k){
     case "drive":{
       const v=await modal({title:itemN("drive"),html:T("เลือกจำนวนช่องที่จะเดิน"),buttons:[1,2,3,4,5,6].map(n=>({label:String(n),value:n})).concat([{label:T("ยกเลิก"),value:null}])});
       if(!v) return "cancel"; log("{p} ขับเอง {n} ช่อง",{p:p.name,n:v}); return v; }
-    case "home": discardCard(i,k); log("{p} ใช้{it}",{p:p.name,it:"home"}); await teleport("BKK",S.dest==="BKK"); p.cards.push(k); return "moved";
-    case "plane": discardCard(i,k); log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); p.cards.push(k); return "moved";
+    case "home": takeOut(i,k); log("{p} ใช้{it}",{p:p.name,it:"home"}); await teleport("BKK",S.dest==="BKK"); p.cards.push(k); return "moved";
+    case "plane": takeOut(i,k); log("{p} เหมาเครื่องบินไป{st}",{p:p.name,st:S.dest}); await teleport(S.dest,true); p.cards.push(k); return "moved";
+    case "steal":{ const t=await choosePlayer(T("ขโมยการ์ดของใคร"),i,`<p>${S.players.map((q,j)=>j===i?"":`${esc(q.name)}: ${T("การ์ด {n} ใบ",{n:q.cards.length})}`).filter(Boolean).join("<br>")}</p>`); if(t===null||t===undefined||!S.players[t].cards.length) return "cancel"; takeOut(i,k); await doTrick(k,t); p.cards.push(k); return "ok"; }
+    case "hex":{ const t=await choosePlayer(T("ส่งผีไปดักรอใคร"),i,T("ผีร้ายจะไปรอที่ตำแหน่งของเขา เจอตอนต้นเทิร์นถัดไป")); if(t===null||t===undefined) return "cancel"; await doTrick(k,t); return "ok"; }
+    case "swap":{ const t=await choosePlayer(T("แลกที่นั่งกับใคร"),i,S.players.map((q,j)=>j===i?"":`${esc(q.name)}: ${labelOf(q.node)}`).filter(Boolean).join("<br>")); if(t===null||t===undefined) return "cancel"; takeOut(i,k); await doTrick(k,t); p.cards.push(k); return "moved"; }
+    case "takeover":{ const list=takeoverList();
+      const v=await modal({title:itemN("takeover"),html:`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b></p><div class="plist">${list.map(q=>propRow(q,`<button class="btn gold" data-val="${q.id}">${money(q.price*2)}</button>`)).join("")}</div>`,buttons:[{label:T("ยกเลิก"),value:null}]});
+      if(v===null||v===undefined) return "cancel"; await doTrick(k,+v); return "ok"; }
+    case "conv": takeOut(i,k); await doTrick(k); p.cards.push(k); return "ok";
+    case "tax": case "loan": case "bargain": await doTrick(k); return "ok";
     case "mob":{ const t=await choosePlayer(T("ม็อบปิดถนนใคร"),i,T("คนที่เลือกจะเดินไม่ได้ในเทิร์นหน้าของเขา")); if(t===null||t===undefined) return "cancel"; S.skip[t]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
     case "pass":{ const t=await choosePlayer(T("ส่งคำสาปให้ใคร"),i); if(t===null||t===undefined) return "cancel"; S.players[t].curse=p.curse; p.curse=null; log("{p} ย้ายคำสาปไปให้{q}",{p:p.name,q:S.players[t].name}); return "ok"; }
     case "lotto":{ const d=p.lucky?6:rnd(6); p.lucky=false; UI.dice=[d]; render(); if(d===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});await info(T("ถูกรางวัล!"),T("ทอยได้ 6 รับ <b>{m}</b>",{m:30}));} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});await info(T("ไม่ถูก"),T("ทอยได้ {d} เสีย {m}",{d,m:1}));} return "ok"; }
@@ -2692,7 +2750,7 @@ const GHOSTS={
 };
 const curseOf=i=>S.players[i]&&S.players[i].curse||null;
 const hasCurse=(i,k)=>{const c=curseOf(i);return !!(c&&c.k===k);};
-const priceOf=(q,i)=>{ let v=hasCurse(i,"pricey")?Math.ceil(q.price*1.5):q.price; if(hasTre(i,"celadon")) v=Math.ceil(v*0.9); return v; };
+const priceOf=(q,i)=>{ let v=hasCurse(i,"pricey")?Math.ceil(q.price*1.5):q.price; if(hasTre(i,"celadon")) v=Math.ceil(v*0.9); if(S.tf&&S.tf.disc&&i===S.turn) v=Math.ceil(v/2); return v; };
 function applyCurse(i,k,turns){ S.players[i].curse={k,left:turns}; }
 async function curseFarthest(dest){
   const d=bfs(dest,S.newRail); let best=-1,bd=-1;
@@ -3157,7 +3215,14 @@ async function botUseCard(){
   else if(has("exp")&&dist>4) k="exp";
   else if(has("viral")) k="viral";
   else if(has("mob")){const near=S.players.map((q,j)=>({j,v:d[q.node]??99})).filter(o=>o.j!==i&&o.v<=6).sort((a,b)=>a.v-b.v)[0]; if(near){k="mob";arg=near.j;}}
-  else if(has("lotto")&&(p.lucky||(p.money>20&&Math.random()<0.3))) k="lotto";
+  else if(has("loan")&&p.money<10) k="loan";
+  else if(has("takeover")){ const mine=new Set(PROPS.filter(q=>S.owners[q.id]===i).map(q=>q.s)); const t=takeoverList().filter(q=>mine.has(q.s)&&p.money>=q.price*2+30)[0]; if(t){k="takeover";arg=t.id;} }
+  if(!k&&has("swap")){ const best=S.players.map((q,j)=>({j,v:d[q.node]??99})).filter(o=>o.j!==i).sort((a,b)=>a.v-b.v)[0]; if(best&&best.v+8<=dist){k="swap";arg=best.j;} }
+  if(!k&&has("steal")&&Math.random()<0.6){ const t=S.players.map((q,j)=>({j,n:q.cards.length})).filter(o=>o.j!==i&&o.n>=2).sort((a,b)=>b.n-a.n)[0]; if(t){k="steal";arg=t.j;} }
+  if(!k&&has("hex")&&Math.random()<0.5){ const j=richestOther(i); if(j>=0&&assets(j)>assets(i)){k="hex";arg=j;} }
+  if(!k&&has("tax")){ const j=richestOther(i); if(j>=0&&assets(j)>assets(i)) k="tax"; }
+  if(!k&&has("conv")&&p.cards.length<=3) k="conv";
+  if(!k&&has("lotto")&&(p.lucky||(p.money>20&&Math.random()<0.3))) k="lotto";
   if(!k) return null;
   discardCard(i,k); S.tf.cardUsed=true;
   await brief({eyebrow:T("{p} ใช้การ์ด",{p:esc(p.name)}),title:itemN(k),html:wrapCard(itemCard(k))},1500);
@@ -3171,6 +3236,8 @@ async function botUseCard(){
     case "mob": S.skip[arg]=true; log("{p} ส่งม็อบไปปิดถนน{q}",{p:p.name,q:S.players[arg].name}); break;
     case "viral":{ const q=PROPS.filter(x=>S.owners[x.id]===i).sort((a,b)=>b.profit-a.profit)[0]; p.money+=q.profit; log("{pr}ของ{p} ดังในโซเชียล รับ {m}",{pr:q.id,p:p.name,m:q.profit}); break; }
     case "lotto":{ const r=p.lucky?6:rnd(6); p.lucky=false; if(r===6){p.money+=30;log("{p} ถูกลอตเตอรี่ รับ {m}",{p:p.name,m:30});} else {p.money-=1;log("{p} ซื้อลอตเตอรี่ไม่ถูก เสีย {m}",{p:p.name,m:1});} break; }
+    case "swap": if((await doTrick(k,arg))==="moved") return "moved"; break;
+    case "steal": case "hex": case "tax": case "loan": case "conv": case "takeover": await doTrick(k,arg); break;
   }
   commit(); render(); return null;
 }
@@ -3297,6 +3364,7 @@ async function yearClose(){
     if(hasTre(k,"fossil")) prof+=2*PROPS.filter(q=>S.owners[q.id]===k&&q.t===TOUR).length;
     p.money+=prof; return {k,prof,mono};
   });
+  S.players.forEach(q=>{ if(q.loan){ q.money-=q.loan; log("{p} คืนเงินกู้ {m}",{p:q.name,m:q.loan}); q.loan=0; } });
   log("ปิดงบปีที่ {y} ทุกกิจการจ่ายกำไร",{y:S.year});
   rows.forEach(r=>r.a=assets(r.k));
   S.report={id:Date.now()+"-"+S.year,year:S.year,rows};
@@ -3321,7 +3389,7 @@ async function showGameOver(){
 // ================= CARD ART & FACES =================
 const ART={map:{}};
 const DEST_ORDER=[...CLASSIC,"SRB","CCO","CBI","PTY","RYG","CTI","TRT","NPT","KRI","RBR","PBI","HHN","KCG","SMT","PKC","KRT","KKN","UDN","NKI","LOE","BRM","SRN","UBN","MDH","NPM","SKN","RET","PKN","CPN","RNG","SNI","NST","PLG","HYI","SGK","KBI","PNA","PKT","TRG","KSM","PPI","LNT"];
-const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane","hsr"];
+const ITEM_ORDER=["exp","sexp","home","drive","mob","amulet","pass","lotto","viral","insure","plane","hsr","steal","hex","tax","swap","loan","conv","bargain","takeover"];
 const pad2=n=>String(n).padStart(2,"0");
 const ARTID={tre:k=>"T"+pad2(Object.keys(TREASURES).indexOf(k)+1),prop:p=>"P"+pad2(p.id+1),dest:s=>"D"+pad2(DEST_ORDER.indexOf(s)+1),item:k=>"I"+pad2(ITEM_ORDER.indexOf(k)+1)};
 const ALL_ART_IDS=[...PROPS.map(p=>"P"+pad2(p.id+1)),...DEST_ORDER.map((s,i)=>"D"+pad2(i+1)),...Array.from({length:20},(_,i)=>"I"+pad2(i+1)),...Array.from({length:11},(_,i)=>"G"+pad2(i+1)),...Array.from({length:12},(_,i)=>"E"+pad2(i+1)),...Object.keys(TREASURES).map((k,i)=>"T"+pad2(i+1))];
@@ -3405,7 +3473,7 @@ async function showPlayer(k){
   if(modalResolve) return;
   const p=S.players[k], mine=PROPS.filter(q=>S.owners[q.id]===k);
   const showCards=MODE==="local"||k===mySeat();
-  const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b> · ${T("ทรัพย์สินรวม")} <b>${money(assets(k))}</b></p><p>${T("การ์ด:")} ${showCards?(p.cards.length?p.cards.map(c=>itemN(c)).join(", "):T("ไม่มี")):T("{n} ใบ (ซ่อนไว้)",{n:p.cards.length})}</p>${treOf(k).length?`<p>${T("ของหายาก:")} ${treOf(k).map(x=>`<span class="mini tre">✦ ${treN(x)}</span>`).join(" ")}</p>`:""}${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${stN(q.s)}</span>`)).join("")}</div>`:`<p>${T("ยังไม่มีกิจการ")}</p>`}`;
+  const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b> · ${T("ทรัพย์สินรวม")} <b>${money(assets(k))}</b></p>${p.loan?`<p>${T("หนี้เงินกู้ {m} (คืนตอนปิดงบ)",{m:p.loan})}</p>`:""}<p>${T("การ์ด:")} ${showCards?(p.cards.length?p.cards.map(c=>itemN(c)).join(", "):T("ไม่มี")):T("{n} ใบ (ซ่อนไว้)",{n:p.cards.length})}</p>${treOf(k).length?`<p>${T("ของหายาก:")} ${treOf(k).map(x=>`<span class="mini tre">✦ ${treN(x)}</span>`).join(" ")}</p>`:""}${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${stN(q.s)}</span>`)).join("")}</div>`:`<p>${T("ยังไม่มีกิจการ")}</p>`}`;
   await modal({title:esc(p.name),html});
 }
 async function showStation(s){
