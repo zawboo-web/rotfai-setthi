@@ -1,0 +1,96 @@
+name: แก้ภาพด้วย GPT
+
+# 1) อัปภาพที่จะแก้ไว้ในโฟลเดอร์ tools/edit
+# 2) Actions → แก้ภาพด้วย GPT → Run workflow
+# ผลลัพธ์อยู่ที่ tools/edit/done/ (เปิดดู/ดาวน์โหลดจากมือถือได้) และถ้าใส่ card_id จะใส่ลงเกมให้ด้วย
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "ชื่อไฟล์ใน tools/edit เช่น A01_full.png"
+        required: true
+      prompt:
+        description: "สั่งว่าจะแก้อะไร (ภาษาอังกฤษจะแม่นกว่า)"
+        required: true
+      name:
+        description: "ชื่อไฟล์ผลลัพธ์ (เว้นว่าง = ชื่อเดิม_edit)"
+        required: false
+        default: ""
+      card_id:
+        description: "ถ้าเป็นภาพการ์ด ใส่รหัส เช่น D05 เพื่อใส่ลงเกมทันที (เว้นว่างได้)"
+        required: false
+        default: ""
+      size:
+        description: "ขนาดภาพ"
+        type: choice
+        options: [auto, 1024x1536, 1024x1024, 1536x1024]
+        default: auto
+      quality:
+        description: "คุณภาพ"
+        type: choice
+        options: [medium, high, low]
+        default: medium
+      transparent:
+        description: "พื้นหลังใส (ตัวละคร/สไปรต์)"
+        type: boolean
+        default: false
+
+concurrency: gen-cards
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: ติดตั้ง Pillow
+        run: pip install pillow
+
+      - name: แก้ภาพ
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          IN_FILE: ${{ inputs.file }}
+          IN_PROMPT: ${{ inputs.prompt }}
+          IN_NAME: ${{ inputs.name }}
+          IN_SIZE: ${{ inputs.size }}
+          IN_QUALITY: ${{ inputs.quality }}
+          IN_TRANSPARENT: ${{ inputs.transparent }}
+        run: |
+          cd tools
+          src="edit/$IN_FILE"
+          if [ ! -f "$src" ]; then echo "ไม่เจอไฟล์ $src — อัปภาพไว้ในโฟลเดอร์ tools/edit ก่อน"; ls edit; exit 1; fi
+          name="$IN_NAME"; [ -z "$name" ] && name="$(basename "${IN_FILE%.*}")_edit"
+          args=(edit "$src" "$IN_PROMPT" --name "$name" --out edit/done --quality "$IN_QUALITY")
+          [ "$IN_SIZE" != "auto" ] && args+=(--size "$IN_SIZE")
+          [ "$IN_TRANSPARENT" = "true" ] && args+=(--transparent)
+          python queue_openai.py "${args[@]}"
+          echo "OUT=edit/done/$name.png" >> "$GITHUB_ENV"
+
+      - name: ใส่ลงเกม (ถ้าเป็นการ์ด)
+        if: ${{ inputs.card_id != '' }}
+        env:
+          CARD: ${{ inputs.card_id }}
+        run: |
+          cd tools
+          mkdir -p tmp_card
+          cp "$OUT" "tmp_card/card_${CARD^^}.png"
+          python prepare_cards.py tmp_card
+          mkdir -p ../cards && cp -f cards/*.webp ../cards/
+          rm -rf tmp_card
+
+      - name: บันทึกลง repo
+        run: |
+          git config user.name "zawboo-web"
+          git config user.email "zawboo-web@users.noreply.github.com"
+          git add tools/edit/done cards
+          if git diff --cached --quiet; then echo "ไม่มีอะไรเปลี่ยน"; exit 0; fi
+          git commit -m "แก้ภาพด้วย GPT: ${{ inputs.file }}"
+          git pull --rebase
+          git push
