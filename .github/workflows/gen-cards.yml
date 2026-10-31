@@ -1,0 +1,107 @@
+name: เจนภาพการ์ดด้วย GPT
+
+# กดรันจากแท็บ Actions ได้ทั้งจากคอมและมือถือ
+# ต้องตั้ง secret ชื่อ OPENAI_API_KEY ก่อน (Settings → Secrets and variables → Actions)
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "ID ที่จะเจน เช่น P01,D01 หรือ P74-P145 (เว้นว่าง = ทุกใบ)"
+        required: false
+        default: ""
+      sheet:
+        description: "เจนเฉพาะแท็บ: กิจการ จุดหมาย ไอเทม ผี อีเวนต์ ของดี มินิเกม อวตาร หลังการ์ด (เว้นว่าง = ทุกแท็บ)"
+        required: false
+        default: ""
+      skip:
+        description: "ID ที่ไม่เอา (ภาพที่มีแล้ว)"
+        required: false
+        default: "G01-G11,A01-A08,M01-M11,M16"
+      quality:
+        description: "คุณภาพ"
+        type: choice
+        options: [medium, low, high]
+        default: medium
+      budget:
+        description: "หยุดเมื่อใช้เงินถึง (ดอลลาร์)"
+        required: false
+        default: "9"
+      ref:
+        description: "ภาพอ้างอิงสไตล์ในโฟลเดอร์ tools/style เช่น buffalo.png (เว้นว่าง = ไม่ใช้)"
+        required: false
+        default: ""
+      force:
+        description: "เจนใหม่ทับใบที่เคยเจนแล้ว"
+        type: boolean
+        default: false
+
+concurrency: gen-cards
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: ติดตั้ง Pillow
+        run: pip install pillow
+
+      - name: เจนภาพ
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          IN_ONLY: ${{ inputs.only }}
+          IN_SHEET: ${{ inputs.sheet }}
+          IN_SKIP: ${{ inputs.skip }}
+          IN_QUALITY: ${{ inputs.quality }}
+          IN_BUDGET: ${{ inputs.budget }}
+          IN_REF: ${{ inputs.ref }}
+          IN_FORCE: ${{ inputs.force }}
+        run: |
+          cd tools
+          args=(--quality "$IN_QUALITY" --out openai_cards)
+          [ -n "$IN_ONLY" ] && args+=(--only "$IN_ONLY")
+          [ -n "$IN_SHEET" ] && args+=(--sheet "$IN_SHEET")
+          [ -n "$IN_SKIP" ] && args+=(--skip "$IN_SKIP")
+          [ -n "$IN_BUDGET" ] && args+=(--budget "$IN_BUDGET")
+          if [ -n "$IN_REF" ]; then
+            refs=$(echo "$IN_REF" | tr ',' '\n' | sed 's#^ *#style/#' | paste -sd, -)
+            args+=(--ref "$refs")
+          fi
+          if [ "$IN_FORCE" = "true" ]; then args+=(--force); else args+=(--done gpt_done.txt); fi
+          python queue_openai.py "${args[@]}"
+
+      - name: แปลงภาพเป็นการ์ดแล้วใส่โฟลเดอร์ cards
+        if: always()
+        run: |
+          cd tools
+          if [ -d openai_cards ] && [ -n "$(ls -A openai_cards)" ]; then
+            python prepare_cards.py openai_cards
+            mkdir -p ../cards && cp -f cards/*.webp ../cards/ 2>/dev/null || true
+          fi
+
+      - name: บันทึกลง repo
+        if: always()
+        run: |
+          git config user.name "zawboo-web"
+          git config user.email "zawboo-web@users.noreply.github.com"
+          git add cards tools/gpt_done.txt
+          if git diff --cached --quiet; then echo "ไม่มีภาพใหม่"; exit 0; fi
+          git commit -m "เจนภาพการ์ดด้วย GPT ($(git diff --cached --name-only cards | wc -l) ไฟล์)"
+          git pull --rebase
+          git push
+
+      - name: เก็บภาพต้นฉบับ PNG ให้ดาวน์โหลด
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpt-originals
+          path: tools/openai_cards
+          if-no-files-found: ignore
+          retention-days: 30
