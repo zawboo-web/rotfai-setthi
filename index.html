@@ -3204,7 +3204,7 @@ try{ C3D.on=localStorage.getItem("rotfai-3d")!=="off"; }catch(e){}
 const C3D_CLIPS={turn:["Wave"],arrive:["Jump","Dance"],buy:["ThumbsUp"],lose:["No"],ghost:["No"],win:["Dance","Dance"]};
 const avOf=i=>(S&&S.players[i]&&S.players[i].av)||AV_IDS[i%AV_IDS.length];
 function c3dLib(){ if(!C3D.lib) C3D.lib=(async()=>{ const THREE=await import("three"); const {GLTFLoader}=await import("three/addons/loaders/GLTFLoader.js"); const SK=await import("three/addons/utils/SkeletonUtils.js"); return {THREE,GLTFLoader,SK}; })(); return C3D.lib; }
-function c3dModel(av){ if(!C3D.cache[av]) C3D.cache[av]=(async()=>{ const {GLTFLoader}=await c3dLib(); const L=new GLTFLoader(); const load=u=>new Promise((res,rej)=>L.load(u,res,undefined,rej)); try{ return await load(`models/${av}.glb`); }catch(e){ return await load("models/robot.glb"); } })(); return C3D.cache[av]; }
+function c3dModel(av){ if(!C3D.cache[av]) C3D.cache[av]=(async()=>{ const {GLTFLoader}=await c3dLib(); const L=new GLTFLoader(); const load=u=>new Promise((res,rej)=>L.load(u,res,undefined,rej)); try{ return await load(`models/${av}.glb`); }catch(e){} try{ return await load("models/robot.glb"); }catch(e){} const m=await import(new URL("models/robot_glb.js",location.href).href); return await load(m.default); })(); return C3D.cache[av]; }
 function c3dToggle(){ C3D.on=!C3D.on; try{ localStorage.setItem("rotfai-3d",C3D.on?"on":"off"); }catch(e){} }
 async function c3dShow(i,kind,host){
   if(!C3D.on||reduced()||document.hidden) return;
