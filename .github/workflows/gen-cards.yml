@@ -72,6 +72,9 @@ jobs:
           [ -n "$IN_BUDGET" ] && args+=(--budget "$IN_BUDGET")
           if [ -n "$IN_REF" ]; then
             refs=$(echo "$IN_REF" | tr ',' '\n' | sed 's#^ *#style/#' | paste -sd, -)
+            for f in $(echo "$refs" | tr ',' ' '); do
+              if [ ! -f "$f" ]; then echo "::error::ไม่เจอภาพอ้างอิง $f · ไฟล์ที่มีใน tools/style: $(ls style | grep -v '^\.keep$' | paste -sd' ' -)"; exit 1; fi
+            done
             args+=(--ref "$refs")
           fi
           if [ "$IN_FORCE" = "true" ]; then args+=(--force); else args+=(--done gpt_done.txt); fi

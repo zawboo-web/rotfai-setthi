@@ -41,10 +41,26 @@ STYLE_NOTE = ("Use the attached reference image(s) only as a guide for art style
               "palette and level of detail. Do not copy their characters or composition. Draw this new subject: ")
 
 
+GH = bool(os.environ.get("GITHUB_ACTIONS"))
+
+
+def fail(msg):
+    """จบพร้อมข้อความ · บน GitHub Actions ให้ขึ้นเป็นกล่องแดงในหน้าผลงานด้วย"""
+    if GH:
+        print("::error::" + msg.replace("\n", " · "))
+    sys.exit(msg)
+
+
+def done_ok(msg):
+    if GH:
+        print("::notice::" + msg)
+    print(msg); sys.exit(0)
+
+
 def key():
     k = os.environ.get("OPENAI_API_KEY")
     if not k:
-        sys.exit("ยังไม่ได้ตั้ง OPENAI_API_KEY  ให้พิมพ์  setx OPENAI_API_KEY \"sk-...\"  แล้วเปิด cmd ใหม่")
+        fail("ยังไม่ได้ตั้ง OPENAI_API_KEY  ให้พิมพ์  setx OPENAI_API_KEY \"sk-...\"  แล้วเปิด cmd ใหม่")
     return k
 
 
@@ -117,7 +133,7 @@ def pick_cards(a):
         cards = [c for c in cards if c["id"].upper() not in got]
         print(f"ข้ามใบที่มีภาพแล้ว {before - len(cards)} ใบ")
     if not cards:
-        sys.exit("ไม่มีการ์ดให้เจน ตรวจ --only / --sheet / --have อีกครั้ง")
+        done_ok("ไม่มีการ์ดให้เจน: ใบที่เลือกเจนไปแล้วทั้งหมด หรือ ID/แท็บไม่ตรง (ถ้าจะเจนทับ ให้ติ๊ก force)")
     return cards
 
 
@@ -180,13 +196,13 @@ def with_retry(label, fn):
                 print(f"  {label} ✗ โดนตัวกรองเนื้อหา ข้ามไปก่อน (ลองแก้พรอมป์): {msg[:200]}")
                 return None
             if e.code == 403 and "verif" in msg.lower():
-                sys.exit("OpenAI ให้ยืนยันองค์กรก่อนใช้โมเดลภาพ: platform.openai.com → Settings → Organization → Verify")
-            sys.exit(f"OpenAI ปฏิเสธ {label}: {e.code}\n{msg}")
+                fail("OpenAI ให้ยืนยันองค์กรก่อนใช้โมเดลภาพ: platform.openai.com → Settings → Organization → Verify")
+            fail(f"OpenAI ปฏิเสธ {label}: {e.code}\n{msg}")
         except urllib.error.URLError as e:
             if attempt < 4:
                 time.sleep(10)
                 continue
-            sys.exit(f"ต่อ OpenAI ไม่ได้: {e}")
+            fail(f"ต่อ OpenAI ไม่ได้: {e}")
 
 
 def run_direct(a):
@@ -196,7 +212,7 @@ def run_direct(a):
     refs = [Path(r.strip()) for r in a.ref.split(",")] if a.ref else []
     for r in refs:
         if not r.exists():
-            sys.exit(f"ไม่เจอภาพอ้างอิง {r}")
+            fail(f"ไม่เจอภาพอ้างอิง {r}")
     print(f"ต้องเจน {len(todo)} ใบ · {a.model} · quality {a.quality}" + (f" · อ้างอิงสไตล์ {len(refs)} ภาพ" if refs else ""))
     if a.dry_run:
         for c in todo:
@@ -221,7 +237,7 @@ def run_direct(a):
 def run_edit(a):
     src = Path(a.image)
     if not src.exists():
-        sys.exit(f"ไม่เจอภาพ {src}")
+        fail(f"ไม่เจอภาพ {src}")
     fields = {"model": a.model, "prompt": a.prompt, "quality": a.quality, "n": "1", "output_format": "png"}
     if a.size:
         fields["size"] = a.size
@@ -260,7 +276,7 @@ def batch_id(a):
     if a.batch:
         return a.batch
     if not STATE.exists():
-        sys.exit("ไม่เจอ batch ล่าสุด ใส่ --batch batch_xxx")
+        fail("ไม่เจอ batch ล่าสุด ใส่ --batch batch_xxx")
     return json.loads(STATE.read_text())["batch_id"]
 
 
@@ -274,7 +290,7 @@ def batch_status(a):
 def batch_fetch(a):
     b = batch_status(a)
     if b["status"] != "completed":
-        sys.exit("ยังไม่เสร็จ ลองใหม่ทีหลัง")
+        fail("ยังไม่เสร็จ ลองใหม่ทีหลัง")
     od, n = out_dir(a), 0
     if b.get("output_file_id"):
         for line in call("GET", f"/files/{b['output_file_id']}/content").decode().splitlines():
@@ -310,7 +326,7 @@ def main():
     ap.add_argument("--force", action="store_true"); ap.add_argument("--batch"); ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     if a.cmd == "edit" and (not a.image or not a.prompt):
-        sys.exit('ใช้แบบนี้: python queue_openai.py edit ภาพ.png "สั่งแก้อะไร"')
+        fail('ใช้แบบนี้: python queue_openai.py edit ภาพ.png "สั่งแก้อะไร"')
     {"run": run_direct, "edit": run_edit, "batch-submit": batch_submit,
      "batch-status": batch_status, "batch-fetch": batch_fetch}[a.cmd](a)
 
