@@ -6,6 +6,7 @@
 <meta name="description" content="เกมกระดานรถไฟสายเหนือ เล่นกับเพื่อนออนไลน์หรือกับบอท">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}html,body{height:100%}</style>
 <title>ตุ๊กตุ๊กเศรษฐีไทย</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mali:wght@500;600;700&display=swap">
@@ -164,6 +165,7 @@ svg.newrail .barrier{display:none}
 .mg-tea{display:flex;flex-direction:column;align-items:center;gap:16px}.mg-glass{position:relative;width:110px;height:220px;border:4px solid #2A2238;border-top:0;border-radius:0 0 22px 22px;background:#EAF6FF;overflow:hidden}
 .mg-tea-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(#F7A35C,#E0782A)}.mg-line{position:absolute;left:-4px;right:-4px;height:3px;background:#E8453C;box-shadow:0 0 0 1px #fff}
 .mg-hold{min-width:180px;min-height:56px;font-size:17px;touch-action:none}.mg-hold.on{transform:scale(.96);filter:brightness(1.1)}
+.c3d{position:absolute;inset:0;width:100%!important;height:100%!important;pointer-events:none;z-index:2}
 .mg-art{display:block;place-items:initial}
 .mg-mosq{position:absolute;width:30%;height:auto;margin:-10% 0 0 -15%;font-size:0;background:none;border:0;padding:0;touch-action:none;animation:mgFly .9s ease-in-out infinite alternate}
 .mg-mosq img{width:100%;transform:scaleX(var(--fx,1));filter:drop-shadow(0 4px 4px rgba(0,0,0,.35));pointer-events:none}
@@ -211,7 +213,7 @@ table.rep th{font-size:12px;color:var(--muted);font-weight:600}
 .gc-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
 .gc-pill{background:#fff;border:2px solid #2A2238;border-radius:999px;padding:1px 10px;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gc-dark{background:#2A2238;color:#fff;border-radius:999px;padding:2px 9px;font-weight:700;font-size:11px;white-space:nowrap}
-.gc-art{height:178px;border:3px solid #2A2238;border-radius:13px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--cl) 0 12px,var(--cl2) 12px 24px);display:grid;place-items:center;flex:none}
+.gc-art{position:relative;height:178px;border:3px solid #2A2238;border-radius:13px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--cl) 0 12px,var(--cl2) 12px 24px);display:grid;place-items:center;flex:none}
 .gc-art.short{height:150px}
 .gc-art img{width:100%;height:100%;object-fit:cover;display:block}
 .gc-ph{background:rgba(255,255,255,.85);border:2px dashed #2A2238;border-radius:8px;padding:2px 8px;font-size:11px;font-weight:600}
@@ -1984,6 +1986,7 @@ Object.assign(TR,{"บุญบั้งไฟ": ["Rocket Festival", "ロケッ�
 Object.assign(TR,{"ภาคใต้": ["South", "南部"], "ช่วงมรสุมของทะเลนี้ ({t}) คลื่นแรงกว่าปกติ": ["Monsoon season on this sea ({t}): rougher waves", "この海のモンスーンの時期({t})は波が高い"], "มิ.ย.–ก.ย.": ["Jun–Sep", "6〜9月"], "พ.ย.–ม.ค.": ["Nov–Jan", "11〜1月"], "พ.ค.–ต.ค.": ["May–Oct", "5〜10月"], "หนังตะลุงชุดครู": ["Master Shadow Puppet Set", "名人の影絵人形セット"], "ต้นปี (เม.ย.) ได้การ์ดไอเทมฟรี 1 ใบ": ["Get a free item card every April", "毎年4月にアイテムカードを1枚もらえる"], "เรือหัวโทงทองคำ": ["Golden Long-tail Boat", "金のロングテールボート"], "ทอยเต๋าได้ 6 รับ 3 ล้าน": ["Roll a 6 to get 3M", "6が出たら3百万"], "{p} ทอยได้ 6 เรือหัวโทงทองคำนำโชค รับ {m}": ["{p} rolled a 6 — the golden long-tail brings luck: +{m}", "{p}は6を出した!金のロングテールボートの幸運で{m}"], "เทศกาลกินเจภูเก็ต": ["Phuket Vegetarian Festival", "プーケットのベジタリアン祭り"], "เจ้าของกิจการที่ภูเก็ตและร้านอาหารในภาคใต้รับ 3 ล้านต่อแห่ง": ["Owners of Phuket businesses and southern restaurants get 3M each", "プーケットの物件と南部の飲食物件の持ち主は1つにつき3百万"], "เทศกาลกินเจภูเก็ต กิจการภูเก็ตและร้านอาหารภาคใต้รับ 3 ล้านต่อแห่ง": ["Phuket Vegetarian Festival: Phuket businesses and southern restaurants get 3M each", "プーケットのベジタリアン祭り:プーケットの物件と南部の飲食物件に1つにつき3百万"], "กิจการภูเก็ตและร้านอาหารภาคใต้ +3/แห่ง": ["Phuket & southern food +3 each", "プーケットと南部の飲食 +3/件"]});
 Object.assign(TR,{"ตุ๊กตุ๊กเศรษฐีไทย": ["Tuk-Tuk Tycoon Thailand", "トゥクトゥク長者タイ"], "{p} คือเศรษฐีตุ๊กตุ๊ก!": ["{p} is the Tuk-Tuk Tycoon!", "{p}がトゥクトゥク長者!"], "แวะ{st}": ["Stop: {st}", "{st}に立ち寄り"], "โบนัสประจำ{st}": ["{st} bonus", "{st}ボーナス"], "จุดแวะ": ["Stop", "立ち寄り先"], "เฉพาะภาคเหนือ · 15 จุดแวะ": ["North only · 15 stops", "北部のみ・15か所"], "ทั่วไทย · 57 จุดแวะ": ["All Thailand · 57 stops", "タイ全土・57か所"], "ถนนชนบท": ["Country road", "田舎道"], "ทั่วไทย 6 ภาค": ["All 6 regions", "タイ全6地方"], "ขับตุ๊กตุ๊กได้ทุกเส้นทาง · การ์ดรถไฟ (รถด่วน รถด่วนพิเศษ รถไฟความเร็วสูง) ใช้ได้เมื่ออยู่บนทางรถไฟ ทอยเต๋าได้หลายลูกแต่เดินได้เฉพาะทางรถไฟ": ["Your tuk-tuk can drive on every route · Train cards (Express, Special Express, High-Speed) work when you're on a railway: roll more dice, but move along railway lines only", "トゥクトゥクはどの道も走れる・列車カード(急行・特急・高速鉄道)は線路上で使える。サイコロが増えるが線路だけを進む"], "นั่งรถไฟอยู่: ทอยแล้วเดินได้เฉพาะทางรถไฟ": ["On the train: after rolling you move along railway only", "列車に乗車中:線路だけを進む"], "{p} จอดตุ๊กตุ๊กขึ้น{it}": ["{p} parked the tuk-tuk and boarded the {it}", "{p}はトゥクトゥクを停めて{it}に乗った"], "ใช้ก่อนทอย · ต้องอยู่บนทางรถไฟ": ["Before rolling · on a railway", "サイコロの前・線路上で"]});
 Object.assign(TR,{"ขโมยสำเร็จ!": ["Got it!", "盗んだ!"], "มือเต็ม การ์ดใบนี้ถูกทิ้งไป": ["Your hand is full — this card was discarded", "手札がいっぱいなので、このカードは捨てられた"], "{p} ขโมยการ์ดจาก{q} 1 ใบ": ["{p} stole a card from {q}", "{p}が{q}からカードを1枚盗んだ"], "{p} เสก{t}ไปดักรอ{q}": ["{p} sent {t} to lie in wait for {q}", "{p}は{t}を{q}のもとへ送った"], "สรรพากรเก็บภาษี{q} {m}": ["The tax office collected {m} from {q}", "税務署が{q}から{m}を徴収"], "{q} ต้องจ่ายภาษี": ["{q} must pay tax", "{q}は納税しなければならない"], "{p} แลกที่นั่งกับ{q}": ["{p} swapped places with {q}", "{p}が{q}と位置を交換"], "{p} กู้เงินด่วน {m}": ["{p} took a quick loan of {m}", "{p}が即日ローンで{m}を借りた"], "{p} แวะร้านสะดวกซื้อ ได้การ์ด {n} ใบ": ["{p} stopped at a 24-hour store and got {n} cards", "{p}はコンビニでカードを{n}枚手に入れた"], "ได้การ์ดใหม่": ["New cards", "新しいカード"], "{p} เตรียมต่อราคา เทิร์นนี้ซื้อกิจการครึ่งราคา": ["{p} is ready to haggle — half-price businesses this turn", "{p}は値切る気満々。このターン物件が半額"], "{p} เทคโอเวอร์{pr}จาก{q} จ่าย {m}": ["{p} took over {pr} from {q} for {m}", "{p}が{q}から{pr}を{m}で買収"], "{p} เทคโอเวอร์สำเร็จ": ["{p}'s takeover succeeded", "{p}の買収成功"], "ขโมยการ์ดของใคร": ["Steal from whom?", "誰から盗む?"], "การ์ด {n} ใบ": ["{n} cards", "カード{n}枚"], "ส่งผีไปดักรอใคร": ["Send the ghost to whom?", "誰におばけを送る?"], "ผีร้ายจะไปรอที่ตำแหน่งของเขา เจอตอนต้นเทิร์นถัดไป": ["A bad ghost will wait at their spot and meet them at the start of their next turn", "悪いおばけが相手の位置で待ち、次のターン開始時に出会う"], "แลกที่นั่งกับใคร": ["Swap places with whom?", "誰と位置を交換する?"], "{p} คืนเงินกู้ {m}": ["{p} repaid the loan of {m}", "{p}がローン{m}を返済"], "หนี้เงินกู้ {m} (คืนตอนปิดงบ)": ["Loan owed: {m} (repaid at year-end)", "ローン残高 {m}(決算で返済)"]});
+Object.assign(TR,{"ปิดตัวละคร 3D": ["Turn off 3D characters", "3Dキャラをオフ"], "เปิดตัวละคร 3D": ["Turn on 3D characters", "3Dキャラをオン"]});
 const RULES=["หนึ่งเดือน ทุกคนเล่นคนละ 1 เทิร์น เริ่มเดือนมีอีเวนต์ตามฤดูกาล", "ใช้การ์ดได้ 1 ใบ แล้วทอยเต๋า เลือกช่องปลายทางที่ไฮไลต์ ห้ามเดินย้อนกลางทาง · ต้องหยุดที่จุดหมายพอดี เดินผ่านไม่นับ · เดินไปข้างหน้าทางไหนก็ได้ วนอ้อมมาลงพอดีก็ได้ · สุดสายแต้มเกินเด้งกลับ แต่เด้งกลับมาลงจุดหมายไม่นับ", "ถึงจุดหมายคนแรกได้เงินรางวัล คนที่อยู่ไกลที่สุดโดนสาป 3 เทิร์น แก้ได้ที่จังหวัดที่มีวัด", "ผีหลายชนิดโผล่ทุกต้นเดือน เดินผ่านช่องที่มีผีจะเจอผี บางตัวเดินได้เอง ผีร้ายชนะควิซหรือมินิเกมหนีได้", "เกาะไปได้ทางเรือเท่านั้น ⚓ ท่าเรือทอยเต๋าก่อนออก ได้ 1 คลื่นแรงเรือไม่ออก (มรสุม มิ.ย.–ก.ย. ได้ 1–2) · ✈ สนามบินบินไปสนามบินไหนก็ได้ แพงและจบตา", "จุดแวะที่มีร้านขายการ์ด (ไอคอนร้านสีเหลือง) หยุดแล้วซื้อการ์ดได้ หรือขายการ์ดคืนครึ่งราคา", "✦ บางจุดแวะมีของดีหายากชิ้นเดียว ใครหยุดก่อนซื้อได้ก่อน มีพลังพิเศษและนับรวมทรัพย์สิน", "ขับตุ๊กตุ๊กได้ทุกเส้นทาง · การ์ดรถไฟ (รถด่วน รถด่วนพิเศษ รถไฟความเร็วสูง) ใช้ได้เมื่ออยู่บนทางรถไฟ ทอยเต๋าได้หลายลูกแต่เดินได้เฉพาะทางรถไฟ", "หยุดที่จุดแวะซื้อกิจการได้ ปิดงบเดือน มี.ค. ทุกกิจการจ่ายกำไร ครบทั้งจุดแวะกำไร ×2", "เงินติดลบตอนจบเทิร์น ระบบขายกิจการถูกสุดคืนธนาคารครึ่งราคา", "จบเกม ทรัพย์สินรวม (เงิน + ราคากิจการ) มากสุดชนะ"];
 // ================= DATA =================
 const DX = 8;
@@ -2646,7 +2649,8 @@ async function resolveSquare(id,arrived){
   const i=S.turn,p=cur(),t=NODES[id].t;
   if(arrived){
     const rw=REWARD[id]; p.money+=rw; log("{p} ถึง{st}คนแรก รับ {m}",{p:p.name,st:id,m:rw}); commit(); render();
-    await say({eyebrow:T("ถึงจุดหมาย"),title:T("{p} ถึง{st}คนแรก!",{p:esc(p.name),st:id}),html:wrapCard(destCard(id))+`<div class="big-num" style="color:#C8361E;text-align:center">+${money(rw)}</div>`});
+    const pa=say({eyebrow:T("ถึงจุดหมาย"),title:T("{p} ถึง{st}คนแรก!",{p:esc(p.name),st:id}),html:wrapCard(destCard(id))+`<div class="big-num" style="color:#C8361E;text-align:center">+${money(rw)}</div>`},3200);
+    c3dShow(i,"arrive"); await pa;
     await buySheet(id);
     await treasureCheck(id);
     await curseFarthest(id);
@@ -3191,6 +3195,53 @@ async function rollAndShow(n){
   UI.dice=vals; renderPanel(); return vals;
 }
 
+
+// ================= 3D CHARACTERS =================
+// ตัวละคร 3D ออกมายืนบนเวทีของการ์ด (ส่วนล่างของภาพ) · ไฟล์ models/A0x.glb ถ้าไม่มีใช้ models/robot.glb แทน
+// ชื่อแอนิเมชันที่เกมเรียก: Idle, Running, Wave, Jump, Dance, ThumbsUp, No (ดู C3D_CLIPS)
+const C3D={on:true,lib:null,cache:{}};
+try{ C3D.on=localStorage.getItem("rotfai-3d")!=="off"; }catch(e){}
+const C3D_CLIPS={turn:["Wave"],arrive:["Jump","Dance"],buy:["ThumbsUp"],lose:["No"],ghost:["No"],win:["Dance","Dance"]};
+const avOf=i=>(S&&S.players[i]&&S.players[i].av)||AV_IDS[i%AV_IDS.length];
+function c3dLib(){ if(!C3D.lib) C3D.lib=(async()=>{ const THREE=await import("three"); const {GLTFLoader}=await import("three/addons/loaders/GLTFLoader.js"); const SK=await import("three/addons/utils/SkeletonUtils.js"); return {THREE,GLTFLoader,SK}; })(); return C3D.lib; }
+function c3dModel(av){ if(!C3D.cache[av]) C3D.cache[av]=(async()=>{ const {GLTFLoader}=await c3dLib(); const L=new GLTFLoader(); const load=u=>new Promise((res,rej)=>L.load(u,res,undefined,rej)); try{ return await load(`models/${av}.glb`); }catch(e){ return await load("models/robot.glb"); } })(); return C3D.cache[av]; }
+function c3dToggle(){ C3D.on=!C3D.on; try{ localStorage.setItem("rotfai-3d",C3D.on?"on":"off"); }catch(e){} }
+async function c3dShow(i,kind,host){
+  if(!C3D.on||reduced()||document.hidden) return;
+  host=host||document.querySelector("#modal .gc-art"); if(!host) return;
+  let lib,gltf; try{ lib=await c3dLib(); gltf=await c3dModel(avOf(i)); }catch(e){ console.warn("3D ไม่พร้อม",e); return; }
+  if(!host.isConnected||$("modalWrap").hidden) return;
+  const {THREE,SK}=lib, W=host.clientWidth, H=host.clientHeight;
+  const r=new THREE.WebGLRenderer({alpha:true,antialias:true}); r.setPixelRatio(Math.min(2,devicePixelRatio)); r.setSize(W,H); r.outputColorSpace=THREE.SRGBColorSpace;
+  r.domElement.className="c3d"; host.appendChild(r.domElement);
+  const scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(30,W/H,0.1,100); cam.position.set(0,2.1,9); cam.lookAt(0,1.7,0);
+  scene.add(new THREE.HemisphereLight(0xffffff,0x8a7a66,1.7)); const sun=new THREE.DirectionalLight(0xfff1d6,2.4); sun.position.set(-4,6,5); scene.add(sun);
+  const obj=SK.clone(gltf.scene); obj.updateMatrixWorld(true); const box=new THREE.Box3().setFromObject(obj,true), h=box.max.y-box.min.y||1, k=2.8/h; obj.scale.setScalar(k); obj.position.y=-box.min.y*k;
+  const col=new THREE.Color(S.players[i].color); obj.traverse(o=>{ if(o.isMesh&&o.material){ o.material=o.material.clone(); if(/main/i.test(o.material.name)) o.material.color=col; } });
+  const shadow=new THREE.Mesh(new THREE.CircleGeometry(0.75,32),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.22})); shadow.rotation.x=-Math.PI/2; shadow.position.y=0.01; shadow.scale.set(1,.55,1);
+  const rig=new THREE.Group(); rig.add(obj); scene.add(rig,shadow);
+  const startX=-(W/H)*3.2; rig.position.x=startX; rig.rotation.y=Math.PI/2;
+  const mix=new THREE.AnimationMixer(obj), find=n=>THREE.AnimationClip.findByName(gltf.animations,n);
+  const play=(n,once)=>{ const c=find(n); if(!c) return null; const a=mix.clipAction(c); a.reset(); if(once){ a.setLoop(THREE.LoopOnce,1); a.clampWhenFinished=true; } a.fadeIn(.2).play(); return a; };
+  const seq=[...(C3D_CLIPS[kind]||["Wave"])]; let cur=play("Running")||play("Walking")||play("Idle");
+  const step=()=>{ const n=seq.shift(), prev=cur; cur=(n&&play(n,true))||play("Idle"); if(prev&&prev!==cur) prev.fadeOut(.25); };
+  mix.addEventListener("finished",step);
+  const clock=new THREE.Clock(); let entering=true;
+  (function tick(){
+    if(!r.domElement.isConnected||$("modalWrap").hidden){ mix.stopAllAction(); r.dispose(); r.forceContextLoss(); r.domElement.remove(); return; }
+    const dt=Math.min(clock.getDelta(),.05); mix.update(dt);
+    if(entering){ rig.position.x=Math.min(0,rig.position.x+dt*5.5); if(rig.position.x>=0){ entering=false; step(); } }
+    else rig.rotation.y+=(0-rig.rotation.y)*Math.min(1,dt*8);
+    shadow.position.x=rig.position.x; r.render(scene,cam); requestAnimationFrame(tick);
+  })();
+}
+// เทิร์นใคร ตัวละครคนนั้นออกมาโบกมือบนการ์ดจุดหมาย
+async function turnIntro(i){
+  if(!C3D.on||reduced()||!S.dest) return;
+  const p=S.players[i], pr=brief({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ตาของ{p}",{p:esc(p.name)}),html:wrapCard(destCard(S.dest))},2300);
+  c3dShow(i,"turn"); await pr;
+}
+
 // ================= BOT =================
 function botPickDest(opts){
   if(opts.has(S.dest)) return S.dest;
@@ -3265,6 +3316,7 @@ async function botTurn(){
   if(S.stage!=="choose"){
     S.tf={nDice:1,cardUsed:false,locked:false};
     render(); focusNode(p.node); await sleep(600);
+    await turnIntro(i);
     if(S.skip[i]){ S.skip[i]=false; log("{p} ติดม็อบ เดินไม่ได้",{p:p.name}); render(); await info(T("{p} ติดม็อบปิดถนน",{p:esc(p.name)}),T("เทิร์นนี้เดินไม่ได้")); UI.busy=false; return endTurn(); }
     if(await turnStartEffects(i)){ UI.busy=false; return endTurn(); }
     S.stage="choose"; commit();
@@ -3299,9 +3351,9 @@ async function startTurn(){
     S.tf={nDice:1,cardUsed:false,locked:false};
     render(); focusNode(p.node);
     if(S.skip[i]){ S.skip[i]=false; log("{p} ติดม็อบ เดินไม่ได้",{p:p.name}); render(); await info(T("{p} ติดม็อบปิดถนน",{p:esc(p.name)}),T("เทิร์นนี้เดินไม่ได้")); return endTurn(); }
-    if(MODE==="local"&&S.players.filter(q=>!q.bot).length<2) toast(T("ตาของ{p}",{p:p.name}));
-    else if(MODE==="local") await modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ตาของ{p}",{p:esc(p.name)}),html:T("ส่งเครื่องให้{p} แล้วกดเริ่ม",{p:esc(p.name)}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]});
-    else await modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ถึงตาคุณแล้ว"),html:T("{p} อยู่ที่{x} · จุดหมาย{st}",{p:esc(p.name),x:labelOf(p.node),st:S.dest}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]});
+    if(MODE==="local"&&S.players.filter(q=>!q.bot).length<2){ if(C3D.on&&!reduced()) await turnIntro(i); else toast(T("ตาของ{p}",{p:p.name})); }
+    else if(MODE==="local"){ const pm=modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ตาของ{p}",{p:esc(p.name)}),html:(C3D.on&&S.dest?wrapCard(destCard(S.dest)):"")+T("ส่งเครื่องให้{p} แล้วกดเริ่ม",{p:esc(p.name)}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]}); c3dShow(i,"turn"); await pm; }
+    else { const pm=modal({eyebrow:T("{mo} ปีที่ {y}",{mo:S.month,y:S.year}),title:T("ถึงตาคุณแล้ว"),html:(C3D.on&&S.dest?wrapCard(destCard(S.dest)):"")+T("{p} อยู่ที่{x} · จุดหมาย{st}",{p:esc(p.name),x:labelOf(p.node),st:S.dest}),buttons:[{label:T("เริ่มเทิร์น"),value:1,primary:true}]}); c3dShow(i,"turn"); await pm; }
     if(await turnStartEffects(i)) return endTurn();
     S.stage="choose"; commit();
   }
@@ -3514,7 +3566,8 @@ async function home(){
     <button class="mode-btn" data-val="mini"><b>${T("ลองมินิเกม")}</b><span>${T("ฝึกเล่นมินิเกมทีละเกม ไม่มีผลกับเกม")}</span></button>
     <button class="mode-btn" data-val="art"><b>${T("ภาพการ์ด")}</b><span>${T("อัปโหลดภาพที่เจนไว้ ให้การ์ดในเกมมีภาพ")}</span></button>
   </div>`;
-  const v=await modal({eyebrow:T("ทั่วไทย 6 ภาค")+" · v0.5",title:T("ตุ๊กตุ๊กเศรษฐีไทย"),html,buttons:[{label:"♪ "+T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"}]});
+  const v=await modal({eyebrow:T("ทั่วไทย 6 ภาค")+" · v0.5",title:T("ตุ๊กตุ๊กเศรษฐีไทย"),html,buttons:[{label:"♪ "+T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"},{label:T(C3D.on?"ปิดตัวละคร 3D":"เปิดตัวละคร 3D"),value:"c3d"}]});
+  if(v==="c3d"){ c3dToggle(); return home(); }
   if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return home(); }
   if(v==="bgm"){ bgmToggle(); return home(); }
   if(v==="sfx"){ sfxToggle(); return home(); }
@@ -3738,9 +3791,10 @@ $("menuBtn").onclick=async()=>{
   if(!S||S.phase==="setup") return;
   if(modalResolve) return;
   const online=MODE==="online";
-  const v=await modal({title:T("เมนู"),html:langSeg()+(online&&ON.meta?`<p style="margin-top:10px">${T("ห้อง <b>{c}</b> · คุณคือ {p}",{c:esc(ON.meta.code),p:esc(S.players[mySeat()]?.name||T("ผู้ชม"))})}</p>`:""),buttons:[{label:T("กติกาย่อ"),value:"rules"},{label:T("ภาพการ์ด"),value:"art"},{label:T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"},{label:T(online?"ออกไปหน้าแรก":"เริ่มเกมใหม่"),value:"new"},{label:T("ปิด"),value:null,primary:true}]});
+  const v=await modal({title:T("เมนู"),html:langSeg()+(online&&ON.meta?`<p style="margin-top:10px">${T("ห้อง <b>{c}</b> · คุณคือ {p}",{c:esc(ON.meta.code),p:esc(S.players[mySeat()]?.name||T("ผู้ชม"))})}</p>`:""),buttons:[{label:T("กติกาย่อ"),value:"rules"},{label:T("ภาพการ์ด"),value:"art"},{label:T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(C3D.on?"ปิดตัวละคร 3D":"เปิดตัวละคร 3D"),value:"c3d"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"},{label:T(online?"ออกไปหน้าแรก":"เริ่มเกมใหม่"),value:"new"},{label:T("ปิด"),value:null,primary:true}]});
   if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return; }
   if(v==="art") return manageArt();
+  if(v==="c3d"){ c3dToggle(); toast(T(C3D.on?"เปิดตัวละคร 3D":"ปิดตัวละคร 3D")); return; }
   if(v==="bgm"){ bgmToggle(); return; }
   if(v==="sfx"){ sfxToggle(); return; }
   if(v==="rules") await modal({title:T("กติกาย่อ"),html:`<ul class="rules">${RULES.map(x=>`<li>${T(x)}</li>`).join("")}</ul>`});
