@@ -77,7 +77,8 @@ jobs:
             done
             args+=(--ref "$refs")
           fi
-          if [ "$IN_FORCE" = "true" ]; then args+=(--force); else args+=(--done gpt_done.txt); fi
+          if [ "$IN_FORCE" = "true" ]; then args+=(--force); fi
+          args+=(--done gpt_done.txt)
           python queue_openai.py "${args[@]}"
 
       - name: แปลงภาพเป็นการ์ดแล้วใส่โฟลเดอร์ cards

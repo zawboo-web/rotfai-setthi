@@ -124,7 +124,7 @@ def pick_cards(a):
     if a.skip:
         skip = parse_only(a.skip)
         cards = [c for c in cards if c["id"].upper() not in skip]
-    if a.done and Path(a.done).exists():
+    if a.done and Path(a.done).exists() and not a.force:
         donelist = {x.strip().upper() for x in Path(a.done).read_text(encoding="utf-8").split() if x.strip()}
         cards = [c for c in cards if c["id"].upper() not in donelist]
     got = have_ids(a.have)
