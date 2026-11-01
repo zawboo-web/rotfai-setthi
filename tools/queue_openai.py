@@ -146,7 +146,10 @@ def request_body(c, a):
     size = "1024x1024" if w == h else ("1024x1536" if h > w else "1536x1024")
     body = {"model": a.model, "prompt": p, "size": size, "quality": a.quality, "n": 1, "output_format": "png"}
     if transparent:
-        body["background"] = "transparent"
+        if a.model.startswith("gpt-image-1"):
+            body["background"] = "transparent"
+        else:  # gpt-image-2 ยังไม่รองรับพื้นใส: ขอพื้นขาวเรียบ แล้วลบพื้นทีหลัง (BiRefNet)
+            body["prompt"] = p + " Isolated on a plain flat pure white background, no shadow on the ground, no scenery."
     return body
 
 
@@ -194,6 +197,12 @@ def with_retry(label, fn):
                 continue
             if e.code == 400 and ("safety" in msg.lower() or "moderation" in msg.lower()):
                 print(f"  {label} ✗ โดนตัวกรองเนื้อหา ข้ามไปก่อน (ลองแก้พรอมป์): {msg[:200]}")
+                return None
+            if "insufficient_quota" in msg or "credit_balance" in msg:
+                fail("เครดิต OpenAI หมด เติมเงินที่ platform.openai.com → Settings → Billing แล้วรันใหม่ (จะเจนต่อจากใบที่ค้าง)")
+            if e.code == 400:
+                print(f"  {label} ✗ OpenAI ไม่รับคำขอนี้ ข้ามไปใบถัดไป: {msg[:200]}")
+                if GH: print(f"::warning::{label} ถูกข้าม: {msg[:150]}")
                 return None
             if e.code == 403 and "verif" in msg.lower():
                 fail("OpenAI ให้ยืนยันองค์กรก่อนใช้โมเดลภาพ: platform.openai.com → Settings → Organization → Verify")
