@@ -2888,7 +2888,7 @@ async function meetGhost(g){
     case "pop": p.money-=5; log("{t}ขโมยเงิน{p} {m}",{t:G.n,p:p.name,m:5}); break;
     case "krasue": if(p.cards.length){ const k=p.cards[Math.floor(Math.random()*p.cards.length)]; discardCard(i,k); log("{t}ขโมยการ์ด{it}ของ{p}",{t:G.n,it:k,p:p.name}); } else log("{t}หาการ์ดของ{p}ไม่เจอ",{t:G.n,p:p.name}); break;
     case "chaoti":{ const k=CURSE_POOL[Math.floor(Math.random()*CURSE_POOL.length)]; applyCurse(i,k,3); log("{p} โดนสาป: {t2}",{p:p.name,t2:CURSES[k].n}); commit(); render(); await say({eyebrow:T(G.n),title:T("{p} โดนสาป!",{p:esc(p.name)}),html:curseHTML(k)}); break; }
-    case "kongkoi": applyCurse(i,"slow",1); log("{t}พา{p}หลงป่า",{t:G.n,p:p.name}); break;
+    case "kongkoi": applyCurse(i,"slow",2); log("{t}พา{p}หลงป่า",{t:G.n,p:p.name}); break;
     case "takhian":{ if(p.cards.length<5){ p.cards.push("lotto"); } p.lucky=true; log("{t}ใบ้หวยให้{p}",{t:G.n,p:p.name}); break; }
     case "kuman":{ const n=PROPS.filter(q=>S.owners[q.id]===i).length, m=Math.max(5,n*3); p.money+=m; log("{t}เรียกทรัพย์ให้{p} {m}",{t:G.n,p:p.name,m}); break; }
     case "takhon":{ const a=drawItem(i), b=drawItem(i); log("{p} ได้การ์ดจากงานบุญ {n} ใบ",{p:p.name,n:(a?1:0)+(b?1:0)}); break; }
