@@ -10,13 +10,13 @@ on:
         required: false
         default: ""
       sheet:
-        description: "เจนเฉพาะแท็บ: กิจการ จุดหมาย ไอเทม ผี อีเวนต์ ของดี มินิเกม อวตาร หลังการ์ด (เว้นว่าง = ทุกแท็บ)"
+        description: "เจนเฉพาะแท็บ: กิจการ จุดหมาย ไอเทม ผี อีเวนต์ ของดี มินิเกม อวตาร อวตารเต็มตัว หลังการ์ด (เว้นว่าง = ทุกแท็บ)"
         required: false
         default: ""
       skip:
         description: "ID ที่ไม่เอา (ภาพที่มีแล้ว)"
         required: false
-        default: "G01-G11,A01-A08,M01-M11,M16"
+        default: "G01-G11,A01-A08,AB01-AB08,M01-M11,M16"
       quality:
         description: "คุณภาพ"
         type: choice
