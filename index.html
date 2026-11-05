@@ -3132,6 +3132,8 @@ async function playMini(eyebrow,stake,forceK,practice){
     ok=Math.random()<0.55;
     await brief({eyebrow,title:T("{p} เล่นมินิเกม",{p:esc(p.name)}),html:head+`<p><b>${T(M.n)}</b></p><p>${T(ok?"ผ่าน!":"ไม่ผ่าน")}</p>`},1800);
   } else {
+    MUS.mini=true; try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){}
+    try{
     await modal({eyebrow,title:T("มินิเกม: {g}",{g:T(M.n)}),html:head+`<div class="mg-how">${T(M.how,{g:M.goal})}</div>`,buttons:[{label:T("เริ่ม!"),value:1,primary:true}]});
     const box=document.createElement("div"); box.className="mg-wrap";
     box.innerHTML=`<div class="mg-top"><b>${T(M.n)}</b><span class="mg-score" id="mgScore"></span><span class="mg-time" id="mgTime"></span></div><div class="mg-arena" id="mgArena"></div>`;
@@ -3140,6 +3142,7 @@ async function playMini(eyebrow,stake,forceK,practice){
     ok=res.ok;
     box.classList.add("done"); await mgTimer(500); box.remove();
     await modal({eyebrow,title:T(ok?"ผ่าน!":"ไม่ผ่าน"),html:`<p class="mg-result ${ok?"win":"lose"}">${res.text}</p>`,buttons:[{label:T("ตกลง"),value:1,primary:true}]});
+    } finally { MUS.mini=false; try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
   }
   if(!practice) log(ok?"{p} ชนะมินิเกม{g}":"{p} แพ้มินิเกม{g}",{p:p.name,t:"",g:M.n});
   return ok;
@@ -3881,7 +3884,7 @@ const ICON_ON=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" strok
 const ICON_OFF=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4.5l8-1.8V13" opacity=".45"/><circle cx="5.8" cy="15" r="2.2" opacity=".45"/><circle cx="13.8" cy="13" r="2.2" opacity=".45"/><path d="M3 3l14 14"/></svg>`;
 function bgmIcon(){ const b=$("bgmBtn"); if(!b) return; b.innerHTML=BGM.on?ICON_ON:ICON_OFF; b.setAttribute("aria-pressed",String(BGM.on)); b.setAttribute("aria-label",T(BGM.on?"ปิดเพลง":"เปิดเพลง")); }
 // เพลงตามสถานการณ์: วน (main/title/ghost/last/ending) + จิงเกิลเล่นทับ (goal/giant/yearend)
-const TRACKS={main:"bgm.mp3",title:"music/title.mp3",ghost:"music/ghost.mp3",last:"music/lastmonths.mp3",ending:"music/ending.mp3",goal:"music/goal.mp3",giant:"music/giant.mp3",yearend:"music/yearend.mp3"};
+const TRACKS={main:"bgm.mp3",title:"music/title.mp3",ghost:"music/ghost.mp3",last:"music/lastmonths.mp3",ending:"music/ending.mp3",goal:"music/goal.mp3",giant:"music/giant.mp3",mini:"music/minigame.mp3",yearend:"music/yearend.mp3"};
 const STINGS=new Set(["goal","giant","yearend"]);
 const MUS={bufs:{},loading:{},cur:null,want:null,src:null,g:null,sting:null,stingG:null,duckUntil:0};
 function musLoad(k){
@@ -3894,6 +3897,7 @@ function musLoad(k){
 // เก็บในหน่วยความจำแค่เพลงที่กำลังเล่นกับจิงเกิล (เพลงยาวถอดรหัสแล้วกินแรมมาก)
 function musEvict(keep){ for(const k in MUS.bufs) if(k!==keep&&!STINGS.has(k)) delete MUS.bufs[k]; }
 function musWant(){
+  if(MUS.mini) return "mini";
   if(!S||S.phase==="setup") return "title";
   if(S.phase==="over") return "ending";
   if(S.players&&S.players[S.turn]&&S.players[S.turn].curse) return "ghost";
