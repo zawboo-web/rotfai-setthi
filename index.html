@@ -138,6 +138,11 @@ svg.newrail .barrier{display:none}
 .mg-score{font-family:var(--font-d);font-size:22px;background:#FFC21A;color:#2A2238;border-radius:10px;padding:2px 12px;min-width:64px;text-align:center}.mg-time{font-family:var(--font-d);font-size:20px;min-width:52px;text-align:right}
 .mg-arena{position:relative;width:min(420px,100%);height:min(420px,62vh);background:var(--surface);border-radius:20px;border:3px solid #2A2238;overflow:hidden;display:grid;place-items:center}
 .mg-mortar{background:none;border:0;padding:0;touch-action:manipulation}
+.fl-wrap{position:fixed;inset:0;z-index:60;display:grid;gap:4px;padding:4px;background:#1B2430;grid-template:1fr/1fr}.fl-wrap.n2{grid-template:1fr 1fr/1fr}.fl-wrap.n3,.fl-wrap.n4{grid-template:1fr 1fr/1fr 1fr}.fl-wrap.n2 .fl-lane[data-i="0"],.fl-wrap.n3 .fl-lane[data-i="0"],.fl-wrap.n3 .fl-lane[data-i="1"],.fl-wrap.n4 .fl-lane[data-i="0"],.fl-wrap.n4 .fl-lane[data-i="1"]{transform:rotate(180deg)}
+.fl-lane{position:relative;border-radius:16px;border:5px solid var(--pc);background:#F4F1E8;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:background .08s;overflow:hidden}
+.fl-name{position:absolute;top:8px;left:12px;font:600 15px var(--font-d,Mitr),sans-serif;color:var(--pc)}.fl-sig{font:700 clamp(40px,12vmin,96px) var(--font-d,Mitr),sans-serif;color:#2A2A2A;line-height:1}.fl-sub{font:500 16px var(--font-d,Mitr),sans-serif;color:#555;margin-top:6px;min-height:1.3em}
+.fl-lane[data-st="feint"]{background:#FFE7B3}.fl-lane[data-st="go"]{background:#4CC36B}.fl-lane[data-st="go"] .fl-sig,.fl-lane[data-st="go"] .fl-sub{color:#fff}.fl-lane[data-st="foul"],.fl-lane[data-st="miss"]{background:#F6C6C1}.fl-lane[data-st="hit"]{background:#D8F0DD}.fl-lane[data-st="end"]{background:#FFF6D6}
+.fl-waitbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:61;background:#1B2430;color:#fff;padding:10px 18px;border-radius:999px;font:500 15px var(--font-d,Mitr),sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.3)}.fl-rep .fl-win td{font-weight:700;background:rgba(255,194,26,.18)}
 .mg-somtam{display:block;place-items:initial;cursor:pointer}.st-chili{position:absolute;inset:0;z-index:6;display:grid;place-items:center;pointer-events:none;background:rgba(214,40,30,.5);opacity:0;transition:opacity .08s}.mg-arena .st-chili.chili-on{opacity:1}.st-chili span{background:#fff;color:#C62A1E;font:700 22px var(--font-d,Mitr),sans-serif;padding:10px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25);transform:scale(.8);transition:transform .12s}.mg-arena .st-chili.chili-on span{transform:scale(1)}.st-shake{animation:stShake .3s}@keyframes stShake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}.st-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .st-stage{position:absolute;left:50%;bottom:6%;width:64%;aspect-ratio:1;transform:translateX(-50%);pointer-events:none}
 .st-mortar{position:absolute;left:0;bottom:0;width:100%;transform-origin:50% 100%;filter:drop-shadow(0 8px 6px rgba(0,0,0,.25))}
@@ -3231,6 +3236,134 @@ async function mgSplash(ar,goal,score,tick,lv=0){
   return {ok:n>=goal,text:T("ได้ {n} แต้ม (เป้า {g})",{n,g:goal})};
 }
 
+Object.assign(TR,{"สงกรานต์": ["Songkran", "ソンクラーン"], "แห่เทียนพรรษา": ["Candle Festival", "ろうそく祭り"], "ออกพรรษา": ["End of Buddhist Lent", "出安居"], "งานวัดปีใหม่": ["New Year Temple Fair", "新年の縁日"], "ใครไวกว่า": ["Quick Draw", "早押し対決"], "รอให้ขึ้นคำว่า \"จุด!\" แล้วแตะช่องตัวเองให้ไวที่สุด แตะก่อนสัญญาณ (หรือตอนขึ้น \"จุ๊…\" หลอก) ถือว่าฟาล์ว · 3 ยก รวมเวลาน้อยสุดชนะ": ["Wait for \"FIRE!\" then tap your own area as fast as you can. Tapping early (or on the fake \"Fi…\") is a foul · 3 rounds, lowest total time wins", "「点火!」が出たら自分のエリアをすばやくタップ。合図の前(フェイントの「て…」も)に押すとフライング・3回戦、合計タイムが一番短い人の勝ち"], "ฟาล์ว!": ["Foul!", "フライング!"], "วินาที": ["sec", "秒"], "รอ…": ["Wait…", "待って…"], "ยก {n}/{t}": ["Round {n}/{t}", "{n}/{t}回戦"], "จุ๊…": ["Fi…", "て…"], "จุด!": ["FIRE!", "点火!"], "ช้าไป": ["Too slow", "おそい"], "วินาที รวม": ["sec total", "秒(合計)"], "ผู้เล่น": ["Player", "プレイヤー"], "ผล": ["Result", "結果"], "รางวัล": ["Prize", "賞金"], "ไม่ได้ส่งผล": ["No result", "未送信"], "เทศกาล{f}": ["{f} Festival", "{f}フェス"], "เล่นแข่งกัน": ["Versus", "対戦"], "เล่นช่วยกัน": ["Co-op", "協力"], "วางเครื่องไว้กลางวง แต่ละคนแตะช่องสีของตัวเอง": ["Put the device in the middle — everyone taps their own colour area", "端末を真ん中に置いて、それぞれ自分の色のエリアをタップ"], "เล่นกับบอท": ["Playing against bots", "ボットと対戦"], "รอผลเพื่อน… {n}/{t}": ["Waiting for friends… {n}/{t}", "友だちの結果を待っています… {n}/{t}"], "เทศกาล{f}: {p} ชนะ{g} รับ {m}": ["{f} Festival: {p} won {g} and got {m}", "{f}フェス:{p}が{g}で優勝、{m}獲得"], "ผล{g}": ["{g} results", "{g}の結果"], "ส่งผลแล้ว รอเพื่อน…": ["Result sent — waiting for friends…", "結果を送信しました。友だちを待っています…"], "กี่คนเล่นบนเครื่องนี้?": ["How many players on this device?", "この端末で何人遊ぶ?"], "{n} คน": ["{n} players", "{n}人"], "มินิเกมเทศกาล (เล่นพร้อมกันหลายคน)": ["Festival minigames (everyone at once)", "フェスミニゲーム(みんなで同時に)"], "เล่นแข่งกัน 1–4 คน เครื่องเดียว": ["Versus · 1–4 players on one device", "対戦・1台で1〜4人"], "เล่นช่วยกัน 1–4 คน เครื่องเดียว": ["Co-op · 1–4 players on one device", "協力・1台で1〜4人"]});
+// ================= FESTIVAL (มินิเกมกลุ่ม ทุก 3 เดือน) =================
+// ทุกคนเล่นพร้อมกัน: เครื่องเดียว = แบ่งจอเป็นช่อง · ออนไลน์ = เครื่องใครเครื่องมันเล่นเต็มจอ แล้วส่งคะแนนให้เครื่องที่ถือตาเดินรวม
+// ทุกช่องใช้ seed เดียวกัน จึงเจอรูปแบบเดียวกันเป๊ะ · บอทคำนวณคะแนนจาก seed
+const FEST={0:"สงกรานต์",3:"แห่เทียนพรรษา",6:"ออกพรรษา",9:"งานวัดปีใหม่"};
+const FEST_WAIT=45000;   // ออนไลน์: รอผลเพื่อนนานสุดนับจากเริ่ม
+function srng(seed){ let a=seed>>>0; return ()=>{ a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const GROUP={
+  quick:{n:"ใครไวกว่า",type:"vs",low:true,
+    how:"รอให้ขึ้นคำว่า \"จุด!\" แล้วแตะช่องตัวเองให้ไวที่สุด แตะก่อนสัญญาณ (หรือตอนขึ้น \"จุ๊…\" หลอก) ถือว่าฟาล์ว · 3 ยก รวมเวลาน้อยสุดชนะ",
+    plan(seed){ const r=srng(seed); return [0,1,2].map(()=>{ const wait=1500+r()*2600; return {wait,feint:r()<.5?wait*(.35+r()*.3):null}; }); },
+    run:laneQuick,
+    bot(plan,r){ return plan.reduce((t,rd)=>t+(rd.feint&&r()<.08?1000:Math.round(260+r()*280+(r()<.15?r()*300:0))),0); },
+    fmt(v){ return T("{n} วิ",{n:(v/1000).toFixed(2)}); }}
+};
+const GROUP_KEYS=Object.keys(GROUP);
+function modalAuto(o,ms){ const p=modal(o); const r=modalResolve; setTimeout(()=>{ if(modalResolve===r) closeModal(); },ms); return p; }
+const Q_FOUL=1000, Q_MISS=1200, Q_AFTER=1200, Q_GAP=900;
+// ช่องเดียวของเกม "ใครไวกว่า": คืนเวลารวม (ms)
+function laneQuick(el,plan){
+  const sig=el.querySelector(".fl-sig"), sub=el.querySelector(".fl-sub");
+  let total=0, round=-1, state="idle", t0=0, done=false;
+  const set=(cls,txt,s="")=>{ el.dataset.st=cls; sig.textContent=txt; sub.textContent=s; };
+  el.addEventListener("pointerdown",e=>{ e.preventDefault(); if(done||round<0) return;
+    if(state==="wait"){ state="over"; total+=Q_FOUL; set("foul",T("ฟาล์ว!"),"+1.00"); sfx("wrong"); }
+    else if(state==="go"){ state="over"; const ms=Math.round(performance.now()-t0); total+=ms; set("hit",(ms/1000).toFixed(2),T("วินาที")); sfx("pop"); } },{passive:false});
+  return (async()=>{
+    for(round=0;round<plan.length;round++){
+      const rd=plan[round]; state="wait"; set("wait",T("รอ…"),T("ยก {n}/{t}",{n:round+1,m:plan.length}));
+      if(rd.feint!=null){ await mgTimer(rd.feint); if(state==="wait") set("feint",T("จุ๊…"),T("ยก {n}/{t}",{n:round+1,m:plan.length})); await mgTimer(rd.wait-rd.feint); }
+      else await mgTimer(rd.wait);
+      if(state==="wait"){ state="go"; t0=performance.now(); set("go",T("จุด!"),"🚀"); }
+      await mgTimer(Q_AFTER);
+      if(state==="go"){ state="over"; total+=Q_MISS; set("miss",T("ช้าไป"),"+1.20"); }
+      await mgTimer(Q_GAP);
+    }
+    done=true; set("end",(total/1000).toFixed(2),T("วินาที รวม")); return total;
+  })();
+}
+// เล่นบนเครื่องนี้: seats = ลำดับผู้เล่นที่เล่นบนจอนี้ · คืน {seat:score}
+async function festPlay(G,plan,seats,names){
+  const wrap=document.createElement("div"); wrap.className="fl-wrap n"+seats.length;
+  wrap.innerHTML=seats.map((k,i)=>`<div class="fl-lane" data-i="${i}" style="--pc:${PCOL[k%PCOL.length][1]}"><div class="fl-name">${esc(names[k])}</div><div class="fl-sig">3</div><div class="fl-sub"></div></div>`).join("");
+  document.body.appendChild(wrap);
+  MUS.mini=true; try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){}
+  const lanes=[...wrap.querySelectorAll(".fl-lane")];
+  try{
+    for(const n of [3,2,1]){ lanes.forEach(l=>{ l.querySelector(".fl-sig").textContent=n; l.dataset.st="count"; }); sfx("step"); await mgTimer(700); }
+    const res=await Promise.all(lanes.map(l=>G.run(l,plan)));
+    await mgTimer(1400);
+    const out={}; seats.forEach((k,i)=>out[k]=res[i]); return out;
+  } finally { wrap.remove(); MUS.mini=false; try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
+}
+const festPrizes=n=>({1:[10],2:[12,4],3:[15,7,2],4:[15,8,3,0]})[n]||[15,8,3,0];
+function festRank(G,scores,n){
+  const ks=Object.keys(scores).map(Number).sort((a,b)=>G.low?scores[a]-scores[b]:scores[b]-scores[a]);
+  const mult=1+0.5*((S&&S.year||1)-1), pz=festPrizes(n); let prevS=null, prevR=0;
+  return ks.map((k,i)=>{ const rank=scores[k]===prevS?prevR:i+1; prevS=scores[k]; prevR=rank; return {k,score:scores[k],rank,prize:Math.round((pz[rank-1]||0)*mult)}; });
+}
+function festTable(G,rows,names,showPrize=true){
+  return `<table class="rep fl-rep"><tr><th>#</th><th>${T("ผู้เล่น")}</th><th>${T("ผล")}</th>${showPrize?`<th>${T("รางวัล")}</th>`:""}</tr>${rows.map(r=>`<tr${r.rank===1?' class="fl-win"':""}><td>${r.rank===1?"🏆":r.rank}</td><td>${esc(names[r.k])}</td><td>${r.missing?T("ไม่ได้ส่งผล"):G.fmt(r.score)}</td>${showPrize?`<td>${r.prize?"+"+money(r.prize):"–"}</td>`:""}</tr>`).join("")}</table>`;
+}
+const festIntro=(f,G)=>({eyebrow:T("เทศกาล{f}",{f:T(FEST[f.month]||"")})+" · "+T(G.type==="vs"?"เล่นแข่งกัน":"เล่นช่วยกัน"),title:T(G.n),html:`<div class="mg-how">${T(G.how)}</div>`});
+// เครื่องที่ถือตาเดิน: เรียกตอนต้นเดือนเทศกาล
+async function festival(){
+  if(!S||!FEST[S.month]||S.festOff) return;
+  const key=GROUP_KEYS[Math.floor(Math.random()*GROUP_KEYS.length)], G=GROUP[key];
+  const seed=Math.floor(Math.random()*2147483647), plan=G.plan(seed);
+  const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const names=S.players.map(p=>p.name), humans=S.players.map((p,k)=>k).filter(k=>!S.players[k].bot);
+  const f={id,key,seed,month:S.month,year:S.year,humans};
+  const scores={};
+  S.players.forEach((p,k)=>{ if(p.bot) scores[k]=G.bot(plan,srng(seed+(k+1)*7919)); });
+  let missing=[];
+  if(MODE==="online"){
+    ON.festRes={}; S.fest={...f,active:true,t:Date.now()}; commit();
+    const me=mySeat(), t0=Date.now();
+    if(humans.includes(me)){ await modalAuto({...festIntro(f,G),buttons:[{label:T("เริ่ม!"),value:1,primary:true}]},8000); Object.assign(scores,await festPlay(G,plan,[me],names)); }
+    const others=humans.filter(k=>k!==me);
+    const got=()=>others.every(k=>ON.festRes[S.players[k].uid]&&ON.festRes[S.players[k].uid].id===id);
+    if(others.length&&!got()){
+      const w=document.createElement("div"); w.className="fl-waitbar"; document.body.appendChild(w);
+      while(!got()&&Date.now()-t0<FEST_WAIT){ w.textContent=T("รอผลเพื่อน… {n}/{t}",{n:others.filter(k=>ON.festRes[S.players[k].uid]?.id===id).length,t:others.length}); await mgTimer(300); }
+      w.remove();
+    }
+    others.forEach(k=>{ const r=ON.festRes[S.players[k].uid]; if(r&&r.id===id&&typeof r.score==="number") scores[k]=r.score; else { scores[k]=G.low?99999:-99999; missing.push(k); } });
+  } else if(humans.length){
+    await modal({...festIntro(f,G),html:festIntro(f,G).html+`<p style="margin-top:8px">${T(humans.length>1?"วางเครื่องไว้กลางวง แต่ละคนแตะช่องสีของตัวเอง":"เล่นกับบอท")}</p>`,buttons:[{label:T("เริ่ม!"),value:1,primary:true}]});
+    Object.assign(scores,await festPlay(G,plan,humans,names));
+  }
+  const rows=festRank(G,scores,S.players.length); rows.forEach(r=>{ if(missing.includes(r.k)) r.missing=true; if(r.prize) S.players[r.k].money+=r.prize; });
+  const win=rows[0];
+  log("เทศกาล{f}: {p} ชนะ{g} รับ {m}",{f:FEST[f.month],p:names[win.k],g:G.n,m:win.prize});
+  S.fest=null; S.festLast={id,key,month:f.month,rows};
+  if(MODE==="online") ON.seenFest=id;
+  render();
+  await modal({eyebrow:T("เทศกาล{f}",{f:T(FEST[f.month])}),title:T("ผล{g}",{g:T(G.n)}),html:festTable(G,rows,names)});
+}
+// เครื่องอื่น (ออนไลน์): เห็นเทศกาลเริ่ม → เล่นช่องตัวเองแล้วส่งคะแนน · คืน true ถ้ายังรออยู่ (ห้ามเริ่มเทิร์น)
+async function festGuest(fresh){
+  if(S.fest&&S.fest.active){
+    const f=S.fest, me=mySeat(), G=GROUP[f.key];
+    if(G&&f.humans.includes(me)&&ON.festPlayed!==f.id&&Date.now()-(f.t||0)<FEST_WAIT){
+      ON.festPlayed=f.id; closeModal();
+      await modalAuto({...festIntro(f,G),buttons:[{label:T("เริ่ม!"),value:1,primary:true}]},8000);
+      const sc=await festPlay(G,G.plan(f.seed),[me],S.players.map(p=>p.name));
+      try{ await ON.ref.update({["fr_"+ON.me]:{id:f.id,score:sc[me]}}); }catch(e){ console.warn(e); }
+      toast(T("ส่งผลแล้ว รอเพื่อน…"));
+    }
+    return true;
+  }
+  if(S.festLast&&S.festLast.id!==ON.seenFest){
+    ON.seenFest=S.festLast.id; const L=S.festLast, G=GROUP[L.key];
+    if(!fresh&&G&&!modalResolve) await modal({eyebrow:T("เทศกาล{f}",{f:T(FEST[L.month])}),title:T("ผล{g}",{g:T(G.n)}),html:festTable(G,L.rows,S.players.map(p=>p.name))});
+  }
+  return false;
+}
+// ฝึกเล่นแบบหลายคนเครื่องเดียว
+async function practiceGroup(key){
+  const G=GROUP[key];
+  const n=await modal({eyebrow:T("ฝึกเล่น ไม่มีผลกับเกม"),title:T(G.n),html:`<div class="mg-how">${T(G.how)}</div><p style="margin-top:8px">${T("กี่คนเล่นบนเครื่องนี้?")}</p>`,buttons:[1,2,3,4].map(v=>({label:T("{n} คน",{n:v}),value:v,primary:v===2})).concat([{label:T("กลับ"),value:"back"}])});
+  if(typeof n!=="number") return;
+  const names=PCOL.map((c,k)=>defaultCo(k)), seed=Math.floor(Math.random()*2147483647), plan=G.plan(seed);
+  const sc=await festPlay(G,plan,[...Array(n).keys()],names);
+  const rows=Object.keys(sc).map(Number).sort((a,b)=>G.low?sc[a]-sc[b]:sc[b]-sc[a]).map((k,i)=>({k,score:sc[k],rank:i+1}));
+  await modal({eyebrow:T("ฝึกเล่น"),title:T("ผล{g}",{g:T(G.n)}),html:festTable(G,rows,names,false)});
+}
+
 // ================= DICE FX =================
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 const FACE_ROT={1:[0,0],2:[90,0],3:[0,-90],4:[0,90],5:[-90,0],6:[0,180]};
@@ -3487,6 +3620,7 @@ async function startMonth(){
   if(m===9){ const r=ownersOf(q=>q.t===TOUR&&NORTH.has(q.s),2); await evInfo("ฝุ่น PM2.5",`<p>${T("เจ้าของกิจการท่องเที่ยวในภาคเหนือจ่าย 2 ล้านต่อแห่ง")}</p>`+list(r,"−"),E); for(const [k,a] of r) await pay(k,a,T("นักท่องเที่ยวหายเพราะฝุ่น"),true); log("ฝุ่น PM2.5 ท่องเที่ยวภาคเหนือจ่าย 2 ล้านต่อแห่ง",{}); render(); }
   if(m===10){ const r=ownersOf(q=>q.s==="NSW",5); r.forEach(([k,a])=>S.players[k].money+=a); log("ตรุษจีน กิจการนครสวรรค์รับ 5 ล้านต่อแห่ง",{}); render(); await evInfo("ตรุษจีน",`<p>${T("เจ้าของกิจการที่นครสวรรค์รับ 5 ล้านต่อแห่ง")}</p>`+list(r,"+"),E); }
   if(m===11){ log("เดือนปิดงบ จบเดือนนี้ทุกกิจการจ่ายกำไร",{}); await evInfo("เดือนปิดงบ",T("จบเดือนนี้ทุกกิจการจ่ายกำไรให้เจ้าของ"),E); }
+  await festival();
 }
 function reportHTML(rows){return `<table class="rep"><tr><th>${T("บริษัท")}</th><th>${T("กำไรปีนี้")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rows.map(r=>`<tr><td>${esc(S.players[r.k].name)}${r.mono.length?`<br><span style="font-size:12px;color:var(--muted)">${T("ผูกขาด {sts}",{sts:r.mono})}</span>`:""}</td><td>+${r.prof}</td><td>${r.a??assets(r.k)}</td></tr>`).join("")}</table>`;}
 const reportTitle=rep=>T("ปิดงบปีที่ {y}",{y:rep.year});
@@ -3648,8 +3782,9 @@ async function home(){
 }
 async function practiceMini(){
   while(true){
-    const html=`<div class="stack">${MINI_KEYS.map(k=>`<button class="mode-btn" data-val="pm_${k}"><b>${T(MINIS[k].n)}</b><span>${T(MINIS[k].how,{g:MINIS[k].goal})}</span></button>`).join("")}</div>`;
+    const html=`<div class="stack">${MINI_KEYS.map(k=>`<button class="mode-btn" data-val="pm_${k}"><b>${T(MINIS[k].n)}</b><span>${T(MINIS[k].how,{g:MINIS[k].goal})}</span></button>`).join("")}<p class="label" style="margin:10px 2px 0">${T("มินิเกมเทศกาล (เล่นพร้อมกันหลายคน)")}</p>${GROUP_KEYS.map(k=>`<button class="mode-btn" data-val="pg_${k}"><b>${T(GROUP[k].n)}</b><span>${T(GROUP[k].type==="vs"?"เล่นแข่งกัน 1–4 คน เครื่องเดียว":"เล่นช่วยกัน 1–4 คน เครื่องเดียว")}</span></button>`).join("")}</div>`;
     const v=await modal({eyebrow:T("ฝึกเล่น ไม่มีผลกับเกม"),title:T("ลองมินิเกม"),html,buttons:[{label:T("กลับ"),value:"back"}]});
+    if(v&&String(v).startsWith("pg_")){ await practiceGroup(String(v).slice(3)); continue; }
     if(!v||!String(v).startsWith("pm_")) return home();
     await playMini(T("ฝึกเล่น"),"",String(v).slice(3),true);
   }
@@ -3772,7 +3907,9 @@ function enterRoom(code){
 let lobbyDrawn=null;
 async function onRoomSnap(snap){
   if(!snap.exists){ toast(T("ห้องนี้ถูกปิดแล้ว")); try{localStorage.removeItem("rotfai-room");}catch(e){} leaveOnline(); return home(); }
-  const d=snap.data(); const {S:gs,...meta}=d; ON.meta=meta;
+  const d=snap.data(); const {S:gs,...meta}=d;
+  for(const k of Object.keys(meta)) if(k.startsWith("fr_")){ ON.festRes=ON.festRes||{}; ON.festRes[k.slice(3)]=meta[k]; delete meta[k]; }
+  ON.meta=meta;
   if(d.status==="lobby"){ MODE="online"; return drawRoom(d); }
   if(!gs) return;
   lobbyDrawn=null;
@@ -3796,6 +3933,7 @@ async function applyRemote(next){
   }
   ON.seenLog=S.logN||0;
   if(S.phase==="over"){ if(!ON.shownOver) await showGameOver(); return; }
+  if(await festGuest(fresh)) return;
   if(!fresh&&S.report&&S.report.id!==ON.seenReport){ ON.seenReport=S.report.id; if(!modalResolve) await modal({eyebrow:monthN(11),title:S.report.rows?reportTitle(S.report):S.report.title,html:reportBody(S.report)}); }
   if(S.turn===mySeat()&&ON.handledTurn!==S.turnId) startTurn();
   else if(isBotTurn()&&ON.handledTurn!==S.turnId) botTurn();
