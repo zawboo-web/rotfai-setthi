@@ -3327,8 +3327,8 @@ function laneQuick(el,plan){
     else if(state==="go"){ state="over"; const ms=Math.round(performance.now()-t0); total+=ms; set("hit",(ms/1000).toFixed(2),T("วินาที")); sfx("pop"); } },{passive:false});
   return (async()=>{
     for(round=0;round<plan.length;round++){
-      const rd=plan[round]; state="wait"; set("wait",T("รอ…"),T("ยก {n}/{t}",{n:round+1,m:plan.length}));
-      if(rd.feint!=null){ await mgTimer(rd.feint); if(state==="wait") set("feint",T("จุ๊…"),T("ยก {n}/{t}",{n:round+1,m:plan.length})); await mgTimer(rd.wait-rd.feint); }
+      const rd=plan[round]; state="wait"; set("wait",T("รอ…"),T("ยก {n}/{t}",{n:round+1,t:plan.length}));
+      if(rd.feint!=null){ await mgTimer(rd.feint); if(state==="wait") set("feint",T("จุ๊…"),T("ยก {n}/{t}",{n:round+1,t:plan.length})); await mgTimer(rd.wait-rd.feint); }
       else await mgTimer(rd.wait);
       if(state==="wait"){ state="go"; t0=performance.now(); set("go",T("จุด!"),"🚀"); }
       await mgTimer(Q_AFTER);
