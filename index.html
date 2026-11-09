@@ -2730,7 +2730,7 @@ async function resolveSquare(id,arrived){
   else if(t==="y"||t==="jn"){ if(hasTre(i,"bowl")) drawItem(i); const c=drawItem(i); commit(); render(); if(c){log("{p} ได้การ์ดไอเทม",{p:p.name}); await say({eyebrow:T("ได้การ์ดไอเทม"),title:itemN(c),html:(MODE==="online"&&p.bot)?T("บอทเก็บการ์ดไว้ในมือ"):wrapCard(itemCard(c))});} else await info(T("มือเต็ม"),T("ถือการ์ดได้สูงสุด 5 ใบ รอบนี้ไม่ได้จั่ว")); }
   else if(t==="st"){
     if(S.quiz&&Math.random()<0.35){
-      const r=S.year>=2?12:8;
+      const r=S.year>=2?6:4;
       const ok=await challenge(id,T("โบนัสประจำ{st}",{st:id}),T("ผ่านได้ {m} · ไม่ผ่านเสีย {m2}",{m:r,m2:2}));
       if(ok){p.money+=r;log("{p} ได้โบนัส {m}",{p:p.name,m:r});} else {p.money-=2;}
       commit(); render();
@@ -3353,17 +3353,17 @@ async function festPlay(G,plan,seats,names,nAll,cols){
     const out={}; seats.forEach((k,i)=>out[k]=res[i]); return out;
   } finally { wrap.remove(); MUS.mini=false; try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
 }
-const festPrizes=n=>({1:[10],2:[12,4],3:[15,7,2],4:[15,8,3,0]})[n]||[15,8,3,0];
+const festPrizes=n=>({1:[5],2:[6,2],3:[8,3,0],4:[8,4,1,0]})[n]||[8,4,1,0];
 function festRank(G,scores,n){
   const ks=Object.keys(scores).map(Number).sort((a,b)=>G.low?scores[a]-scores[b]:scores[b]-scores[a]);
-  const mult=1+0.5*((S&&S.year||1)-1), pz=festPrizes(n); let prevS=null, prevR=0;
+  const mult=1+0.25*((S&&S.year||1)-1), pz=festPrizes(n); let prevS=null, prevR=0;
   return ks.map((k,i)=>{ const rank=scores[k]===prevS?prevR:i+1; prevS=scores[k]; prevR=rank; return {k,score:scores[k],rank,prize:Math.round((pz[rank-1]||0)*mult)}; });
 }
 // ผลรวม: แข่งกัน = จัดอันดับ · ช่วยกัน = รวมแรงทั้งทีมเทียบเป้า ทุกคนได้รางวัลเท่ากัน
 function festResult(G,scores,n){
   if(G.type!=="coop") return {rows:festRank(G,scores,n)};
-  const mult=1+0.5*((S&&S.year||1)-1), total=Object.values(scores).reduce((a,b)=>a+Math.max(0,b),0), goal=G.goal(n);
-  const ok=total>=goal, great=total>=goal*1.25, prize=ok?Math.round((great?12:8)*mult):0;
+  const mult=1+0.25*((S&&S.year||1)-1), total=Object.values(scores).reduce((a,b)=>a+Math.max(0,b),0), goal=G.goal(n);
+  const ok=total>=goal, great=total>=goal*1.25, prize=ok?Math.round((great?6:4)*mult):0;
   const rows=Object.keys(scores).map(Number).sort((a,b)=>scores[b]-scores[a]).map((k,i)=>({k,score:scores[k],rank:i+1,prize}));
   return {rows,team:{total,goal,ok,great}};
 }
