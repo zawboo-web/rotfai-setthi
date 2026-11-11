@@ -82,7 +82,7 @@ svg.newrail .barrier{display:none}
 .tok.active .halo{opacity:.9;animation:halo 1.2s ease-out infinite}
 @keyframes halo{0%{r:3.4;opacity:.9}100%{r:7;opacity:0}}
 .destflag{pointer-events:none}
-.stn-hit{fill:transparent;cursor:pointer}
+.stn-hit{fill:transparent;cursor:pointer}.sq-hit{fill:transparent;cursor:pointer}.card-peek{position:fixed;inset:0;z-index:95;display:grid;place-items:center;background:rgba(10,18,22,.78);padding:16px;cursor:pointer;animation:pkIn .15s ease-out}.card-peek .pk{width:min(340px,100%)}.card-peek .pk-hint{color:#fff;text-align:center;font-size:13px;margin-top:10px;opacity:.85}@keyframes pkIn{from{opacity:0}}button.mini{border:0;font:inherit;font-size:12.5px;cursor:pointer}button.mini:hover{filter:brightness(.95)}.dist{margin:0 0 8px;font-weight:600}.dist-others{margin:-4px 0 10px;font-size:13px;color:var(--muted)}.cat-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 
 /* panel */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
@@ -2348,6 +2348,7 @@ function buildBoard(){
       const s=n.t==="g"?5.2:7.4;
       h+=`<rect x="${n.x-s/2}" y="${n.y-s/2}" width="${s}" height="${s}" rx="1.6" fill="${SQ_COL[n.t]}"/>`;
       if(SQ_SYM[n.t]) h+=`<text x="${n.x}" y="${n.y+2}" text-anchor="middle" font-size="5.6" font-weight="700" fill="${n.t==="y"?"#2B2100":"#fff"}">${SQ_SYM[n.t]}</text>`;
+      h+=`<circle class="sq-hit" data-sq="${id}" cx="${n.x}" cy="${n.y}" r="5.5"/>`;
     }
   }
   h+=`<g id="dyn"></g><g id="toks"></g>`;
@@ -2436,8 +2437,8 @@ function renderTop(){
 }
 function renderPanel(){
   const p=cur(), i=S.turn, me=mySeat();
-  const handHTML=(MODE==="online"&&i!==me)?`<span class="label" style="font-weight:400">${T("การ์ดในมือ {n} ใบ",{n:p.cards.length})}</span>`:p.cards.length?p.cards.map(k=>`<span class="mini">${itemN(k)}</span>`).join(""):`<span class="label" style="font-weight:400">${T("ยังไม่มีการ์ด")}</span>`;
-  const tl=treOf(i); const treHTML=tl.map(k=>`<span class="mini tre" title="${esc(treF(k))}">✦ ${treN(k)}</span>`).join("");
+  const handHTML=(MODE==="online"&&i!==me)?`<span class="label" style="font-weight:400">${T("การ์ดในมือ {n} ใบ",{n:p.cards.length})}</span>`:p.cards.length?p.cards.map(k=>`<button class="mini" data-card="${k}">${itemN(k)}</button>`).join(""):`<span class="label" style="font-weight:400">${T("ยังไม่มีการ์ด")}</span>`;
+  const tl=treOf(i); const treHTML=tl.map(k=>`<button class="mini tre" data-tre="${k}" title="${esc(treF(k))}">✦ ${treN(k)}</button>`).join("");
   let prompt="", actions="";
   const cz=curseOf(i);
   if(S.phase!=="play"){ prompt=T(S.phase==="over"?"จบเกมแล้ว":"ตั้งค่าเกม"); }
@@ -2764,9 +2765,9 @@ async function cardShop(s){
   if(isBotTurn()){
     const bought=[];
     for(const k of ["drive","amulet","exp"]){
-      if(stock.includes(k)&&p.cards.length<5&&p.money>=CARD_PRICE[k]+30&&!p.cards.includes(k)){ p.money-=CARD_PRICE[k]; p.cards.push(k); bought.push(k); log("{p} ซื้อการ์ด{it} {m}",{p:p.name,it:k,m:CARD_PRICE[k]}); }
+      if(stock.includes(k)&&p.cards.length<5&&p.money>=CARD_PRICE[k]+30&&!p.cards.includes(k)){ p.money-=CARD_PRICE[k]; p.cards.push(k); bought.push(k); }
     }
-    if(bought.length){ commit(); render(); await brief({eyebrow:T("ร้านขายการ์ด{st}",{st:s}),title:T("{p} ซื้อการ์ด",{p:esc(p.name)}),html:`<p>${bought.map(itemN).join(", ")}</p>`},1500); }
+    if(bought.length){ log("{p} ซื้อการ์ด {c} ใบ",{p:p.name,c:bought.length}); commit(); render(); await brief({eyebrow:T("ร้านขายการ์ด{st}",{st:s}),title:T("{p} ซื้อการ์ด {c} ใบ",{p:esc(p.name),c:bought.length}),html:`<p>${T("ไม่เปิดเผยว่าเป็นการ์ดอะไร")}</p>`},1500); }
     return;
   }
   let shown=false;
@@ -2781,7 +2782,7 @@ async function cardShop(s){
     const v=await mp;
     if(!v||v==="done") break;
     const k=String(v).slice(2);
-    if(v[0]==="b"){ if(p.cards.length>=5||p.money<CARD_PRICE[k]) continue; p.money-=CARD_PRICE[k]; p.cards.push(k); log("{p} ซื้อการ์ด{it} {m}",{p:p.name,it:k,m:CARD_PRICE[k]}); sfx("card"); }
+    if(v[0]==="b"){ if(p.cards.length>=5||p.money<CARD_PRICE[k]) continue; p.money-=CARD_PRICE[k]; p.cards.push(k); log("{p} ซื้อการ์ด {c} ใบ",{p:p.name,c:1}); sfx("card"); }
     else { const ix=p.cards.indexOf(k); if(ix<0) continue; p.cards.splice(ix,1); S.discard.push(k); p.money+=sellPrice(k); log("{p} ขายการ์ด{it} {m}",{p:p.name,it:k,m:sellPrice(k)}); sfx("coin"); }
     commit(); render();
   }
@@ -3246,6 +3247,7 @@ async function mgSplash(ar,goal,score,tick,lv=0){
 Object.assign(TR,{"สงกรานต์": ["Songkran", "ソンクラーン"], "แห่เทียนพรรษา": ["Candle Festival", "ろうそく祭り"], "ออกพรรษา": ["End of Buddhist Lent", "出安居"], "งานวัดปีใหม่": ["New Year Temple Fair", "新年の縁日"], "ใครไวกว่า": ["Quick Draw", "早押し対決"], "รอให้ขึ้นคำว่า \"จุด!\" แล้วแตะช่องตัวเองให้ไวที่สุด แตะก่อนสัญญาณ (หรือตอนขึ้น \"จุ๊…\" หลอก) ถือว่าฟาล์ว · 3 ยก รวมเวลาน้อยสุดชนะ": ["Wait for \"FIRE!\" then tap your own area as fast as you can. Tapping early (or on the fake \"Fi…\") is a foul · 3 rounds, lowest total time wins", "「点火!」が出たら自分のエリアをすばやくタップ。合図の前(フェイントの「て…」も)に押すとフライング・3回戦、合計タイムが一番短い人の勝ち"], "ฟาล์ว!": ["Foul!", "フライング!"], "วินาที": ["sec", "秒"], "รอ…": ["Wait…", "待って…"], "ยก {n}/{c}": ["Round {n}/{c}", "{n}/{c}回戦"], "จุ๊…": ["Fi…", "て…"], "จุด!": ["FIRE!", "点火!"], "ช้าไป": ["Too slow", "おそい"], "วินาที รวม": ["sec total", "秒(合計)"], "ผู้เล่น": ["Player", "プレイヤー"], "ผล": ["Result", "結果"], "รางวัล": ["Prize", "賞金"], "ไม่ได้ส่งผล": ["No result", "未送信"], "เทศกาล{f}": ["{f} Festival", "{f}フェス"], "เล่นแข่งกัน": ["Versus", "対戦"], "เล่นช่วยกัน": ["Co-op", "協力"], "วางเครื่องไว้กลางวง แต่ละคนแตะช่องสีของตัวเอง": ["Put the device in the middle — everyone taps their own colour area", "端末を真ん中に置いて、それぞれ自分の色のエリアをタップ"], "เล่นกับบอท": ["Playing against bots", "ボットと対戦"], "รอผลเพื่อน… {n}/{c}": ["Waiting for friends… {n}/{c}", "友だちの結果を待っています… {n}/{c}"], "เทศกาล{f}: {p} ชนะ{g} รับ {m}": ["{f} Festival: {p} won {g} and got {m}", "{f}フェス:{p}が{g}で優勝、{m}獲得"], "ผล{g}": ["{g} results", "{g}の結果"], "ส่งผลแล้ว รอเพื่อน…": ["Result sent — waiting for friends…", "結果を送信しました。友だちを待っています…"], "กี่คนเล่นบนเครื่องนี้?": ["How many players on this device?", "この端末で何人遊ぶ?"], "{n} คน": ["{n} players", "{n}人"], "มินิเกมเทศกาล (เล่นพร้อมกันหลายคน)": ["Festival minigames (everyone at once)", "フェスミニゲーム(みんなで同時に)"], "เล่นแข่งกัน 1–4 คน เครื่องเดียว": ["Versus · 1–4 players on one device", "対戦・1台で1〜4人"], "เล่นช่วยกัน 1–4 คน เครื่องเดียว": ["Co-op · 1–4 players on one device", "協力・1台で1〜4人"]});
 Object.assign(TR,{"แข่งเรือยาว": ["Longboat Race", "ロングボートレース"], "แตะช่องตัวเองตามจังหวะกลอง ตูม! ตรงจังหวะเรือพุ่งแรง แตะรัวมั่วๆ เรือสะดุด · 8 วินาที ใครพายได้ไกลสุดชนะ": ["Tap your area to the drum beat. On the beat = big push, random mashing makes the boat stumble · 8 seconds, farthest wins", "太鼓のリズムに合わせて自分のエリアをタップ。ぴったりで大きく進み、連打しすぎるとつまずく・8秒で一番遠くまで漕いだ人の勝ち"], "{n} เมตร": ["{n} m", "{n} m"], "เมตร": ["m", "m"], "สะดุด!": ["Stumble!", "つまずき!"], "เป๊ะ!": ["Perfect!", "ぴったり!"], "ดี": ["Good", "いいね"], "หลุดจังหวะ": ["Off beat", "ずれた"], "เข็นตุ๊กตุ๊กขึ้นดอย": ["Push the Tuk-tuk Uphill", "トゥクトゥクを押して山登り"], "ตุ๊กตุ๊กดับกลางดอย! ทุกคนแตะช่องตัวเองรัวๆ (นิ้วเดียว) ช่วยกันเข็น พอขึ้น \"ฮึบ!\" แตะทันทีได้แรงเพิ่ม · 8 วินาที แรงรวมทั้งทีมต้องถึงเป้า": ["The tuk-tuk stalled on the mountain! Everyone taps their own area (one finger) to push. Tap right on \"HEAVE!\" for extra power · 8 seconds, the team total must reach the goal", "山の途中でトゥクトゥクが止まった!みんなで自分のエリアを連打(指1本)して押そう。「せーの!」ですぐ押すとパワーアップ・8秒でチーム合計が目標に届けば成功"], "ฮึบ!": ["HEAVE!", "せーの!"], "ฮึบ! +5": ["HEAVE! +5", "せーの! +5"], "แรงเข็น": ["push", "パワー"], "แรง {n}": ["{n} power", "パワー {n}"], "สุดยอด! ทีมเข็นถึงยอดดอย": ["Amazing! The team reached the summit", "すごい!チームで山頂に到着"], "สำเร็จ! ทีมเข็นถึงยอดดอย": ["Success! The team reached the summit", "成功!チームで山頂に到着"], "ไม่ถึงยอด ตุ๊กตุ๊กไหลกลับ": ["Not enough — the tuk-tuk rolled back", "届かず…トゥクトゥクが下がっちゃった"], "แรงรวม {a} / เป้า {b}": ["Team total {a} / goal {b}", "チーム合計 {a} / 目標 {b}"], "เทศกาล{f}: ทีมช่วยกัน{g}สำเร็จ ทุกคนรับ {m}": ["{f} Festival: the team cleared {g}, everyone gets {m}", "{f}フェス:チームで{g}に成功、全員{m}獲得"], "เทศกาล{f}: ทีมช่วยกัน{g}ไม่สำเร็จ": ["{f} Festival: the team failed {g}", "{f}フェス:チームで{g}に失敗"]});
 Object.assign(TR,{"จับลำดับเดิน": ["Turn order", "順番決め"], "ลำดับการเดิน": ["Turn order", "プレイ順"], "ที่ {n}": ["#{n}", "{n}番"], "ไวสุดได้เดินก่อน เรียงลำดับตามเวลา": ["Fastest goes first — order follows your times", "一番速い人が先攻。タイム順に並びます"], "{p} ไวสุด ได้เดินก่อน": ["{p} was fastest and goes first", "{p}が一番速く、先攻"]});
+Object.assign(TR,{"{p} ซื้อการ์ด {c} ใบ": ["{p} bought {c} card(s)", "{p}がカードを{c}枚購入"], "ไม่เปิดเผยว่าเป็นการ์ดอะไร": ["Which card stays secret", "どのカードかは秘密"], "{p} อยู่ที่นี่": ["{p} — here", "{p}はここにいる"], "{p}ไปทางถนนไม่ถึง ต้องนั่งเรือหรือบิน": ["{p} can't reach this by road — take a boat or fly", "{p}は道路では行けない。船か飛行機で"], "ห่างจาก{p} {c} ช่อง · ทอยเต๋าราว {k} ครั้ง": ["{c} squares from {p} · about {k} roll(s)", "{p}から{c}マス・サイコロ約{k}回"], "คนอื่น (ช่อง):": ["Others (squares):", "他の人(マス):"], "ช่อง": ["Square", "マス"], "หยุดแล้วทอยเต๋า ได้เงินเท่ากับแต้ม × 2": ["Stop here: roll, gain money = roll × 2", "止まるとサイコロ、出目×2のお金をもらう"], "หยุดแล้วทอยเต๋า เสียเงินเท่ากับแต้ม × 2": ["Stop here: roll, lose money = roll × 2", "止まるとサイコロ、出目×2のお金を払う"], "หยุดแล้วได้การ์ดไอเทม 1 ใบ": ["Stop here: draw 1 item card", "止まるとアイテムカードを1枚引く"], "ถนนชนบท เดินผ่านเฉยๆ ไม่มีอะไรเกิดขึ้น": ["Country road — nothing happens here", "田舎道。何も起きない"], "แตะที่ไหนก็ได้เพื่อปิด": ["Tap anywhere to close", "どこかをタップして閉じる"], "รายการการ์ด": ["Card list", "カード一覧"], "แตะการ์ดเพื่อดูรายละเอียด": ["Tap a card to see details", "カードをタップして詳細を見る"]});
 // ================= FESTIVAL (มินิเกมกลุ่ม ทุก 3 เดือน) =================
 // ทุกคนเล่นพร้อมกัน: เครื่องเดียว = แบ่งจอเป็นช่อง · ออนไลน์ = เครื่องใครเครื่องมันเล่นเต็มจอ แล้วส่งคะแนนให้เครื่องที่ถือตาเดินรวม
 // ทุกช่องใช้ seed เดียวกัน จึงเจอรูปแบบเดียวกันเป๊ะ · บอทคำนวณคะแนนจาก seed
@@ -3834,14 +3836,42 @@ async function showPlayer(k){
   if(modalResolve) return;
   const p=S.players[k], mine=PROPS.filter(q=>S.owners[q.id]===k);
   const showCards=MODE==="local"||k===mySeat();
-  const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b> · ${T("ทรัพย์สินรวม")} <b>${money(assets(k))}</b></p>${p.loan?`<p>${T("หนี้เงินกู้ {m} (คืนตอนปิดงบ)",{m:p.loan})}</p>`:""}<p>${T("การ์ด:")} ${showCards?(p.cards.length?p.cards.map(c=>itemN(c)).join(", "):T("ไม่มี")):T("{n} ใบ (ซ่อนไว้)",{n:p.cards.length})}</p>${treOf(k).length?`<p>${T("ของหายาก:")} ${treOf(k).map(x=>`<span class="mini tre">✦ ${treN(x)}</span>`).join(" ")}</p>`:""}${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${stN(q.s)}</span>`)).join("")}</div>`:`<p>${T("ยังไม่มีกิจการ")}</p>`}`;
+  const html=`<p>${T("เงินคงเหลือ")} <b>${fmt(p.money)}</b> · ${T("ทรัพย์สินรวม")} <b>${money(assets(k))}</b></p>${p.loan?`<p>${T("หนี้เงินกู้ {m} (คืนตอนปิดงบ)",{m:p.loan})}</p>`:""}<p>${T("การ์ด:")} ${showCards?(p.cards.length?p.cards.map(c=>`<button class="mini" data-card="${c}">${itemN(c)}</button>`).join(" "):T("ไม่มี")):T("{n} ใบ (ซ่อนไว้)",{n:p.cards.length})}</p>${treOf(k).length?`<p>${T("ของหายาก:")} ${treOf(k).map(x=>`<button class="mini tre" data-tre="${x}">✦ ${treN(x)}</button>`).join(" ")}</p>`:""}${mine.length?`<div class="plist">${mine.map(q=>propRow(q,`<span class="pm">${stN(q.s)}</span>`)).join("")}</div>`:`<p>${T("ยังไม่มีกิจการ")}</p>`}`;
   await modal({title:esc(p.name),html});
 }
 async function showStation(s){
   if(modalResolve||UI.mode==="pick"||UI.busy) return;
   const props=PROPS_AT(s);
   const html=s==="DNC"?T("ชุมทาง ไม่มีกิจการ หยุดแล้วจั่วการ์ดไอเทม"):`<p>${T("รางวัลถ้าเป็นจุดหมาย {m}",{m:REWARD[s]})}</p>${TRE_AT(s)?`<p>✦ ${T("ของหายาก:")} <b>${treN(TRE_AT(s))}</b> · ${treOwner(TRE_AT(s))===undefined?T("ยังไม่มีเจ้าของ ({m})",{m:TREASURES[TRE_AT(s)].val}):esc(S.players[treOwner(TRE_AT(s))].name)}</p>`:""}<div class="gc-row">${props.map(q=>`<div class="gc-col">${propCard(q)}<div style="min-height:28px;display:grid;place-items:center">${ownerTag(S.owners[q.id])||`<span class="pm">${T("ยังว่าง")}</span>`}</div></div>`).join("")}</div>`;
-  await modal({eyebrow:T("จุดแวะ"),title:stN(s),html});
+  await modal({eyebrow:T("จุดแวะ"),title:stN(s),html:distHTML(s)+html});
+}
+// ระยะจาก "เรา" (ออนไลน์ = ที่นั่งของเครื่องนี้, เครื่องเดียว = คนที่ถึงตา) + ระยะของคนอื่น
+function distHTML(id){
+  if(!S||!S.players.length) return "";
+  const ms=mySeat(), me=ms>=0?ms:S.turn, dOf=k=>bfs(S.players[k].node,S.newRail)[id];
+  const d=dOf(me), who=ms>=0?T("คุณ"):S.players[me].name;
+  const main=d===0?T("{p} อยู่ที่นี่",{p:esc(who)}):d===undefined?T("{p}ไปทางถนนไม่ถึง ต้องนั่งเรือหรือบิน",{p:esc(who)})
+    :T("ห่างจาก{p} {c} ช่อง · ทอยเต๋าราว {k} ครั้ง",{p:esc(who),c:d,k:Math.max(1,Math.ceil(d/3.5))});
+  const others=S.players.map((q,k)=>k===me?"":`<span style="color:${q.color};font-weight:700">●</span> ${esc(q.name)} ${dOf(k)===undefined?"–":dOf(k)}`).filter(Boolean).join(" · ");
+  return `<p class="dist">📍 ${main}</p>${others?`<p class="dist-others">${T("คนอื่น (ช่อง):")} ${others}</p>`:""}`;
+}
+async function showSquare(id){
+  if(modalResolve||UI.mode==="pick"||UI.busy) return;
+  const desc={b:"หยุดแล้วทอยเต๋า ได้เงินเท่ากับแต้ม × 2",r:"หยุดแล้วทอยเต๋า เสียเงินเท่ากับแต้ม × 2",y:"หยุดแล้วได้การ์ดไอเทม 1 ใบ",g:"ถนนชนบท เดินผ่านเฉยๆ ไม่มีอะไรเกิดขึ้น"}[NODES[id].t]||"";
+  await modal({eyebrow:T("ช่อง"),title:labelOf(id),html:distHTML(id)+(desc?`<p>${T(desc)}</p>`:"")});
+}
+// แตะชื่อการ์ดที่ไหนก็ได้ = ดูการ์ดเต็มใบ (ซ้อนบน modal ได้ ไม่ปิด modal เดิม)
+function peekCard(html){ document.querySelectorAll(".card-peek").forEach(x=>x.remove());
+  const d=document.createElement("div"); d.className="card-peek"; d.innerHTML=`<div class="pk">${html}<p class="pk-hint">${T("แตะที่ไหนก็ได้เพื่อปิด")}</p></div>`;
+  d.addEventListener("click",ev=>{ ev.stopPropagation(); d.remove(); }); document.body.appendChild(d); }
+document.addEventListener("click",e=>{
+  const c=e.target.closest&&e.target.closest("[data-card]"); if(c&&ITEMS[c.dataset.card]){ e.preventDefault(); e.stopPropagation(); peekCard(wrapCard(itemCard(c.dataset.card))); return; }
+  const t=e.target.closest&&e.target.closest("[data-tre]"); if(t&&TREASURES[t.dataset.tre]){ e.preventDefault(); e.stopPropagation(); peekCard(wrapCard(treCard(t.dataset.tre))); }
+},true);
+async function cardCatalog(){
+  const items=Object.keys(ITEMS).map(k=>`<button class="mini" data-card="${k}">${itemN(k)}${CARD_PRICE[k]?` · ${money(CARD_PRICE[k])}`:""}</button>`).join("");
+  const tres=Object.keys(TREASURES).map(k=>`<button class="mini tre" data-tre="${k}">✦ ${treN(k)}</button>`).join("");
+  await modal({title:T("รายการการ์ด"),html:`<p>${T("แตะการ์ดเพื่อดูรายละเอียด")}</p><div class="label" style="margin-top:10px">${T("การ์ดไอเทม")}</div><div class="cat-list">${items}</div><div class="label" style="margin-top:12px">${T("ของดีหายาก")}</div><div class="cat-list">${tres}</div>`});
 }
 
 // ================= HOME / LOCAL SETUP =================
@@ -4090,12 +4120,13 @@ $("menuBtn").onclick=async()=>{
   if(!S||S.phase==="setup") return;
   if(modalResolve) return;
   const online=MODE==="online";
-  const v=await modal({title:T("เมนู"),html:langSeg()+(online&&ON.meta?`<p style="margin-top:10px">${T("ห้อง <b>{c}</b> · คุณคือ {p}",{c:esc(ON.meta.code),p:esc(S.players[mySeat()]?.name||T("ผู้ชม"))})}</p>`:""),buttons:[{label:T("กติกาย่อ"),value:"rules"},{label:T("ภาพการ์ด"),value:"art"},{label:T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(C3D.on?"ปิดตัวละคร 3D":"เปิดตัวละคร 3D"),value:"c3d"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"},{label:T(online?"ออกไปหน้าแรก":"เริ่มเกมใหม่"),value:"new"},{label:T("ปิด"),value:null,primary:true}]});
+  const v=await modal({title:T("เมนู"),html:langSeg()+(online&&ON.meta?`<p style="margin-top:10px">${T("ห้อง <b>{c}</b> · คุณคือ {p}",{c:esc(ON.meta.code),p:esc(S.players[mySeat()]?.name||T("ผู้ชม"))})}</p>`:""),buttons:[{label:T("กติกาย่อ"),value:"rules"},{label:T("รายการการ์ด"),value:"cards"},{label:T("ภาพการ์ด"),value:"art"},{label:T(BGM.on?"ปิดเพลง":"เปิดเพลง"),value:"bgm"},{label:T(C3D.on?"ปิดตัวละคร 3D":"เปิดตัวละคร 3D"),value:"c3d"},{label:T(SFX.on?"ปิดเสียงเอฟเฟกต์":"เปิดเสียงเอฟเฟกต์"),value:"sfx"},{label:T(online?"ออกไปหน้าแรก":"เริ่มเกมใหม่"),value:"new"},{label:T("ปิด"),value:null,primary:true}]});
   if(v&&v.startsWith("lang_")){ setLang(v.slice(5)); return; }
   if(v==="art") return manageArt();
   if(v==="c3d"){ c3dToggle(); toast(T(C3D.on?"เปิดตัวละคร 3D":"ปิดตัวละคร 3D")); return; }
   if(v==="bgm"){ bgmToggle(); return; }
   if(v==="sfx"){ sfxToggle(); return; }
+  if(v==="cards") await cardCatalog();
   if(v==="rules") await modal({title:T("กติกาย่อ"),html:`<ul class="rules">${RULES.map(x=>`<li>${T(x)}</li>`).join("")}</ul>`});
   if(v==="new"){
     if(online){ leaveOnline(); return home(); }
@@ -4107,6 +4138,7 @@ svg.addEventListener("click",e=>{
   const t=e.target.closest("[data-node]"); if(t) return onPick(t.dataset.node);
   const gk=e.target.closest("[data-ghost]"); if(gk&&S&&S.phase==="play") return showGhost(gk.dataset.ghost);
   const s=e.target.closest("[data-stn]"); if(s&&S&&S.phase==="play") return showStation(s.dataset.stn);
+  const q=e.target.closest("[data-sq]"); if(q&&S&&S.phase==="play") return showSquare(q.dataset.sq);
 });
 svg.addEventListener("keydown",e=>{const t=e.target.closest("[data-node]");if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onPick(t.dataset.node);}});
 $("zin").onclick=()=>{zoom=Math.min(1.8,zoom+0.25);sizeBoard();if(S)focusNode(cur().node,false);};
