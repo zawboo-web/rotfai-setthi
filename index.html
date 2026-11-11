@@ -2378,8 +2378,9 @@ function renderBoard(){
 }
 const OFF=[[-3.6,-3.6],[3.6,-3.6],[-3.6,3.6],[3.6,3.6]];
 function renderTokens(){
-  const g=$("toks");
-  if(g.querySelectorAll(".tok").length!==S.players.length){
+  const g=$("toks"), sig=S.players.map(p=>p.color).join("|");
+  if(g.dataset.sig!==sig){   // สร้างใหม่เมื่อจำนวนหรือ "ลำดับสี" เปลี่ยน (เช่น หลังจับลำดับเดิน)
+    g.dataset.sig=sig;
     g.innerHTML=S.players.map((p,i)=>`<g class="tok" id="tok${i}"><circle class="halo" r="3.4" stroke="${p.color}"/><circle class="body" r="3.2" fill="${p.color}" stroke="#fff" stroke-width=".9"/></g>`).join("")
       +`<g id="ghostTok" style="display:none"><path d="M-2.6 2.6V-0.5a2.6 2.6 0 0 1 5.2 0V2.6l-.9-.7-.9.7-.9-.7-.9.7-.9-.7z" fill="#F4F1FA" stroke="#4A3A66" stroke-width=".4"/><circle cx="-.9" cy="-.4" r=".45" fill="#222"/><circle cx=".9" cy="-.4" r=".45" fill="#222"/></g>`;
   }
@@ -3409,6 +3410,7 @@ async function festival(opt={}){
   const {rows,team}=festResult(G,scores,S.players.length); rows.forEach(r=>{ r.name=names[r.k]; if(missing.includes(r.k)) r.missing=true; if(order) r.prize=0; if(r.prize) S.players[r.k].money+=r.prize; });
   const win=rows[0];
   if(order){
+    S.players.forEach((p,k)=>{ if(!p.av) p.av=AV_IDS[k%AV_IDS.length]; });   // ตัวละครติดตัวผู้เล่น ไม่ใช่ติดลำดับ
     S.players=rows.map(r=>S.players[r.k]); S.turn=0;   // ไวสุดเดินก่อน (สีและชื่อติดตัวผู้เล่นไปด้วย)
     log("{p} ไวสุด ได้เดินก่อน",{p:names[win.k]});
     S.fest=null; S.festLast={id,key,month:f.month,rows,order:true};
