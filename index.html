@@ -3662,8 +3662,9 @@ async function endTurn(){
   if(S.turn>=S.players.length){
     S.turn=0;
     if(S.month===11){
-      await yearClose();
-      if(S.year>=S.years) return gameOver();
+      const last=S.year>=S.years;
+      await yearClose(last);           // ปีสุดท้าย: ไม่โชว์งบแยก — ไปหน้าจบเกมพร้อมกันทุกเครื่องทันที
+      if(last) return gameOver();
       S.year++;
     }
     walkGhosts();
@@ -3720,7 +3721,7 @@ async function startMonth(){
 function reportHTML(rows){return `<table class="rep"><tr><th>${T("บริษัท")}</th><th>${T("กำไรปีนี้")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rows.map(r=>`<tr><td>${esc(S.players[r.k].name)}${r.mono.length?`<br><span style="font-size:12px;color:var(--muted)">${T("ผูกขาด {sts}",{sts:r.mono})}</span>`:""}</td><td>+${r.prof}</td><td>${r.a??assets(r.k)}</td></tr>`).join("")}</table>`;}
 const reportTitle=rep=>T("ปิดงบปีที่ {y}",{y:rep.year});
 const reportBody=rep=>rep.rows?reportHTML(rep.rows):rep.html;
-async function yearClose(){
+async function yearClose(silent=false){
   const rows=S.players.map((p,k)=>{
     let prof=0; const mono=[];
     for(const s in NAME){const props=PROPS_AT(s); if(!props.length) continue; const own=props.filter(q=>S.owners[q.id]===k); if(!own.length) continue;
@@ -3735,6 +3736,7 @@ async function yearClose(){
   S.report={id:Date.now()+"-"+S.year,year:S.year,rows};
   ON.seenReport=S.report.id;
   render();
+  if(silent) return;
   await modal({eyebrow:monthN(11),title:reportTitle(S.report),html:reportBody(S.report)});
 }
 async function gameOver(){
@@ -3743,9 +3745,10 @@ async function gameOver(){
   render(); await showGameOver();
 }
 async function showGameOver(){
-  ON.shownOver=true; sfx("over"); try{ musUpdate(); }catch(e){}
+  ON.shownOver=true; if(S.report) ON.seenReport=S.report.id; sfx("over"); try{ musUpdate(); }catch(e){}
   const rank=S.players.map((p,k)=>({k,a:assets(k)})).sort((a,b)=>b.a-a.a);
-  const html=`<table class="rep"><tr><th>${T("อันดับ")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${money(r.a)}</td></tr>`).join("")}</table>`;
+  const fin=S.report&&S.report.rows&&S.report.year===S.year?`<div class="label" style="margin-top:14px">${reportTitle(S.report)}</div>${reportBody(S.report)}`:"";
+  const html=`<table class="rep"><tr><th>${T("อันดับ")}</th><th>${T("ทรัพย์สินรวม")}</th></tr>${rank.map((r,n)=>`<tr><td>${n+1}. ${esc(S.players[r.k].name)}</td><td>${money(r.a)}</td></tr>`).join("")}</table>${fin}`;
   await modal({eyebrow:T("จบเกม"),title:T("{p} คือเศรษฐีตุ๊กตุ๊ก!",{p:esc(S.players[rank[0].k].name)}),html,buttons:[{label:T("กลับหน้าแรก"),value:1,primary:true}]});
   leaveOnline(); home();
 }
