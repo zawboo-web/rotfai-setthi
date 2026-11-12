@@ -182,21 +182,21 @@ svg.newrail .barrier{display:none}
 .mg-hold{min-width:180px;min-height:56px;font-size:17px;touch-action:none}.mg-hold.on{transform:scale(.96);filter:brightness(1.1)}
 .c3d{position:absolute;inset:0;width:100%!important;height:100%!important;pointer-events:none;z-index:2}
 .mg-art{display:block;place-items:initial}
-.gr-stage{position:absolute;inset:0;background:linear-gradient(#FFE9B8 0 22%,#3A2A24 22% 100%);display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:26% 10px 12px}
-.gr-stage::before{content:"";position:absolute;left:0;right:0;top:22%;bottom:0;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,120,40,.22) 14px 17px);pointer-events:none}
-.gr-slot{position:relative;background:none;border:0;padding:0;touch-action:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;-webkit-tap-highlight-color:transparent}
-.gr-sk{position:relative;width:70%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .18s}
-.gr-sk::before{content:"";position:absolute;top:-4%;bottom:-10%;width:5px;border-radius:3px;background:#E3C48A}
-.gr-meat{position:relative;width:100%;height:23%;border-radius:38% 42% 40% 36%;border:2.5px solid #2A2238;background:var(--c,#F2A0A0)}
-.gr-slot.flip .gr-sk{transform:rotateY(180deg)}
-.gr-dot{position:absolute;top:2px;right:0;width:16px;height:16px;border-radius:50%;border:2px solid #fff;background:var(--c1,transparent);visibility:hidden;z-index:2}
+.gr-stage{pointer-events:auto}
+.gr-slot{position:absolute;top:50%;height:47%;width:17.5%;transform:translateX(-50%);background:none;border:0;padding:0;touch-action:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gr-sk{position:absolute;left:50%;top:0;height:80%;aspect-ratio:181/420;transform:translateX(-50%);transition:transform .2s;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+.gr-sk img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.gr-slot.flip .gr-sk{transform:translateX(-50%) rotateY(180deg)}
+.gr-dot{position:absolute;top:0;right:4%;width:17px;height:17px;border-radius:50%;border:2px solid #fff;background:var(--c1,transparent);box-shadow:0 0 0 1.5px #2A2238;visibility:hidden;z-index:2}
 .gr-slot.s2 .gr-dot{visibility:visible}
-.gr-bar{position:relative;width:86%;height:12px;border-radius:6px;background:#1E1512;border:2px solid #fff;overflow:hidden}
+.gr-bar{position:absolute;left:7%;right:7%;bottom:7%;height:12px;border-radius:6px;background:#1E1512;border:2px solid #fff;box-shadow:0 0 0 1.5px #2A2238;overflow:hidden}
 .gr-bar::before{content:"";position:absolute;left:48%;width:32%;top:0;bottom:0;background:#3FBF6B}
 .gr-bar i{position:absolute;left:0;top:0;bottom:0;width:4px;margin-left:-2px;background:#fff;box-shadow:0 0 0 1.5px #2A2238}
-.gr-ic{font-size:15px;font-weight:700;color:#fff;height:18px;line-height:18px}
+.gr-ic{position:absolute;left:0;right:0;bottom:-3%;font-size:15px;font-weight:700;color:#fff;text-shadow:0 1px 0 #2A2238,0 0 4px #2A2238;line-height:1;text-align:center}
 .gr-slot.empty .gr-sk,.gr-slot.empty .gr-bar,.gr-slot.empty .gr-ic{visibility:hidden}
-.gr-pop{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--font-d);font-size:20px;color:#fff;text-shadow:0 2px 0 #2A2238;white-space:nowrap;animation:grPop .7s ease-out forwards;pointer-events:none;z-index:3}
+.gr-fx{position:absolute;left:50%;top:6%;width:92%;transform:translateX(-50%);animation:grFx .7s ease-out forwards;pointer-events:none;z-index:3}
+@keyframes grFx{from{opacity:1;transform:translate(-50%,10px) scale(.6)}to{opacity:0;transform:translate(-50%,-30px) scale(1.15)}}
+.gr-pop{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--font-d);font-size:20px;color:#fff;text-shadow:0 2px 0 #2A2238,0 0 6px #2A2238;white-space:nowrap;animation:grPop .7s ease-out forwards;pointer-events:none;z-index:4}
 .gr-pop.good{color:#FFE14D}.gr-pop.bad{color:#FF8A7A}
 @keyframes grPop{to{transform:translate(-50%,-46px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.gr-sk{transition:none}}
@@ -3237,7 +3237,7 @@ async function playMini(eyebrow,stake,forceK,practice){
 }
 // นับถอยหลังแล้วคืน promise ที่จบเมื่อหมดเวลา
 function mgClock(sec,onTick){ const t0=performance.now(); return new Promise(r=>{ const iv=setInterval(()=>{ const left=sec-(performance.now()-t0)/1000; onTick(left); if(left<=0){ clearInterval(iv); r(); } },100); onTick(sec); }); }
-const MG_IMG={mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
+const MG_IMG={grill:["minigame/grill_bg.webp","minigame/grill_smoke.webp","minigame/grill_yum.webp",...["raw","half","done","burnt"].map(u=>`minigame/moo_${u}.webp`)],mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
 function mgPreload(k){ (MG_IMG[k]||[]).forEach(u=>{ const i=new Image(); i.src=u; }); }
 async function mgSomtam(ar,goal,score,tick){
   let n=0, live=true, messy=false;
@@ -3300,22 +3300,26 @@ async function mgMosq(ar,goal,score,tick,lv=0){
 }
 // ปิ้งหมูปิ้ง: 5 ไม้ ความเร็วสุกไม่เท่ากัน · แตะ 1 = พลิก, แตะ 2 = เก็บ · ด้านไหนเกิน BURN = ไหม้ทิ้ง
 const GR={lo:.6,hi:1,burn:1.25,side:1.7};
+const GR_IMG=["raw","half","done","burnt"], GR_KEY=[0,.42,.8,1.25];   // ภาพสุกพอดีอยู่กลางช่องเขียว
 const grCol=v=>{ const st=[[0,[242,160,160]],[GR.lo,[214,138,52]],[GR.hi,[158,88,30]],[GR.burn,[34,22,18]]]; v=Math.max(0,Math.min(GR.burn,v));
   for(let i=1;i<st.length;i++) if(v<=st[i][0]){ const [a,ca]=st[i-1],[b,cb]=st[i],t=(v-a)/(b-a); return `rgb(${ca.map((x,j)=>Math.round(x+(cb[j]-x)*t)).join(",")})`; } return "rgb(34,22,18)"; };
 async function mgGrill(ar,goal,score,tick,lv=0){
   let n=0, live=true, last=performance.now(); score(0,`0 / ${goal}`);
   ar.classList.add("mg-art");
-  ar.innerHTML=`<div class="gr-stage">${[0,1,2,3,4].map(k=>`<button class="gr-slot empty" data-k="${k}" aria-label="${esc(T("หมูปิ้งไม้ที่ {n}",{n:k+1}))}"><span class="gr-dot"></span><span class="gr-sk"><span class="gr-meat"></span><span class="gr-meat"></span><span class="gr-meat"></span></span><span class="gr-bar"><i></i></span><span class="gr-ic"></span></button>`).join("")}</div>`;
+  ar.innerHTML=`<div class="tc-stage gr-stage"><img class="st-bg" src="minigame/grill_bg.webp" alt="">${[0,1,2,3,4].map(k=>`<button class="gr-slot empty" data-k="${k}" style="left:${14.5+17.75*k}%" aria-label="${esc(T("หมูปิ้งไม้ที่ {n}",{n:k+1}))}"><span class="gr-dot"></span><span class="gr-sk">${GR_IMG.map(u=>`<img src="minigame/moo_${u}.webp" alt="">`).join("")}</span><span class="gr-bar"><i></i></span><span class="gr-ic"></span></button>`).join("")}</div>`;
   const slots=[...ar.querySelectorAll(".gr-slot")].map((el,k)=>({el,k,st:0,a:0,b:0,rate:1,wait:.15+k*.28}));   // st: 0 ว่าง, 1 ด้านแรก, 2 ด้านสอง
+  const fx=(s,u)=>{ const d=document.createElement("img"); d.className="gr-fx"; d.src=`minigame/grill_${u}.webp`; d.alt=""; s.el.appendChild(d); setTimeout(()=>d.remove(),700); };
   const popup=(s,txt,cls)=>{ const d=document.createElement("span"); d.className="gr-pop "+cls; d.textContent=txt; s.el.appendChild(d); setTimeout(()=>d.remove(),700); };
   const clear=(s,wait)=>{ s.st=0; s.wait=wait; s.el.className="gr-slot empty"; };
   const fresh=s=>{ s.st=1; s.a=s.b=0; s.rate=(.8+Math.random()*.5)*(1+.12*lv)/GR.side; s.el.className="gr-slot"; };
-  const draw=s=>{ if(!s.st) return; const v=s.st===1?s.a:s.b; s.el.style.setProperty("--c",grCol(v)); s.el.style.setProperty("--c1",grCol(s.a));
+  const draw=s=>{ if(!s.st) return; const v=s.st===1?s.a:s.b; s.el.style.setProperty("--c1",grCol(s.a));
+    const im=s.el.querySelectorAll(".gr-sk img"); let j=0; while(j<GR_KEY.length-2&&v>GR_KEY[j+1]) j++;   // ซ้อนภาพ 4 ระดับแล้วเฟดตามความสุก
+    const t=Math.max(0,Math.min(1,(v-GR_KEY[j])/(GR_KEY[j+1]-GR_KEY[j]))); im.forEach((e,q)=>{ e.style.opacity=q<=j?1:q===j+1?t:0; });
     s.el.querySelector(".gr-bar i").style.left=Math.min(100,v/GR.burn*100)+"%"; s.el.querySelector(".gr-ic").textContent=s.st===1?"↻":"✔"; };
   const good=v=>v>=GR.lo&&v<=GR.hi;
   slots.forEach(s=>s.el.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||!s.st) return;
     if(s.st===1){ s.st=2; s.el.classList.add("flip","s2"); sfx("pop"); draw(s); return; }
-    if(good(s.a)&&good(s.b)){ n++; score(n,`${n} / ${goal}`); popup(s,"+1","good"); sfx("land"); }
+    if(good(s.a)&&good(s.b)){ n++; score(n,`${n} / ${goal}`); popup(s,"+1","good"); fx(s,"yum"); sfx("land"); }
     else { popup(s,T(s.a>GR.hi||s.b>GR.hi?"ไหม้!":"ดิบ!"),"bad"); sfx("wrong"); }
     clear(s,.35);
   },{passive:false}));
@@ -3323,7 +3327,7 @@ async function mgGrill(ar,goal,score,tick,lv=0){
     for(const s of slots){
       if(!s.st){ s.wait-=dt; if(s.wait<=0){ fresh(s); draw(s); } continue; }
       if(s.st===1) s.a+=s.rate*dt; else s.b+=s.rate*dt;
-      if((s.st===1?s.a:s.b)>=GR.burn){ popup(s,"💨 "+T("ไหม้!"),"bad"); sfx("wrong"); clear(s,.6); continue; }
+      if((s.st===1?s.a:s.b)>=GR.burn){ popup(s,T("ไหม้!"),"bad"); fx(s,"smoke"); sfx("wrong"); clear(s,.6); continue; }
       draw(s);
     }
     requestAnimationFrame(loop); };
