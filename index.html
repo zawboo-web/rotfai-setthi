@@ -182,6 +182,24 @@ svg.newrail .barrier{display:none}
 .mg-hold{min-width:180px;min-height:56px;font-size:17px;touch-action:none}.mg-hold.on{transform:scale(.96);filter:brightness(1.1)}
 .c3d{position:absolute;inset:0;width:100%!important;height:100%!important;pointer-events:none;z-index:2}
 .mg-art{display:block;place-items:initial}
+.gr-stage{position:absolute;inset:0;background:linear-gradient(#FFE9B8 0 22%,#3A2A24 22% 100%);display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:26% 10px 12px}
+.gr-stage::before{content:"";position:absolute;left:0;right:0;top:22%;bottom:0;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,120,40,.22) 14px 17px);pointer-events:none}
+.gr-slot{position:relative;background:none;border:0;padding:0;touch-action:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;-webkit-tap-highlight-color:transparent}
+.gr-sk{position:relative;width:70%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .18s}
+.gr-sk::before{content:"";position:absolute;top:-4%;bottom:-10%;width:5px;border-radius:3px;background:#E3C48A}
+.gr-meat{position:relative;width:100%;height:23%;border-radius:38% 42% 40% 36%;border:2.5px solid #2A2238;background:var(--c,#F2A0A0)}
+.gr-slot.flip .gr-sk{transform:rotateY(180deg)}
+.gr-dot{position:absolute;top:2px;right:0;width:16px;height:16px;border-radius:50%;border:2px solid #fff;background:var(--c1,transparent);visibility:hidden;z-index:2}
+.gr-slot.s2 .gr-dot{visibility:visible}
+.gr-bar{position:relative;width:86%;height:12px;border-radius:6px;background:#1E1512;border:2px solid #fff;overflow:hidden}
+.gr-bar::before{content:"";position:absolute;left:48%;width:32%;top:0;bottom:0;background:#3FBF6B}
+.gr-bar i{position:absolute;left:0;top:0;bottom:0;width:4px;margin-left:-2px;background:#fff;box-shadow:0 0 0 1.5px #2A2238}
+.gr-ic{font-size:15px;font-weight:700;color:#fff;height:18px;line-height:18px}
+.gr-slot.empty .gr-sk,.gr-slot.empty .gr-bar,.gr-slot.empty .gr-ic{visibility:hidden}
+.gr-pop{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--font-d);font-size:20px;color:#fff;text-shadow:0 2px 0 #2A2238;white-space:nowrap;animation:grPop .7s ease-out forwards;pointer-events:none;z-index:3}
+.gr-pop.good{color:#FFE14D}.gr-pop.bad{color:#FF8A7A}
+@keyframes grPop{to{transform:translate(-50%,-46px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.gr-sk{transition:none}}
 .mg-mosq{position:absolute;width:30%;height:auto;margin:-10% 0 0 -15%;font-size:0;background:none;border:0;padding:0;touch-action:none;animation:mgFly .9s ease-in-out infinite alternate}
 .mg-mosq img{width:100%;transform:scaleX(var(--fx,1));filter:drop-shadow(0 4px 4px rgba(0,0,0,.35));pointer-events:none}
 @keyframes mgFly{to{transform:translate(var(--dx),var(--dy))}}.mg-mosq.hit{animation:mgSquash .4s ease-out forwards}@keyframes mgSquash{30%{transform:scale(1.15)}to{opacity:0;transform:scale(.9) translateY(10px)}}
@@ -3180,7 +3198,8 @@ const MINIS={
   somtam:{n:"ตำส้มตำรัวๆ",how:"แตะครกรัวๆ ให้ได้ {g} ครั้งใน 5 วินาที (นับนิ้วเดียว) พอพริกกระเด็นต้องหยุดมือ แตะตอนนั้นโดนหัก 5",goal:36,step:4,run:mgSomtam},
   tea:{n:"ชงชาเย็นให้พอดีขีด",how:"กดค้างเพื่อเทชา ยิ่งเทนานยิ่งไหลแรง ปล่อยให้ตรงขีดแดง ล้นหรือขาดเกินไปถือว่าแพ้",goal:1,step:0,run:mgTea},
   mosq:{n:"ตบยุง",how:"ยุงจะบินโผล่มา แตะตบให้ได้ {g} ตัวใน 8 วินาที",goal:10,step:1,run:mgMosq},
-  splash:{n:"สงกรานต์สาดน้ำ",how:"สาดน้ำใส่เพื่อนที่โผล่ตามหน้าต่าง ได้ {g} แต้มใน 9 วินาที ห้ามสาดคุณยาย (−2)",goal:9,step:1,run:mgSplash}
+  splash:{n:"สงกรานต์สาดน้ำ",how:"สาดน้ำใส่เพื่อนที่โผล่ตามหน้าต่าง ได้ {g} แต้มใน 9 วินาที ห้ามสาดคุณยาย (−2)",goal:9,step:1,run:mgSplash},
+  grill:{n:"ปิ้งหมูปิ้ง",how:"หมู 5 ไม้สุกไม่พร้อมกัน แตะ 1 ครั้งเพื่อพลิก แตะอีกครั้งเพื่อเก็บ ต้องสุกเหลืองทั้งสองด้าน (แถบอยู่ในช่องเขียว) เก็บให้ได้ {g} ไม้ใน 16 วินาที ดิบหรือไหม้ไม่นับ",goal:10,step:1,run:mgGrill}
 };
 const MINI_KEYS=Object.keys(MINIS);
 // เลือกควิซหรือมินิเกมตามโหมดที่ตั้งไว้ · คืนค่า true ถ้าผ่าน
@@ -3279,6 +3298,39 @@ async function mgMosq(ar,goal,score,tick,lv=0){
   await mgClock(8,tick); live=false; clearInterval(iv);
   return {ok:n>=goal,text:T("ตบยุงได้ {n} ตัว (เป้า {g})",{n,g:goal})};
 }
+// ปิ้งหมูปิ้ง: 5 ไม้ ความเร็วสุกไม่เท่ากัน · แตะ 1 = พลิก, แตะ 2 = เก็บ · ด้านไหนเกิน BURN = ไหม้ทิ้ง
+const GR={lo:.6,hi:1,burn:1.25,side:1.7};
+const grCol=v=>{ const st=[[0,[242,160,160]],[GR.lo,[214,138,52]],[GR.hi,[158,88,30]],[GR.burn,[34,22,18]]]; v=Math.max(0,Math.min(GR.burn,v));
+  for(let i=1;i<st.length;i++) if(v<=st[i][0]){ const [a,ca]=st[i-1],[b,cb]=st[i],t=(v-a)/(b-a); return `rgb(${ca.map((x,j)=>Math.round(x+(cb[j]-x)*t)).join(",")})`; } return "rgb(34,22,18)"; };
+async function mgGrill(ar,goal,score,tick,lv=0){
+  let n=0, live=true, last=performance.now(); score(0,`0 / ${goal}`);
+  ar.classList.add("mg-art");
+  ar.innerHTML=`<div class="gr-stage">${[0,1,2,3,4].map(k=>`<button class="gr-slot empty" data-k="${k}" aria-label="${esc(T("หมูปิ้งไม้ที่ {n}",{n:k+1}))}"><span class="gr-dot"></span><span class="gr-sk"><span class="gr-meat"></span><span class="gr-meat"></span><span class="gr-meat"></span></span><span class="gr-bar"><i></i></span><span class="gr-ic"></span></button>`).join("")}</div>`;
+  const slots=[...ar.querySelectorAll(".gr-slot")].map((el,k)=>({el,k,st:0,a:0,b:0,rate:1,wait:.15+k*.28}));   // st: 0 ว่าง, 1 ด้านแรก, 2 ด้านสอง
+  const popup=(s,txt,cls)=>{ const d=document.createElement("span"); d.className="gr-pop "+cls; d.textContent=txt; s.el.appendChild(d); setTimeout(()=>d.remove(),700); };
+  const clear=(s,wait)=>{ s.st=0; s.wait=wait; s.el.className="gr-slot empty"; };
+  const fresh=s=>{ s.st=1; s.a=s.b=0; s.rate=(.8+Math.random()*.5)*(1+.12*lv)/GR.side; s.el.className="gr-slot"; };
+  const draw=s=>{ if(!s.st) return; const v=s.st===1?s.a:s.b; s.el.style.setProperty("--c",grCol(v)); s.el.style.setProperty("--c1",grCol(s.a));
+    s.el.querySelector(".gr-bar i").style.left=Math.min(100,v/GR.burn*100)+"%"; s.el.querySelector(".gr-ic").textContent=s.st===1?"↻":"✔"; };
+  const good=v=>v>=GR.lo&&v<=GR.hi;
+  slots.forEach(s=>s.el.addEventListener("pointerdown",e=>{ e.preventDefault(); if(!live||!s.st) return;
+    if(s.st===1){ s.st=2; s.el.classList.add("flip","s2"); sfx("pop"); draw(s); return; }
+    if(good(s.a)&&good(s.b)){ n++; score(n,`${n} / ${goal}`); popup(s,"+1","good"); sfx("land"); }
+    else { popup(s,T(s.a>GR.hi||s.b>GR.hi?"ไหม้!":"ดิบ!"),"bad"); sfx("wrong"); }
+    clear(s,.35);
+  },{passive:false}));
+  const loop=now=>{ if(!live) return; const dt=Math.min(.1,(now-last)/1000); last=now;
+    for(const s of slots){
+      if(!s.st){ s.wait-=dt; if(s.wait<=0){ fresh(s); draw(s); } continue; }
+      if(s.st===1) s.a+=s.rate*dt; else s.b+=s.rate*dt;
+      if((s.st===1?s.a:s.b)>=GR.burn){ popup(s,"💨 "+T("ไหม้!"),"bad"); sfx("wrong"); clear(s,.6); continue; }
+      draw(s);
+    }
+    requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  await mgClock(16,tick); live=false;
+  return {ok:n>=goal,text:T("เก็บหมูปิ้งได้ {n} ไม้ (เป้า {g})",{n,g:goal})};
+}
 // หน้าต่าง 9 ช่องบนภาพตึกแถว (ตำแหน่งเป็น % ของภาพสี่เหลี่ยมจัตุรัส)
 const SPL_WIN=[[25.5,20.5],[50,20.5],[74.5,20.5],[25.5,45],[50,45],[74.5,45],[25.5,80],[50,80],[74.5,80]];
 const AV_IDS=["A01","A02","A03","A04","A05","A06","A07","A08"];
@@ -3303,6 +3355,7 @@ Object.assign(TR,{"แข่งเรือยาว": ["Longboat Race", "ロン
 Object.assign(TR,{"จับลำดับเดิน": ["Turn order", "順番決め"], "ลำดับการเดิน": ["Turn order", "プレイ順"], "ที่ {n}": ["#{n}", "{n}番"], "ไวสุดได้เดินก่อน เรียงลำดับตามเวลา": ["Fastest goes first — order follows your times", "一番速い人が先攻。タイム順に並びます"], "{p} ไวสุด ได้เดินก่อน": ["{p} was fastest and goes first", "{p}が一番速く、先攻"]});
 Object.assign(TR,{"{p} ซื้อการ์ด {c} ใบ": ["{p} bought {c} card(s)", "{p}がカードを{c}枚購入"], "ไม่เปิดเผยว่าเป็นการ์ดอะไร": ["Which card stays secret", "どのカードかは秘密"], "{p} อยู่ที่นี่": ["{p} — here", "{p}はここにいる"], "{p}ไปทางถนนไม่ถึง ต้องนั่งเรือหรือบิน": ["{p} can't reach this by road — take a boat or fly", "{p}は道路では行けない。船か飛行機で"], "ห่างจาก{p} {c} ช่อง · ทอยเต๋าราว {k} ครั้ง": ["{c} squares from {p} · about {k} roll(s)", "{p}から{c}マス・サイコロ約{k}回"], "คนอื่น (ช่อง):": ["Others (squares):", "他の人(マス):"], "ช่อง": ["Square", "マス"], "หยุดแล้วทอยเต๋า ได้เงินเท่ากับแต้ม × 2": ["Stop here: roll, gain money = roll × 2", "止まるとサイコロ、出目×2のお金をもらう"], "หยุดแล้วทอยเต๋า เสียเงินเท่ากับแต้ม × 2": ["Stop here: roll, lose money = roll × 2", "止まるとサイコロ、出目×2のお金を払う"], "หยุดแล้วได้การ์ดไอเทม 1 ใบ": ["Stop here: draw 1 item card", "止まるとアイテムカードを1枚引く"], "ถนนชนบท เดินผ่านเฉยๆ ไม่มีอะไรเกิดขึ้น": ["Country road — nothing happens here", "田舎道。何も起きない"], "แตะที่ไหนก็ได้เพื่อปิด": ["Tap anywhere to close", "どこかをタップして閉じる"], "รายการการ์ด": ["Card list", "カード一覧"], "แตะการ์ดเพื่อดูรายละเอียด": ["Tap a card to see details", "カードをタップして詳細を見る"]});
 Object.assign(TR,{"ข้ามอ่าวไป{st}": ["Cross the gulf to {st}", "湾を渡って{st}へ"], "ข้ามอ่าวไป{st}?": ["Cross the gulf to {st}?", "湾を渡って{st}へ?"], "ข้ามอ่าวไทยไป{st}ในตาเดียว (ทางถนน {c} ช่อง) ค่าเรือ {m} · ไปแล้วจบตา": ["Cross the Gulf of Thailand to {st} in one turn ({c} squares by road). Fare {m} · ends your turn", "1ターンでタイ湾を渡り{st}へ(陸路なら{c}マス)。運賃{m}・ターン終了"], "กลางทะเลทอยเต๋า 1 ลูก:": ["Roll 1 die at sea:", "海の上でサイコロ1個:"], "ได้ {r} — 👻 ผีพรายโผล่! อาจลากเรือกลับท่า ขอส่วย {m} หรือฉุดการ์ดลงทะเล 1 ใบ": ["{r} — 👻 Sea spirit! It may drag you back to port, demand a {m} toll, or pull a card into the sea", "{r} — 👻 ピープライ出現!港へ引き戻す・{m}の通行料・カード1枚を海へ"], "ได้ {r} — ⛈ พายุ ถึงที่หมายแต่จ่ายค่าซ่อมเรือ {m}": ["{r} — ⛈ Storm: you arrive but pay {m} for repairs", "{r} — ⛈ 嵐:到着するが修理代{m}"], "ได้ {r} — ถึงปลอดภัย": ["{r} — safe arrival", "{r} — 無事到着"], "ช่วงมรสุม ทะเลแรงกว่าปกติ": ["Monsoon season — rougher seas than usual", "モンスーンの季節、海はいつもより荒い"], "ออกเรือ": ["Set sail", "出航"], "ผีพราย": ["Sea spirit", "ピープライ"], "ผีพรายลากเรือกลับท่า!": ["The sea spirit drags you back!", "ピープライに引き戻された!"], "เรือวนกลับมาที่{st} เสียค่าเรือฟรีๆ": ["The boat drifts back to {st}. Fare wasted", "船は{st}に戻った。運賃は無駄に"], "ผีพรายฉุดการ์ดลงทะเล!": ["The sea spirit pulls a card into the sea!", "ピープライがカードを海へ!"], "เสียการ์ด{it} แต่เรือไปถึงที่หมาย": ["Lost {it}, but the boat arrives", "{it}を失ったが船は到着"], "ผีพรายขอส่วยทะเล!": ["The sea spirit demands a toll!", "ピープライが通行料を要求!"], "จ่ายไป {m} เรือถึงจะผ่าน": ["Pay {m} to pass", "{m}払って通過"], "กลางอ่าวไทย": ["Mid-gulf", "タイ湾の真ん中"], "พายุเข้า!": ["Storm!", "嵐だ!"], "ไปถึงที่หมายแต่จ่ายค่าซ่อมเรือ {m}": ["You arrive, but pay {m} for repairs", "到着したが修理代{m}"], "{p} ข้ามอ่าวไป{st}": ["{p} crosses the gulf to {st}", "{p}は湾を渡って{st}へ"], "{p} ลงเรือข้ามอ่าวจาก{st}ไป{st2} ค่าเรือ {m}": ["{p} sails across the gulf from {st} to {st2}, fare {m}", "{p}が{st}から{st2}へ湾を渡る、運賃{m}"], "ผีพรายลากเรือของ{p}กลับท่า{st}": ["A sea spirit dragged {p}'s boat back to {st}", "ピープライが{p}の船を{st}へ引き戻した"], "ผีพรายฉุดการ์ด{it}ของ{p}ลงทะเล": ["A sea spirit pulled {p}'s {it} into the sea", "ピープライが{p}の{it}を海へ"], "ผีพรายขอส่วยทะเลจาก{p} {m}": ["A sea spirit took a {m} toll from {p}", "ピープライが{p}から{m}の通行料"], "{p} เจอพายุกลางอ่าว จ่ายค่าซ่อมเรือ {m}": ["{p} hit a storm mid-gulf and paid {m} for repairs", "{p}が嵐に遭い修理代{m}"], "🚢 เรือข้ามอ่าว (พัทยา–หัวหิน, ระยอง–ชุมพร, ตราด–นครศรีฯ) ย่นทางได้มากในตาเดียว แต่กลางทะเลอาจเจอพายุหรือผีพราย": ["🚢 Gulf crossings (Pattaya–Hua Hin, Rayong–Chumphon, Trat–Nakhon Si) cut a long way in one turn, but storms or sea spirits may strike", "🚢 湾横断船(パタヤ–ホアヒン、ラヨーン–チュンポン、トラート–ナコーンシー)は1ターンで大きく近道。ただし嵐やピープライに注意"]});
+Object.assign(TR,{"ปิ้งหมูปิ้ง": ["Grill the Moo Ping", "ムーピンを焼こう"], "หมู 5 ไม้สุกไม่พร้อมกัน แตะ 1 ครั้งเพื่อพลิก แตะอีกครั้งเพื่อเก็บ ต้องสุกเหลืองทั้งสองด้าน (แถบอยู่ในช่องเขียว) เก็บให้ได้ {g} ไม้ใน 16 วินาที ดิบหรือไหม้ไม่นับ": ["Five pork skewers cook at different speeds. Tap once to flip, tap again to serve. Both sides must be golden (marker in the green zone). Serve {g} skewers in 16 seconds — raw or burnt ones don't count", "5本の豚串は焼ける速さがバラバラ。1回タップで裏返し、もう1回で取る。両面がこんがり(マーカーが緑のゾーン)で成功。16秒で{g}本。生焼けと焦げはノーカウント"], "หมูปิ้งไม้ที่ {n}": ["Skewer {n}", "串{n}"], "ไหม้!": ["Burnt!", "焦げた!"], "ดิบ!": ["Raw!", "生焼け!"], "เก็บหมูปิ้งได้ {n} ไม้ (เป้า {g})": ["Served {n} skewers (goal {g})", "{n}本成功(目標{g})"]});
 // ================= FESTIVAL (มินิเกมกลุ่ม ทุก 3 เดือน) =================
 // ทุกคนเล่นพร้อมกัน: เครื่องเดียว = แบ่งจอเป็นช่อง · ออนไลน์ = เครื่องใครเครื่องมันเล่นเต็มจอ แล้วส่งคะแนนให้เครื่องที่ถือตาเดินรวม
 // ทุกช่องใช้ seed เดียวกัน จึงเจอรูปแบบเดียวกันเป๊ะ · บอทคำนวณคะแนนจาก seed
