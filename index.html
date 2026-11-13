@@ -31,7 +31,7 @@
   --plus:#4F87EB; --minus:#EA6150; --card:#E0A800; --field-n:#15231A; --field-c:#211E16; --field-e:#13222A; --sea:#1C3A52; --hwy:#5E4E2C; --field-ne:#2A1E19; --lbl-ne:#D9A08E; --field-s:#13261F; --lbl-s:#7CC2AE; --field-w:#1F1A26; --lbl-e:#7FB3CC; --lbl-w:#B19BCB;
   --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
 
-html,body{height:100%}
+html,body{height:100%;overscroll-behavior:none}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:15px;line-height:1.45;overflow:hidden;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 button:focus-visible,input:focus-visible,[data-node]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -138,7 +138,7 @@ svg.newrail .barrier{display:none}
 .mg-score{font-family:var(--font-d);font-size:22px;background:#FFC21A;color:#2A2238;border-radius:10px;padding:2px 12px;min-width:64px;text-align:center}.mg-time{font-family:var(--font-d);font-size:20px;min-width:52px;text-align:right}
 .mg-arena{position:relative;width:min(420px,100%);height:min(420px,62vh);background:var(--surface);border-radius:20px;border:3px solid #2A2238;overflow:hidden;display:grid;place-items:center}
 .mg-mortar{background:none;border:0;padding:0;touch-action:manipulation}
-.fl-wrap{position:fixed;inset:0;z-index:60;display:grid;gap:4px;padding:4px;background:#1B2430;grid-template:1fr/1fr}.fl-wrap.n2{grid-template:1fr 1fr/1fr}.fl-wrap.n3,.fl-wrap.n4{grid-template:1fr 1fr/1fr 1fr}.fl-wrap.n2 .fl-lane[data-i="0"],.fl-wrap.n3 .fl-lane[data-i="0"],.fl-wrap.n3 .fl-lane[data-i="1"],.fl-wrap.n4 .fl-lane[data-i="0"],.fl-wrap.n4 .fl-lane[data-i="1"]{transform:rotate(180deg)}
+.fl-wrap{position:fixed;inset:0;z-index:60;touch-action:none;overscroll-behavior:none;display:grid;gap:4px;padding:4px;background:#1B2430;grid-template:1fr/1fr}.fl-wrap.n2{grid-template:1fr 1fr/1fr}.fl-wrap.n3,.fl-wrap.n4{grid-template:1fr 1fr/1fr 1fr}.fl-wrap.n2 .fl-lane[data-i="0"],.fl-wrap.n3 .fl-lane[data-i="0"],.fl-wrap.n3 .fl-lane[data-i="1"],.fl-wrap.n4 .fl-lane[data-i="0"],.fl-wrap.n4 .fl-lane[data-i="1"]{transform:rotate(180deg)}
 .fl-lane{position:relative;border-radius:16px;border:5px solid var(--pc);background:#F4F1E8;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:background .08s;overflow:hidden}
 .fl-name{position:absolute;top:8px;left:12px;font:600 15px var(--font-d,Mitr),sans-serif;color:var(--pc)}.fl-sig{font:700 clamp(40px,12vmin,96px) var(--font-d,Mitr),sans-serif;color:#2A2A2A;line-height:1}.fl-sub{font:500 16px var(--font-d,Mitr),sans-serif;color:#555;margin-top:6px;min-height:1.3em}
 .fl-lane[data-st="feint"]{background:#FFE7B3}.fl-lane[data-st="go"]{background:#4CC36B}.fl-lane[data-st="go"] .fl-sig,.fl-lane[data-st="go"] .fl-sub{color:#fff}.fl-lane[data-st="foul"],.fl-lane[data-st="miss"]{background:#F6C6C1}.fl-lane[data-st="hit"]{background:#D8F0DD}.fl-lane[data-st="end"]{background:#FFF6D6}
@@ -2541,7 +2541,16 @@ function renderPanel(){
   document.querySelectorAll("[data-player]").forEach(b=>b.onclick=()=>showPlayer(+b.dataset.player));
 }
 function labelOf(id){ if(NAME[id]) return stN(id); const t=NODES[id].t; return T({b:"ช่องน้ำเงิน",r:"ช่องแดง",y:"ช่องการ์ด",g:"ถนนชนบท"}[t]); }
-function render(){ if(!S) return; renderTop(); renderBoard(); renderPanel(); try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
+// กันเด้งออกจากเกมบนมือถือ: ปัดขอบจอ (ย้อนกลับของ Android) หรือรีเฟรชโดยไม่ตั้งใจ
+let NAV_GUARD=false, NAV_BACK=0;
+const inGame=()=>!!(S&&S.phase==="play")||!!document.querySelector(".fl-wrap,.mg-arena");
+function navGuard(){ if(NAV_GUARD||!inGame()) return; NAV_GUARD=true; try{ history.pushState({tk:1},""); }catch(e){} }
+window.addEventListener("popstate",()=>{ if(!NAV_GUARD) return; NAV_GUARD=false;
+  if(inGame()&&Date.now()-NAV_BACK>2500){ NAV_BACK=Date.now(); toast(T("กดย้อนกลับอีกครั้งเพื่อออกจากเกม")); navGuard(); return; }
+  history.back(); });
+window.addEventListener("beforeunload",e=>{ if(inGame()){ e.preventDefault(); e.returnValue=""; } });
+document.addEventListener("pointerdown",()=>navGuard(),true);
+function render(){ if(!S) return; navGuard(); renderTop(); renderBoard(); renderPanel(); try{ if(BGM.ctx&&BGM.on) musUpdate(); }catch(e){} }
 function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;$("toasts").appendChild(el);setTimeout(()=>el.remove(),3600);while($("toasts").children.length>3)$("toasts").firstChild.remove();}
 
 // ================= MODAL =================
@@ -3262,6 +3271,7 @@ async function playMini(eyebrow,stake,forceK,practice){
     try{
     await modal({eyebrow,title:T("มินิเกม: {g}",{g:T(M.n)}),html:head+`<div class="mg-how">${T(M.how,{g:goal})}</div>`,buttons:[{label:T("เริ่ม!"),value:1,primary:true}]});
     const box=document.createElement("div"); box.className="mg-wrap";
+    setTimeout(navGuard,0);
     box.innerHTML=`<div class="mg-top"><b>${T(M.n)}</b><span class="mg-score" id="mgScore"></span><span class="mg-time" id="mgTime"></span></div><div class="mg-arena" id="mgArena"></div>`;
     document.body.appendChild(box);
     const res=await M.run($("mgArena"),goal,(sc,tx)=>{ const e=$("mgScore"); if(e){ e.textContent=tx!==undefined?tx:sc; e.style.visibility=e.textContent===""?"hidden":""; } },(sec)=>{ const e=$("mgTime"); if(e) e.textContent=sec>0?T("{n} วิ",{n:Math.ceil(sec)}):""; },lv);
@@ -3406,6 +3416,7 @@ Object.assign(TR,{"{p} ซื้อการ์ด {c} ใบ": ["{p} bought {c}
 Object.assign(TR,{"ข้ามอ่าวไป{st}": ["Cross the gulf to {st}", "湾を渡って{st}へ"], "ข้ามอ่าวไป{st}?": ["Cross the gulf to {st}?", "湾を渡って{st}へ?"], "ข้ามอ่าวไทยไป{st}ในตาเดียว (ทางถนน {c} ช่อง) ค่าเรือ {m} · ไปแล้วจบตา": ["Cross the Gulf of Thailand to {st} in one turn ({c} squares by road). Fare {m} · ends your turn", "1ターンでタイ湾を渡り{st}へ(陸路なら{c}マス)。運賃{m}・ターン終了"], "กลางทะเลทอยเต๋า 1 ลูก:": ["Roll 1 die at sea:", "海の上でサイコロ1個:"], "ได้ {r} — 👻 ผีพรายโผล่! อาจลากเรือกลับท่า ขอส่วย {m} หรือฉุดการ์ดลงทะเล 1 ใบ": ["{r} — 👻 Sea spirit! It may drag you back to port, demand a {m} toll, or pull a card into the sea", "{r} — 👻 ピープライ出現!港へ引き戻す・{m}の通行料・カード1枚を海へ"], "ได้ {r} — ⛈ พายุ ถึงที่หมายแต่จ่ายค่าซ่อมเรือ {m}": ["{r} — ⛈ Storm: you arrive but pay {m} for repairs", "{r} — ⛈ 嵐:到着するが修理代{m}"], "ได้ {r} — ถึงปลอดภัย": ["{r} — safe arrival", "{r} — 無事到着"], "ช่วงมรสุม ทะเลแรงกว่าปกติ": ["Monsoon season — rougher seas than usual", "モンスーンの季節、海はいつもより荒い"], "ออกเรือ": ["Set sail", "出航"], "ผีพราย": ["Sea spirit", "ピープライ"], "ผีพรายลากเรือกลับท่า!": ["The sea spirit drags you back!", "ピープライに引き戻された!"], "เรือวนกลับมาที่{st} เสียค่าเรือฟรีๆ": ["The boat drifts back to {st}. Fare wasted", "船は{st}に戻った。運賃は無駄に"], "ผีพรายฉุดการ์ดลงทะเล!": ["The sea spirit pulls a card into the sea!", "ピープライがカードを海へ!"], "เสียการ์ด{it} แต่เรือไปถึงที่หมาย": ["Lost {it}, but the boat arrives", "{it}を失ったが船は到着"], "ผีพรายขอส่วยทะเล!": ["The sea spirit demands a toll!", "ピープライが通行料を要求!"], "จ่ายไป {m} เรือถึงจะผ่าน": ["Pay {m} to pass", "{m}払って通過"], "กลางอ่าวไทย": ["Mid-gulf", "タイ湾の真ん中"], "พายุเข้า!": ["Storm!", "嵐だ!"], "ไปถึงที่หมายแต่จ่ายค่าซ่อมเรือ {m}": ["You arrive, but pay {m} for repairs", "到着したが修理代{m}"], "{p} ข้ามอ่าวไป{st}": ["{p} crosses the gulf to {st}", "{p}は湾を渡って{st}へ"], "{p} ลงเรือข้ามอ่าวจาก{st}ไป{st2} ค่าเรือ {m}": ["{p} sails across the gulf from {st} to {st2}, fare {m}", "{p}が{st}から{st2}へ湾を渡る、運賃{m}"], "ผีพรายลากเรือของ{p}กลับท่า{st}": ["A sea spirit dragged {p}'s boat back to {st}", "ピープライが{p}の船を{st}へ引き戻した"], "ผีพรายฉุดการ์ด{it}ของ{p}ลงทะเล": ["A sea spirit pulled {p}'s {it} into the sea", "ピープライが{p}の{it}を海へ"], "ผีพรายขอส่วยทะเลจาก{p} {m}": ["A sea spirit took a {m} toll from {p}", "ピープライが{p}から{m}の通行料"], "{p} เจอพายุกลางอ่าว จ่ายค่าซ่อมเรือ {m}": ["{p} hit a storm mid-gulf and paid {m} for repairs", "{p}が嵐に遭い修理代{m}"], "🚢 เรือข้ามอ่าว (พัทยา–หัวหิน, ระยอง–ชุมพร, ตราด–นครศรีฯ) ย่นทางได้มากในตาเดียว แต่กลางทะเลอาจเจอพายุหรือผีพราย": ["🚢 Gulf crossings (Pattaya–Hua Hin, Rayong–Chumphon, Trat–Nakhon Si) cut a long way in one turn, but storms or sea spirits may strike", "🚢 湾横断船(パタヤ–ホアヒン、ラヨーン–チュンポン、トラート–ナコーンシー)は1ターンで大きく近道。ただし嵐やピープライに注意"]});
 Object.assign(TR,{"ปิ้งหมูปิ้ง": ["Grill the Moo Ping", "ムーピンを焼こう"], "หมู 5 ไม้สุกไม่พร้อมกัน แตะ 1 ครั้งเพื่อพลิก แตะอีกครั้งเพื่อเก็บ ต้องสุกเหลืองทั้งสองด้าน (แถบอยู่ในช่องเขียว) เก็บให้ได้ {g} ไม้ใน 20 วินาที ดิบหรือไหม้ไม่นับ": ["Five pork skewers cook at different speeds. Tap once to flip, tap again to serve. Both sides must be golden (marker in the green zone). Serve {g} skewers in 20 seconds — raw or burnt ones don't count", "5本の豚串は焼ける速さがバラバラ。1回タップで裏返し、もう1回で取る。両面がこんがり(マーカーが緑のゾーン)で成功。20秒で{g}本。生焼けと焦げはノーカウント"], "หมูปิ้งไม้ที่ {n}": ["Skewer {n}", "串{n}"], "ไหม้!": ["Burnt!", "焦げた!"], "ดิบ!": ["Raw!", "生焼け!"], "เก็บหมูปิ้งได้ {n} ไม้ (เป้า {g})": ["Served {n} skewers (goal {g})", "{n}本成功(目標{g})"]});
 Object.assign(TR,{"แสบตา! รอแป๊บ": ["Stinging eyes! Wait…", "目にしみる!ちょっと待って"]});
+Object.assign(TR,{"กดย้อนกลับอีกครั้งเพื่อออกจากเกม": ["Press back again to leave the game", "もう一度戻るとゲームを終了"]});
 // ================= FESTIVAL (มินิเกมกลุ่ม ทุก 3 เดือน) =================
 // ทุกคนเล่นพร้อมกัน: เครื่องเดียว = แบ่งจอเป็นช่อง · ออนไลน์ = เครื่องใครเครื่องมันเล่นเต็มจอ แล้วส่งคะแนนให้เครื่องที่ถือตาเดินรวม
 // ทุกช่องใช้ seed เดียวกัน จึงเจอรูปแบบเดียวกันเป๊ะ · บอทคำนวณคะแนนจาก seed
@@ -3513,6 +3524,7 @@ function laneQuick(el,plan){
 }
 // เล่นบนเครื่องนี้: seats = ลำดับผู้เล่นที่เล่นบนจอนี้ · คืน {seat:score}
 async function festPlay(G,plan,seats,names,nAll,cols){
+  setTimeout(navGuard,0);
   for(const k in GROUP) if(GROUP[k]===G) mgPreload(k);
   const wrap=document.createElement("div"); wrap.className="fl-wrap n"+seats.length;
   wrap.innerHTML=seats.map((k,i)=>`<div class="fl-lane" data-i="${i}" style="--pc:${cols&&cols[k]||PCOL[k%PCOL.length][1]}"><div class="fl-name">${esc(names[k])}</div><div class="fl-sig">3</div><div class="fl-sub"></div></div>`).join("");
