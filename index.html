@@ -150,18 +150,26 @@ svg.newrail .barrier{display:none}
 .bt-boat img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .bt-boat .bt-fb,.bt-boat .bt-wob{opacity:0}
 .bt-boat.pull .bt-fa{opacity:0}.bt-boat.pull .bt-fb{opacity:1}
-.bt-boat .bt-wake{left:-53%;width:206%;opacity:0}
-.bt-boat.wake .bt-wake{animation:btFade .4s ease-out}
+.bt-boat .bt-sp{width:150%;height:auto;inset:auto;top:28%;opacity:0}
+.bt-boat .bt-spL{left:-115%}.bt-boat .bt-spR{left:65%}
+.bt-boat.spL .bt-spL,.bt-boat.spR .bt-spR{animation:btSplash .45s ease-out}
+@keyframes btSplash{0%{opacity:1;transform:scale(.4)}60%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.15)}}
 .bt-boat .bt-wob{left:-40%;top:-12%;width:180%;height:auto}
 .bt-boat.wob .bt-wob{animation:btFade .5s ease-out}
 .bt-boat.wob{animation:btWob .35s}
 @keyframes btFade{0%{opacity:1}100%{opacity:0}}
 @keyframes btWob{25%{transform:translateX(-58%) rotate(-5deg)}75%{transform:translateX(-42%) rotate(5deg)}}
-.bt-drum{position:absolute;right:6px;bottom:6px;width:clamp(40px,13%,80px);aspect-ratio:224/300;z-index:2;pointer-events:none;transform-origin:50% 90%}
+.bt-drum{position:absolute;right:clamp(16px,6%,30px);bottom:10px;width:clamp(40px,13%,80px);aspect-ratio:224/300;z-index:2;pointer-events:none;transform-origin:50% 90%}
 .bt-drum img{position:absolute;left:0;width:100%;pointer-events:none}
 .bt-drum .bd-body{bottom:0}
-.bt-drum .bd-st,.bt-drum .bd-sth{left:-12%;width:124%;top:-22%}
-.bt-drum .bd-sth{opacity:0}.bt-drum.hit .bd-st{opacity:0}.bt-drum.hit .bd-sth{opacity:1}.bt-drum.hit{animation:btDrum .22s}@keyframes btDrum{0%{transform:scale(1.18)}100%{transform:scale(1)}}
+.bt-drum .bd-s{width:55%;transition:none}
+.bt-drum .bd-lu{left:-15%;top:-30%}.bt-drum .bd-ru{left:auto;right:-15%;top:-30%}
+.bt-drum .bd-ld{left:-6%;top:5%}.bt-drum .bd-rd{left:auto;right:-6%;top:5%}
+.bt-drum .bd-ld,.bt-drum .bd-rd{opacity:0}
+.bt-drum.hitL .bd-lu,.bt-drum.hitR .bd-ru{opacity:0}.bt-drum.hitL .bd-ld,.bt-drum.hitR .bd-rd{opacity:1}
+.bd-ring,.bd-tgt{position:absolute;left:50%;top:25%;width:74%;aspect-ratio:74/57;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.bd-tgt{border:3px dashed rgba(255,255,255,.75)}
+.bd-ring{border:4px solid #fff;box-shadow:0 0 0 2px var(--pc),0 0 10px var(--pc);opacity:0;will-change:transform}.bt-drum.hit{animation:btDrum .22s}@keyframes btDrum{0%{transform:scale(1.18)}100%{transform:scale(1)}}
 .pu-hill{position:absolute;left:0;right:0;bottom:0;height:46%}.pu-hill svg{position:absolute;inset:0;width:100%;height:100%}.pu-tuk{position:absolute;left:3%;bottom:3%;font-size:38px;line-height:1;transform:translate(-30%,0) scaleX(-1) rotate(-14deg);transform-origin:50% 100%;transition:left .12s,bottom .12s}.pu-flag{position:absolute;right:2%;top:-30px;font-size:26px}
 .pu-heave{position:absolute;inset:auto 0 46% 0;text-align:center;font:700 clamp(34px,10vmin,70px) var(--font-d,Mitr),sans-serif;color:#C62A1E;opacity:0;transform:scale(.7);transition:opacity .06s,transform .1s;pointer-events:none}.pu-heave.on{opacity:1;transform:scale(1)}
 .fl-team{text-align:center;font:700 19px var(--font-d,Mitr),sans-serif;margin:0 0 10px}.fl-team.ok{color:#1E8E3E}.fl-team.no{color:#C62A1E}.fl-team small{font-weight:500;font-size:14px;color:var(--muted)}
@@ -3267,7 +3275,7 @@ async function playMini(eyebrow,stake,forceK,practice){
 }
 // นับถอยหลังแล้วคืน promise ที่จบเมื่อหมดเวลา
 function mgClock(sec,onTick){ const t0=performance.now(); return new Promise(r=>{ const iv=setInterval(()=>{ const left=sec-(performance.now()-t0)/1000; onTick(left); if(left<=0){ clearInterval(iv); r(); } },100); onTick(sec); }); }
-const MG_IMG={boat:["minigame/boat_bg.webp","minigame/boat_wake.webp","minigame/boat_wobble.webp","minigame/boat_drum.webp","minigame/boat_sticks.webp","minigame/boat_sticks_hit.webp",...["red","blue","green","yellow"].flatMap(c=>["a","b"].map(f=>`minigame/boat_${c}_${f}.webp`))],grill:["minigame/grill_bg.webp","minigame/grill_fg.webp",...["a","b","c"].flatMap(c=>["wait","yum","ugh"].map(m=>`minigame/cust_${c}_${m}.webp`)),"minigame/grill_smoke.webp","minigame/grill_yum.webp",...["raw","half","done","burnt"].map(u=>`minigame/moo_${u}.webp`)],mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
+const MG_IMG={boat:["minigame/boat_bg.webp","minigame/boat_splash.webp","minigame/boat_wobble.webp","minigame/boat_drum.webp",...["l","r"].flatMap(a=>["up","dn"].map(b=>`minigame/boat_stick_${a}_${b}.webp`)),...["red","blue","green","yellow"].flatMap(c=>["a","b"].map(f=>`minigame/boat_${c}_${f}.webp`))],grill:["minigame/grill_bg.webp","minigame/grill_fg.webp",...["a","b","c"].flatMap(c=>["wait","yum","ugh"].map(m=>`minigame/cust_${c}_${m}.webp`)),"minigame/grill_smoke.webp","minigame/grill_yum.webp",...["raw","half","done","burnt"].map(u=>`minigame/moo_${u}.webp`)],mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
 function mgPreload(k){ (MG_IMG[k]||[]).forEach(u=>{ const i=new Image(); i.src=u; }); }
 async function mgSomtam(ar,goal,score,tick){
   let n=0, live=true, messy=false;
@@ -3441,9 +3449,10 @@ function laneBoat(el,plan,ctx){
   const sig=el.querySelector(".fl-sig"), sub=el.querySelector(".fl-sub");
   el.classList.add("bt"); el.dataset.st="play";
   const bc=btColor(getComputedStyle(el).getPropertyValue("--pc"));
-  el.insertAdjacentHTML("beforeend",`<div class="bt-river"><img class="bt-bg" src="minigame/boat_bg.webp" alt=""><div class="bt-boat"><img class="bt-wake" src="minigame/boat_wake.webp" alt=""><img class="bt-fa" src="minigame/boat_${bc}_a.webp" alt=""><img class="bt-fb" src="minigame/boat_${bc}_b.webp" alt=""><img class="bt-wob" src="minigame/boat_wobble.webp" alt=""></div></div><div class="bt-drum"><img class="bd-body" src="minigame/boat_drum.webp" alt=""><img class="bd-st" src="minigame/boat_sticks.webp" alt=""><img class="bd-sth" src="minigame/boat_sticks_hit.webp" alt=""></div>`);
+  el.insertAdjacentHTML("beforeend",`<div class="bt-river"><img class="bt-bg" src="minigame/boat_bg.webp" alt=""><div class="bt-boat"><img class="bt-sp bt-spL" src="minigame/boat_splash.webp" alt=""><img class="bt-sp bt-spR" src="minigame/boat_splash.webp" alt=""><img class="bt-fa" src="minigame/boat_${bc}_a.webp" alt=""><img class="bt-fb" src="minigame/boat_${bc}_b.webp" alt=""><img class="bt-wob" src="minigame/boat_wobble.webp" alt=""></div></div><div class="bt-drum"><img class="bd-body" src="minigame/boat_drum.webp" alt=""><div class="bd-tgt"></div><div class="bd-ring"></div><img class="bd-s bd-lu" src="minigame/boat_stick_l_up.webp" alt=""><img class="bd-s bd-ru" src="minigame/boat_stick_r_up.webp" alt=""><img class="bd-s bd-ld" src="minigame/boat_stick_l_dn.webp" alt=""><img class="bd-s bd-rd" src="minigame/boat_stick_r_dn.webp" alt=""></div>`);
   const boat=el.querySelector(".bt-boat"), drum=el.querySelector(".bt-drum"), max=plan.n*4;
-  let dist=0, t0=0, live=false, pullTo=0; const judged=new Set();
+  let dist=0, t0=0, live=false, pullTo=0, hitTo=0; const judged=new Set(); const ring=el.querySelector(".bd-ring");
+  const side=i=>i%2?"L":"R";   // ตีสลับซ้าย-ขวา: จังหวะคี่ = ซ้าย
   const show=()=>{ boat.style.bottom=(3+Math.min(1,dist/max)*52)+"%"; sig.textContent=Math.round(dist*5); };
   const flash=c=>{ boat.classList.remove(c); void boat.offsetWidth; boat.classList.add(c); };
   sig.textContent="0"; sub.textContent=T("เมตร");
@@ -3452,12 +3461,14 @@ function laneBoat(el,plan,ctx){
     if(judged.has(i)){ dist=Math.max(0,dist-.5); sub.textContent=T("สะดุด!"); el.dataset.j="bad"; flash("wob"); }
     else { judged.add(i); const g=dt<=70?4:dt<=150?2:1; dist+=g; sub.textContent=T(g===4?"เป๊ะ!":g===2?"ดี":"หลุดจังหวะ"); el.dataset.j=g===4?"top":g===2?"ok":"bad";
       boat.classList.add("pull"); clearTimeout(pullTo); pullTo=setTimeout(()=>boat.classList.remove("pull"),200);   // สลับเฟรมพาย
-      if(g===4) flash("wake"); else if(g===1) flash("wob"); }
+      if(g===4) flash("sp"+side(i)); else if(g===1) flash("wob"); }
     show(); });
   return (async()=>{
     t0=performance.now(); live=true; let last=0;
     await new Promise(res=>{ const frame=()=>{ const t=performance.now()-t0, i=Math.floor(t/plan.beat);
-        if(i>last&&i<=plan.n){ last=i; drum.classList.remove("hit"); void drum.offsetWidth; drum.classList.add("hit"); if(!ctx||ctx.i===0) sfx("step"); }
+        if(i>last&&i<=plan.n){ last=i; drum.classList.remove("hit","hitL","hitR"); void drum.offsetWidth; drum.classList.add("hit","hit"+side(i)); clearTimeout(hitTo); hitTo=setTimeout(()=>drum.classList.remove("hitL","hitR"),160); if(!ctx||ctx.i===0) sfx("step"); }
+        // วงแหวนไกด์: หุบจากใหญ่เข้ามาพอดีหน้ากลองตอนถึงจังหวะ
+        if(i<plan.n){ const p=(t-i*plan.beat)/plan.beat; ring.style.opacity=(.25+.75*p).toFixed(2); ring.style.transform=`translate(-50%,-50%) scale(${(1+1.6*(1-p)).toFixed(3)})`; } else ring.style.opacity=0;
         if(t>=(plan.n+.6)*plan.beat) return res(); requestAnimationFrame(frame); }; requestAnimationFrame(frame); });
     live=false; el.dataset.st="end"; sub.textContent=T("เมตร"); return dist;
   })();
