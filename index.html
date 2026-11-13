@@ -144,8 +144,24 @@ svg.newrail .barrier{display:none}
 .fl-lane[data-st="feint"]{background:#FFE7B3}.fl-lane[data-st="go"]{background:#4CC36B}.fl-lane[data-st="go"] .fl-sig,.fl-lane[data-st="go"] .fl-sub{color:#fff}.fl-lane[data-st="foul"],.fl-lane[data-st="miss"]{background:#F6C6C1}.fl-lane[data-st="hit"]{background:#D8F0DD}.fl-lane[data-st="end"]{background:#FFF6D6}
 .fl-lane.bt,.fl-lane.pu{justify-content:flex-start;padding-top:34px}.fl-lane.bt .fl-sig,.fl-lane.pu .fl-sig{font-size:clamp(30px,8vmin,60px);position:relative;z-index:2}.fl-lane .fl-sub{position:relative;z-index:2}
 .fl-lane[data-j="top"] .fl-sub{color:#1E8E3E;font-weight:700}.fl-lane[data-j="bad"] .fl-sub{color:#C62A1E}
-.bt-river{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;top:44%;width:56px;border-radius:28px;background:linear-gradient(#9FD3F0,#4FA3D8)}.bt-boat{position:absolute;left:50%;transform:translateX(-50%);bottom:0;font-size:34px;line-height:1;transition:bottom .15s}
-.bt-drum{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;background:#C8361E;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25)}.bt-drum.hit{animation:btDrum .22s}@keyframes btDrum{0%{transform:scale(1.35);background:#FFC21A}100%{transform:scale(1)}}
+.bt-river{position:absolute;inset:0;border-radius:11px;overflow:hidden;z-index:0;pointer-events:none}
+.bt-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+.bt .fl-sig,.bt .fl-sub{text-shadow:0 0 6px #fff,0 0 3px #fff,0 2px 0 #fff}.bt-boat{position:absolute;left:50%;transform:translateX(-50%);bottom:3%;height:31%;aspect-ratio:202/600;transition:bottom .15s;z-index:1}
+.bt-boat img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.bt-boat .bt-fb,.bt-boat .bt-wob{opacity:0}
+.bt-boat.pull .bt-fa{opacity:0}.bt-boat.pull .bt-fb{opacity:1}
+.bt-boat .bt-wake{left:-53%;width:206%;opacity:0}
+.bt-boat.wake .bt-wake{animation:btFade .4s ease-out}
+.bt-boat .bt-wob{left:-40%;top:-12%;width:180%;height:auto}
+.bt-boat.wob .bt-wob{animation:btFade .5s ease-out}
+.bt-boat.wob{animation:btWob .35s}
+@keyframes btFade{0%{opacity:1}100%{opacity:0}}
+@keyframes btWob{25%{transform:translateX(-58%) rotate(-5deg)}75%{transform:translateX(-42%) rotate(5deg)}}
+.bt-drum{position:absolute;right:6px;bottom:6px;width:clamp(40px,13%,80px);aspect-ratio:224/300;z-index:2;pointer-events:none;transform-origin:50% 90%}
+.bt-drum img{position:absolute;left:0;width:100%;pointer-events:none}
+.bt-drum .bd-body{bottom:0}
+.bt-drum .bd-st,.bt-drum .bd-sth{left:-12%;width:124%;top:-22%}
+.bt-drum .bd-sth{opacity:0}.bt-drum.hit .bd-st{opacity:0}.bt-drum.hit .bd-sth{opacity:1}.bt-drum.hit{animation:btDrum .22s}@keyframes btDrum{0%{transform:scale(1.18)}100%{transform:scale(1)}}
 .pu-hill{position:absolute;left:0;right:0;bottom:0;height:46%}.pu-hill svg{position:absolute;inset:0;width:100%;height:100%}.pu-tuk{position:absolute;left:3%;bottom:3%;font-size:38px;line-height:1;transform:translate(-30%,0) scaleX(-1) rotate(-14deg);transform-origin:50% 100%;transition:left .12s,bottom .12s}.pu-flag{position:absolute;right:2%;top:-30px;font-size:26px}
 .pu-heave{position:absolute;inset:auto 0 46% 0;text-align:center;font:700 clamp(34px,10vmin,70px) var(--font-d,Mitr),sans-serif;color:#C62A1E;opacity:0;transform:scale(.7);transition:opacity .06s,transform .1s;pointer-events:none}.pu-heave.on{opacity:1;transform:scale(1)}
 .fl-team{text-align:center;font:700 19px var(--font-d,Mitr),sans-serif;margin:0 0 10px}.fl-team.ok{color:#1E8E3E}.fl-team.no{color:#C62A1E}.fl-team small{font-weight:500;font-size:14px;color:var(--muted)}
@@ -3251,7 +3267,7 @@ async function playMini(eyebrow,stake,forceK,practice){
 }
 // นับถอยหลังแล้วคืน promise ที่จบเมื่อหมดเวลา
 function mgClock(sec,onTick){ const t0=performance.now(); return new Promise(r=>{ const iv=setInterval(()=>{ const left=sec-(performance.now()-t0)/1000; onTick(left); if(left<=0){ clearInterval(iv); r(); } },100); onTick(sec); }); }
-const MG_IMG={grill:["minigame/grill_bg.webp","minigame/grill_fg.webp",...["a","b","c"].flatMap(c=>["wait","yum","ugh"].map(m=>`minigame/cust_${c}_${m}.webp`)),"minigame/grill_smoke.webp","minigame/grill_yum.webp",...["raw","half","done","burnt"].map(u=>`minigame/moo_${u}.webp`)],mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
+const MG_IMG={boat:["minigame/boat_bg.webp","minigame/boat_wake.webp","minigame/boat_wobble.webp","minigame/boat_drum.webp","minigame/boat_sticks.webp","minigame/boat_sticks_hit.webp",...["red","blue","green","yellow"].flatMap(c=>["a","b"].map(f=>`minigame/boat_${c}_${f}.webp`))],grill:["minigame/grill_bg.webp","minigame/grill_fg.webp",...["a","b","c"].flatMap(c=>["wait","yum","ugh"].map(m=>`minigame/cust_${c}_${m}.webp`)),"minigame/grill_smoke.webp","minigame/grill_yum.webp",...["raw","half","done","burnt"].map(u=>`minigame/moo_${u}.webp`)],mosq:["minigame/mosq_bg.webp","minigame/mosq.webp","minigame/mosq_hit.webp"],splash:["minigame/splash_bg.webp","minigame/granny.webp",...["A01","A02","A03","A04","A05","A06","A07","A08"].map(a=>`avatars/${a}_face.webp`)],tea:["minigame/tea_bg.webp","minigame/tea_filter_idle.webp","minigame/tea_cup.webp","minigame/tea_filter.webp"],somtam:["minigame/somtam_bg.webp","minigame/somtam_mortar.webp","minigame/somtam_mortar_mess.webp","minigame/somtam_pestle.webp"]};
 function mgPreload(k){ (MG_IMG[k]||[]).forEach(u=>{ const i=new Image(); i.src=u; }); }
 async function mgSomtam(ar,goal,score,tick){
   let n=0, live=true, messy=false;
@@ -3416,18 +3432,27 @@ const Q_FOUL=1000, Q_MISS=1200, Q_AFTER=1200, Q_GAP=900;
 function laneTap(el,fn){ const act=new Set();
   el.addEventListener("pointerdown",e=>{ e.preventDefault(); const first=act.size===0; act.add(e.pointerId); if(first) fn(e); },{passive:false});
   const up=e=>act.delete(e.pointerId); ["pointerup","pointercancel","pointerleave"].forEach(t=>el.addEventListener(t,up)); }
+// เลือกสีเรือจากสีผู้เล่น (แดง/น้ำเงิน/เขียว/เหลือง)
+function btColor(hex){ const m=/#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i.exec(String(hex).trim()); if(!m) return "red";
+  const [r,g,b]=m.slice(1).map(x=>parseInt(x,16)/255), mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn||1e-6;
+  const h=(mx===r?((g-b)/d+6)%6:mx===g?(b-r)/d+2:(r-g)/d+4)*60;
+  return h<25||h>330?"red":h<75?"yellow":h<180?"green":"blue"; }
 function laneBoat(el,plan,ctx){
   const sig=el.querySelector(".fl-sig"), sub=el.querySelector(".fl-sub");
   el.classList.add("bt"); el.dataset.st="play";
-  el.insertAdjacentHTML("beforeend",`<div class="bt-river"><div class="bt-boat">🚣</div></div><div class="bt-drum"></div>`);
+  const bc=btColor(getComputedStyle(el).getPropertyValue("--pc"));
+  el.insertAdjacentHTML("beforeend",`<div class="bt-river"><img class="bt-bg" src="minigame/boat_bg.webp" alt=""><div class="bt-boat"><img class="bt-wake" src="minigame/boat_wake.webp" alt=""><img class="bt-fa" src="minigame/boat_${bc}_a.webp" alt=""><img class="bt-fb" src="minigame/boat_${bc}_b.webp" alt=""><img class="bt-wob" src="minigame/boat_wobble.webp" alt=""></div></div><div class="bt-drum"><img class="bd-body" src="minigame/boat_drum.webp" alt=""><img class="bd-st" src="minigame/boat_sticks.webp" alt=""><img class="bd-sth" src="minigame/boat_sticks_hit.webp" alt=""></div>`);
   const boat=el.querySelector(".bt-boat"), drum=el.querySelector(".bt-drum"), max=plan.n*4;
-  let dist=0, t0=0, live=false; const judged=new Set();
-  const show=()=>{ boat.style.bottom=Math.min(92,dist/max*92)+"%"; sig.textContent=Math.round(dist*5); };
+  let dist=0, t0=0, live=false, pullTo=0; const judged=new Set();
+  const show=()=>{ boat.style.bottom=(3+Math.min(1,dist/max)*52)+"%"; sig.textContent=Math.round(dist*5); };
+  const flash=c=>{ boat.classList.remove(c); void boat.offsetWidth; boat.classList.add(c); };
   sig.textContent="0"; sub.textContent=T("เมตร");
   laneTap(el,()=>{ if(!live) return; const t=performance.now()-t0, i=Math.round(t/plan.beat), dt=Math.abs(t-i*plan.beat);
     if(i<1||i>plan.n) return;
-    if(judged.has(i)){ dist=Math.max(0,dist-.5); sub.textContent=T("สะดุด!"); el.dataset.j="bad"; }
-    else { judged.add(i); const g=dt<=70?4:dt<=150?2:1; dist+=g; sub.textContent=T(g===4?"เป๊ะ!":g===2?"ดี":"หลุดจังหวะ"); el.dataset.j=g===4?"top":g===2?"ok":"bad"; }
+    if(judged.has(i)){ dist=Math.max(0,dist-.5); sub.textContent=T("สะดุด!"); el.dataset.j="bad"; flash("wob"); }
+    else { judged.add(i); const g=dt<=70?4:dt<=150?2:1; dist+=g; sub.textContent=T(g===4?"เป๊ะ!":g===2?"ดี":"หลุดจังหวะ"); el.dataset.j=g===4?"top":g===2?"ok":"bad";
+      boat.classList.add("pull"); clearTimeout(pullTo); pullTo=setTimeout(()=>boat.classList.remove("pull"),200);   // สลับเฟรมพาย
+      if(g===4) flash("wake"); else if(g===1) flash("wob"); }
     show(); });
   return (async()=>{
     t0=performance.now(); live=true; let last=0;
@@ -3477,6 +3502,7 @@ function laneQuick(el,plan){
 }
 // เล่นบนเครื่องนี้: seats = ลำดับผู้เล่นที่เล่นบนจอนี้ · คืน {seat:score}
 async function festPlay(G,plan,seats,names,nAll,cols){
+  for(const k in GROUP) if(GROUP[k]===G) mgPreload(k);
   const wrap=document.createElement("div"); wrap.className="fl-wrap n"+seats.length;
   wrap.innerHTML=seats.map((k,i)=>`<div class="fl-lane" data-i="${i}" style="--pc:${cols&&cols[k]||PCOL[k%PCOL.length][1]}"><div class="fl-name">${esc(names[k])}</div><div class="fl-sig">3</div><div class="fl-sub"></div></div>`).join("");
   document.body.appendChild(wrap);
